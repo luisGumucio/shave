@@ -8,6 +8,8 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.springframework.http.HttpEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
@@ -88,7 +90,12 @@ public class FileService {
     private void executeFileRead(XSSFSheet sheet, int process) {
         for (int i = sheet.getFirstRowNum() + 1; i <= sheet.getLastRowNum(); i++) {
             HttpEntity<Transaction> request = new HttpEntity(executeInitial(sheet.getRow(i), process));
-            restTemplate.postForObject(URL, request, Transaction.class);
+            try {
+                restTemplate.postForObject(URL, request, Transaction.class);
+            } catch (RestClientException exRestTemplate) {
+                System.out.println("failed to execute" + exRestTemplate.getMessage());
+            }
+
         }
     }
 
@@ -116,7 +123,7 @@ public class FileService {
                         transaction.setQuantity(item.getQuantity());
                         break;
                     case 8:
-                        item.setPrice(new BigDecimal(cell.getNumericCellValue()));
+                        item.setPrice(new BigDecimal(cell.getNumericCellValue()).setScale(6, BigDecimal.ROUND_CEILING));
                         transaction.setPriceActual(item.getPrice());
                         transaction.setPriceNeto(BigDecimal.ZERO);
                         break;
