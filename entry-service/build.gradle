@@ -1,0 +1,11 @@
+bootJar {
+    mainClassName = 'com.manaco.org.entries.Application'
+}
+
+dependencies {
+    compile project(':common')
+    compile('org.springframework.boot:spring-boot-starter-web')
+    compile group: 'org.apache.poi', name: 'poi', version: '3.15'
+    compile group: 'org.apache.poi', name: 'poi-ooxml', version: '3.15'
+    runtimeOnly 'org.postgresql:postgresql'
+}

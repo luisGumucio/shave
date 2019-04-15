@@ -1,0 +1,10 @@
+pluginManagement {
+	repositories {
+		gradlePluginPortal()
+	}
+}
+rootProject.name = 'shave'
+include 'common'
+include 'entry-service'
+include 'operartor-service'
+
