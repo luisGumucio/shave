@@ -6,6 +6,7 @@ import com.manaco.org.common.model.Proccess;
 import com.manaco.org.common.model.Transaction;
 import com.manaco.org.common.model.TransactionType;
 
+import static com.manaco.org.common.model.TransactionOption.UPDATE_PROCESS;
 import static com.manaco.org.common.model.TransactionType.INITIAL;
 
 import com.manaco.org.common.model.Ufv;
@@ -16,6 +17,7 @@ import com.manaco.org.common.repositories.UfvRepository;
 import com.manaco.org.common.utils.Operator;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -237,4 +239,32 @@ public class TransactionService {
         transactionRepository.save(current);
         return item;
     }
+
+    public void updateItem(LocalDate localDate) {
+        Ufv actual = ufvRepository.findByCreationDate(localDate);
+        Proccess proccess = new Proccess();
+        proccess.setNumberProcess(3);
+        proccess.setType(UPDATE_PROCESS);
+        proccessRepository.save(proccess);
+        List<Item> items = itemRepository.findAll();
+        items.forEach((item) -> {
+            updateItem(item, actual, localDate, proccess);
+        });
+    }
+
+    private void updateItem(Item item, Ufv actual, LocalDate date, Proccess proccess) {
+        Ufv before = ufvRepository.findByCreationDate(item.getLastUpdate());
+        if (item.getQuantity().intValue() != 0) {
+            BigDecimal totalNormal = operator.calculateTotal(item.getQuantity(), item.getPrice());
+            BigDecimal totalUpdate = operator.calculateUpdate(totalNormal, actual.getValue(), before.getValue());
+            BigDecimal newPrice = operator.newPrice(totalUpdate, item.getQuantity());
+            BigDecimal ufvValue = operator.caclulateUfvValue(totalUpdate, totalNormal);
+            item.setPrice(newPrice.setScale(6, BigDecimal.ROUND_DOWN));
+            item.setLastUpdate(date);
+            saveMove(item, TransactionType.UPDATE, ufvValue, actual, proccess.getId());
+        } else {
+            saveMove(item, TransactionType.UPDATE, BigDecimal.ZERO, actual, proccess.getId());
+        }
+    }
+
 }

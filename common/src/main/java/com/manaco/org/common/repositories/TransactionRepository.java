@@ -11,5 +11,6 @@ import java.util.List;
 @Service
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
     Page<Transaction> findByTransactionDetailItemItemIdOrderByDateAsc(Pageable pageable, Long id);
+    List<Transaction> findByTransactionDetailItemItemIdOrderByDateAsc(Long id);
 }
 

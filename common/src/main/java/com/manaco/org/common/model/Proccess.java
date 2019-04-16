@@ -21,7 +21,7 @@ public class Proccess {
     @Id
     @GeneratedValue
     private int id;
-    private boolean active;;
+    private boolean active;
     @Enumerated(EnumType.STRING)
     private TransactionOption type;
     private int numberProcess;
