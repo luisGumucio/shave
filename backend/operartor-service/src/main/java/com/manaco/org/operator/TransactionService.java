@@ -132,6 +132,7 @@ public class TransactionService {
         transaction.setUfvValue(ufvValue);
         transaction.setDate(item.getLastUpdate());
         transaction.setProcessId(proccesID);
+        transaction.setTransactionDetail(detail);
         itemRepository.save(item);
         transactionRepository.save(transaction);
     }
@@ -146,12 +147,12 @@ public class TransactionService {
             BigDecimal totalNormal = operator.calculateTotal(transaction.getQuantity(), transaction.getPriceNeto());
             BigDecimal totalUpdate = operator.calculateTotal(item.getQuantity(), item.getPrice());
             BigDecimal newPrice = operator.newPrice(totalUpdate.add(totalNormal), quantityTotal);
-            entry.setPriceActual(newPrice.setScale(6, BigDecimal.ROUND_DOWN));
+            entry.setPriceActual(newPrice.setScale(6, BigDecimal.ROUND_CEILING));
         } else {
             entry.setPriceActual(item.getPrice());
         }
 
-        entry.setQuantity(transaction.getQuantity().setScale(6, BigDecimal.ROUND_DOWN));
+        entry.setQuantity(transaction.getQuantity().setScale(6, BigDecimal.ROUND_CEILING));
         entry.setDate(transaction.getDate());
         entry.setTransactionDetail(detail);
         entry.setUfvValue(BigDecimal.ZERO);
@@ -259,7 +260,7 @@ public class TransactionService {
             BigDecimal totalUpdate = operator.calculateUpdate(totalNormal, actual.getValue(), before.getValue());
             BigDecimal newPrice = operator.newPrice(totalUpdate, item.getQuantity());
             BigDecimal ufvValue = operator.caclulateUfvValue(totalUpdate, totalNormal);
-            item.setPrice(newPrice.setScale(6, BigDecimal.ROUND_DOWN));
+            item.setPrice(newPrice.setScale(6, BigDecimal.ROUND_CEILING));
             item.setLastUpdate(date);
             saveMove(item, TransactionType.UPDATE, ufvValue, actual, proccess.getId());
         } else {

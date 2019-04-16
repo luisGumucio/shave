@@ -26,7 +26,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 
 @RestController
 @RequestMapping("/files")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:4200", methods= {RequestMethod.GET,RequestMethod.POST})
 public class FileController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FileController.class);
@@ -142,10 +142,14 @@ public class FileController {
     }
 
     private void saveUfv(int day, BigDecimal numericCellValue, int month) {
-        Ufv ufv = new Ufv();
-        ufv.setCreationDate(LocalDate.of(2018, month, day));
-        ufv.setValue(numericCellValue);
-        ufvRepository.save(ufv);
+        LocalDate date = LocalDate.of(2018, month, day);
+        Ufv ufv = ufvRepository.findByCreationDate(date);
+        if(ufv == null) {
+            ufv = new Ufv();
+            ufv.setCreationDate(LocalDate.of(2018, month, day));
+            ufv.setValue(numericCellValue);
+            ufvRepository.save(ufv);
+        }
     }
 
     private Proccess getProcess(int numberProcess, TransactionOption option) {

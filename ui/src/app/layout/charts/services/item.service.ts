@@ -19,7 +19,7 @@ export class ItemService {
 
 
   getByItem(id): Observable<any> {
-    return this.http.get('//localhost:4000/items/' + id);
+    return this.http.get('//localhost:4000/transaction/' + id);
   }
   getByStore(id): Observable<any> {
     return this.http.get('//localhost:4000/items/store/' + id);

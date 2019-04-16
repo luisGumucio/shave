@@ -78,7 +78,7 @@ export class ItemDetailComponent implements OnInit {
     console.log("hoa");
     var id = this.route.snapshot.paramMap.get("id");
     this.itemService.getByItem(id).subscribe(result => {
-      this.items = result;
+      this.items = result['content'];
     },
       (error) => {
         console.log(error.error.message);

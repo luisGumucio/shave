@@ -23,13 +23,13 @@
                 </thead>
                 <tbody>
                     <tr *ngFor="let item of items">
-                        <td>{{item.itemId}}</td>
+                        <td>{{item.id}}</td>
                         <td>{{item.price | number:'1.2-2'}}</td>
                         <td>{{item.quantity | number:'1.2-2'}}</td>
                         <td>{{item.quantity * item.price | number:'1.2-2'}}</td>
                         <td>{{item.lastUpdate}}</td>                        
                         <td>
-                            <a [routerLink]="['/item', item.itemId]" class="edit" title="Edit" data-toggle="tooltip">
+                            <a [routerLink]="['/item', item.id]" class="edit" title="Edit" data-toggle="tooltip">
                                 <i class="fa fa-search-plus" style="cursor: -webkit-grabbing; cursor: grabbing;"></i>
                             </a>
                         </td>
