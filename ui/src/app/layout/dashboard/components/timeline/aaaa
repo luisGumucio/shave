@@ -1,0 +1,49 @@
+testing appium
+first time when no contain app install from appium
+Thu Feb 21 14:16:01 BOT 2019check contact false
+Thu Feb 21 14:16:01 BOT 2019check contact true
+Thu Feb 21 14:16:01 BOT 2019execute steps
+2019-02-21 14:16:01,566 INFO 519686 --- com.jalasoft.cloud.notifier.android.dispatcher.server.MessageSocketHandler executeAppiumSteps : Sending a notification with id 123e4567-e89b-12d3-a456-556642440000
+Thu Feb 21 14:16:01 BOT 2019
+2019-02-21 14:17:04,178 INFO 582298 --- org.openqa.selenium.remote.ProtocolHandshake lambda$0 : Detected dialect: W3C
+Thu Feb 21 14:17:04 BOT 2019
+Thu Feb 21 14:17:04 BOT 2019sending
+Thu Feb 21 14:17:05 BOT 2019after click
+Thu Feb 21 14:17:13 BOT 2019after type an account
+Thu Feb 21 14:17:16 BOT 2019after click
+Thu Feb 21 14:17:22 BOT 2019after writter a message
+Thu Feb 21 14:17:23 BOT 2019after to send
+2019-02-21 14:17:31,352 INFO 609472 --- com.jalasoft.cloud.notifier.android.dispatcher.server.MessageSocketHandler unregisterFromEureka : Phone unregistered with number 60348985 to eureka service
+2019-02-21 14:17:31,352 INFO 609472 --- org.springframework.cloud.netflix.eureka.serviceregistry.EurekaServiceRegistry deregister : Unregistering application android-dispatcher-server-123e4567-e89b-12d3-a456-556642440000-60348985 with eureka with status DOWN
+2019-02-21 14:17:31,352 WARN 609472 --- com.netflix.discovery.DiscoveryClient notify : Saw local status change event StatusChangeEvent [timestamp=1550773051352, current=DOWN, previous=UP]
+2019-02-21 14:17:31,353 INFO 609473 --- com.netflix.discovery.DiscoveryClient register : DiscoveryClient_ANDROID-DISPATCHER-SERVER-123E4567-E89B-12D3-A456-556642440000-60348985/gateway.notifier.jalasoft.local:
+: registering service...
+2019-02-21 14:17:31,365 INFO 609485 --- com.netflix.discovery.DiscoveryClient register : DiscoveryClient_ANDROID-DISPATCHER-SERVER-123E4567-E89B-12D3-A456-556642440000-60348985/gateway.notifier.jalasoft.local:
+ - registration status: 204
+first time
+
+Thu Feb 21 15:21:02 BOT 2019check contact false
+Thu Feb 21 15:21:02 BOT 2019check contact true
+Thu Feb 21 15:21:02 BOT 2019execute steps
+2019-02-21 15:21:02,422 INFO 21085 --- com.jalasoft.cloud.notifier.android.dispatcher.server.MessageSocketHandler executeAppiumSteps : Sending a notification with id 123e4567-e89b-12d3-a456-556642440000
+Thu Feb 21 15:21:02 BOT 2019
+2019-02-21 15:21:25,077 INFO 43740 --- org.openqa.selenium.remote.ProtocolHandshake lambda$0 : Detected dialect: W3C
+Thu Feb 21 15:21:25 BOT 2019
+Thu Feb 21 15:21:25 BOT 2019sending
+Thu Feb 21 15:21:28 BOT 2019after click
+Thu Feb 21 15:21:34 BOT 2019after type an account
+Thu Feb 21 15:21:36 BOT 2019after click
+Thu Feb 21 15:21:44 BOT 2019after writter a message
+Thu Feb 21 15:21:45 BOT 2019after to send
+
+second testin
+Thu Feb 21 15:22:38 BOT 2019check contact false
+Thu Feb 21 15:22:38 BOT 2019check contact true
+Thu Feb 21 15:22:38 BOT 2019execute steps
+2019-02-21 15:22:38,147 INFO 116810 --- com.jalasoft.cloud.notifier.android.dispatcher.server.MessageSocketHandler executeAppiumSteps : Sending a notification with id 123e4567-e89b-12d3-a456-556642440000
+Thu Feb 21 15:22:38 BOT 2019sending
+Thu Feb 21 15:22:38 BOT 2019after click
+Thu Feb 21 15:22:46 BOT 2019after type an account
+Thu Feb 21 15:22:48 BOT 2019after click
+Thu Feb 21 15:22:54 BOT 2019after writter a message
+Thu Feb 21 15:22:55 BOT 2019after to send

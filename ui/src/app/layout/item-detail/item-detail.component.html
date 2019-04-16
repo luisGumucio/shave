@@ -1,0 +1,269 @@
+<div class="card-body">
+    <h4 class="card-title">Movimientos por Item</h4>
+    <div class="form-group input-group">
+            <h3>Desde:</h3>
+            <div class="input-group datepicker-input">         
+                    <input class="form-control" placeholder="yyyy-mm-dd"
+                        name="dp"  ngbDatepicker #d="ngbDatepicker">
+                    <button class="input-group-addon" (click)="d.toggle()" type="button">
+                        <!-- <img src="img/calendar-icon.svg" style="width: 1.2rem; height: 1rem; cursor: pointer;"/> -->
+                        <span class="fa fa-calendar"></span>
+                    </button>
+                </div>
+                <h3>Hasta:  </h3>
+                <div class="input-group datepicker-input">
+                        
+                        <input class="form-control" placeholder="yyyy-mm-dd"
+                        name="dp1"  ngbDatepicker #d1="ngbDatepicker">
+                        <button class="input-group-addon" (click)="d1.toggle()" type="button">
+                                <!-- <img src="img/calendar-icon.svg" style="width: 1.2rem; height: 1rem; cursor: pointer;"/> -->
+                                <span class="fa fa-calendar"></span>
+                            </button>
+                        </div>
+    </div>
+    <ng-template #content let-c="close" let-d="dismiss">
+        <div class="modal-header">
+            <h4 class="modal-title">Detalles
+            </h4>
+            <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p>
+                <b>Descripcion:</b> {{ model.description }}</p>
+            <p>
+                <b>Seccion:</b> {{ model.seccion }}</p>
+            <p>
+                <b>Almacen:</b> {{ model.wareHouseId }}</p>
+            <p>
+                <b>Tipo:</b> {{ model.idtype }}</p>
+            <p>
+                <b>NroCuenta:</b> {{ model.nroAccount }}</p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="c('Close click')">Cerrar</button>
+        </div>
+    </ng-template>
+</div>
+<table class="table table-sm">
+    <thead>
+        <tr>
+            <th></th>
+            <th></th>
+            <th>Fisico</th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th>Valorado</th>
+            <th></th>
+            <th></th>
+        </tr>
+        <tr>
+            <th>Tipo</th>
+            <th>Fecha</th>
+            <th>Ingreso</th>
+            <th>Egreso</th>
+            <th>Saldo</th>
+            <th>P.U(neto)</th>
+            <th>P.U(actual)</th>
+            <th>Ufv</th>
+            <th>Ingreso</th>
+            <th>Egreso</th>
+            <th>Saldo</th>
+            <th>Saldo Actualizado</th>
+            <th>Diferencia</th>
+            <th>Accion</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let item of items; let i = index;">
+            <td>{{item.type}}</td>
+            <td>{{item.transactionDetail.ufv.creationDate}}</td>
+            <td *ngIf="item.type === 'INITIAL'"></td>
+            <td *ngIf="item.type === 'INITIAL'"></td>
+            <td *ngIf="item.type === 'INITIAL'">{{item.quantity | number:'1.2-2'}}</td>
+            <td *ngIf="item.type === 'ENTRY'">{{item.quantity | number:'1.2-2'}}</td>
+            <td *ngIf="item.type === 'ENTRY'"></td>
+            <td *ngIf="item.type === 'ENTRY'">{{item.quantity + items[i-1].quantity | number:'1.2-2'}}</td>
+            <td *ngIf="item.type === 'EGRESS'"></td>
+            <td *ngIf="item.type === 'EGRESS'">{{item.quantity | number:'1.2-2'}}</td>
+            <td *ngIf="item.type === 'EGRESS'">{{items[i-1].quantity - item.quantity | number:'1.2-2' }}</td>
+            <td *ngIf="item.type === 'UPDATE'"></td>
+            <td *ngIf="item.type === 'UPDATE'"></td>
+            <td *ngIf="item.type === 'UPDATE'">{{item.quantity | number:'1.2-2'}}</td>
+            <td>{{item.priceNeto | number:'1.2-2'}}</td>
+            <td>{{item.priceActual | number:'1.2-2'}}</td>
+            <td>{{item.transactionDetail.ufv.value | number:'1.2-2'}}</td>
+            <td *ngIf="item.type === 'INITIAL'"></td>
+            <td *ngIf="item.type === 'INITIAL'"></td>
+            <td *ngIf="item.type === 'INITIAL'">{{item.quantity * item.priceActual | number:'1.2-2'}}</td>
+            <td *ngIf="item.type === 'INITIAL'">{{item.quantity * item.priceNeto | number:'1.2-2'}}</td>
+            <td *ngIf="item.type === 'UPDATE'"></td>
+            <td *ngIf="item.type === 'UPDATE'"></td>
+            <td *ngIf="item.type === 'UPDATE'"></td>
+            <td *ngIf="item.type === 'UPDATE'">{{item.quantity * item.priceActual | number:'1.2-2'}}</td>
+            <td *ngIf="item.type === 'ENTRY'">{{item.quantity * item.priceNeto | number:'1.2-2' }}</td>
+            <td *ngIf="item.type === 'ENTRY'"></td>
+            <td *ngIf="item.type === 'ENTRY'"></td>
+            <td *ngIf="item.type === 'ENTRY'">{{item.quantity * item.priceNeto + items[i-1].priceActual * items[i-1].quantity | number:'1.2-2'}}</td>
+            <td *ngIf="item.type === 'EGRESS'"></td>
+            <td *ngIf="item.type === 'EGRESS'">{{item.quantity * item.priceActual | number:'1.2-2'}}</td>
+            <td *ngIf="item.type === 'EGRESS'"></td>
+            <td *ngIf="item.type === 'EGRESS'">{{items[i-1].priceActual * items[i-1].quantity - item.quantity * item.priceActual | number:'1.2-2'}}</td>
+            <td>{{item.ufvValue | number:'1.2-2'}}</td>
+            <td>
+                <a (click)="open(content, item.id)" class="edit" title="Edit" data-toggle="tooltip">
+                    <i class="fa fa-search-plus" style="cursor: -webkit-grabbing; cursor: grabbing;"></i>
+                </a>
+            </td>
+        </tr>
+        <!-- <tr>
+      <th scope="row">INICIAL</th>
+      <td>12/31/18</td>
+      <td></td>
+      <td></td>
+      <td>10</td>
+      <td>40</td>
+      <td>40.0000</td>
+      <td>1.694562</td>            
+      <td></td>            
+      <td></td>            
+      <td>400.00</td>            
+      <td>400.00</td>            
+      <td>0.00</td>   
+      <td><a routerLink="/item" class="edit" title="Edit" data-toggle="tooltip"><i class="fa fa-search-plus" style="cursor: -webkit-grabbing; cursor: grabbing;"></i></a></td>         
+  </tr>
+  <tr class="table-success">
+      <th scope="row">ACTUALIZACION</th>
+      <td>01/01/19</td>
+      <td></td>
+      <td></td>
+      <td>10</td>
+      <td></td>
+      <td>40.0000</td>
+      <td>1.695541</td>            
+      <td></td>            
+      <td></td>            
+      <td>400.00</td>            
+      <td>400.23</td>            
+      <td>0.23</td>      
+      <td><a routerLink="/item" class="edit" title="Edit" data-toggle="tooltip"><i class="fa fa-search-plus" style="cursor: -webkit-grabbing; cursor: grabbing;"></i></a></td>      
+  </tr>
+  <tr class="table-danger">
+      <th scope="row">INGRESO</th>
+      <td>02/01/19</td>
+      <td>20</td>
+      <td></td>
+      <td>30</td>
+      <td>41</td>
+      <td>40.67436974</td>
+      <td>1.695541</td>            
+      <td>820</td>            
+      <td></td>            
+      <td>1220.00</td>            
+      <td>1220.23</td>            
+      <td>0.00</td>      
+      <td><a routerLink="/item" class="edit" title="Edit" data-toggle="tooltip"><i class="fa fa-search-plus" style="cursor: -webkit-grabbing; cursor: grabbing;"></i></a></td>      
+  </tr>
+  <tr class="table-success">
+      <th  scope="row">ACTUALIZACION</th>
+      <td>03/01/19</td>
+      <td></td>
+      <td></td>
+      <td>30</td>
+      <td></td>
+      <td>40.72856094</td>
+      <td>1.697800</td>            
+      <td></td>            
+      <td></td>            
+      <td>1220.00</td>            
+      <td>1221.86</td>            
+      <td>1.63</td>    
+      <td><a routerLink="/item" class="edit" title="Edit" data-toggle="tooltip"><i class="fa fa-search-plus" style="cursor: -webkit-grabbing; cursor: grabbing;"></i></a></td>        
+  </tr>
+  <tr>
+      <th scope="row">EGRESO</th>
+      <td>03/01/19</td>
+      <td></td>
+      <td>25</td>
+      <td>5</td>
+      <td></td>
+      <td>440.72856094</td>
+      <td>1.697800</td>            
+      <td></td>            
+      <td>1018.21</td>            
+      <td>201.79</td>            
+      <td>203.64</td>            
+      <td>0.00</td>   
+      <td><a routerLink="/item" class="edit" title="Edit" data-toggle="tooltip"><i class="fa fa-search-plus" style="cursor: -webkit-grabbing; cursor: grabbing;"></i></a></td>         
+  </tr>
+  <tr class="table-success">
+      <th scope="row">ACTUALIZACION</th>
+      <td>04/01/19</td>
+      <td></td>
+      <td></td>
+      <td>5</td>
+      <td></td>
+      <td>40.73683715</td>
+      <td>1.698145</td>            
+      <td></td>            
+      <td></td>            
+      <td>201.79</td>            
+      <td>203.68</td>            
+      <td>0.04</td>      
+      <td><a routerLink="/item" class="edit" title="Edit" data-toggle="tooltip"><i class="fa fa-search-plus" style="cursor: -webkit-grabbing; cursor: grabbing;"></i></a></td>      
+  </tr>
+  <tr class="table-danger">
+      <th scope="row">INGRESO</th>
+      <td>04/01/19</td>
+      <td>10</td>
+      <td></td>
+      <td>15</td>
+      <td>41.2</td>
+      <td>41.07220032</td>
+      <td>1.698145</td>            
+      <td>412</td>            
+      <td></td>            
+      <td>613.79</td>            
+      <td>615.68</td>            
+      <td>0.00</td>      
+      <td><a routerLink="/item" class="edit" title="Edit" data-toggle="tooltip"><i class="fa fa-search-plus" style="cursor: -webkit-grabbing; cursor: grabbing;"></i></a></td>      
+  </tr>
+  <tr class="table-success">
+      <th  scope="row">ACTUALIZACION</th>
+      <td>05/01/19</td>
+      <td></td>
+      <td></td>
+      <td>15</td>
+      <td></td>
+      <td>41.072220032</td>
+      <td>1.699245</td>            
+      <td></td>            
+      <td></td>            
+      <td>613.79</td>            
+      <td>616.08</td>            
+      <td>0.40</td>      
+      <td><a routerLink="/item" class="edit" title="Edit" data-toggle="tooltip"><i class="fa fa-search-plus" style="cursor: -webkit-grabbing; cursor: grabbing;"></i></a></td>      
+  </tr>
+  <tr class="table-danger">
+      <th scope="row">INGRESO</th>
+      <td>05/01/19</td>
+      <td>15</td>
+      <td></td>
+      <td>30</td>
+      <td>41.5</td>
+      <td>41.28610016</td>
+      <td>1.698145</td>            
+      <td>622.5</td>            
+      <td></td>            
+      <td>1236.29</td>            
+      <td>1238.58</td>            
+      <td>0.00</td>    
+      <td><a routerLink="/item" class="edit" title="Edit" data-toggle="tooltip"><i class="fa fa-search-plus" style="cursor: -webkit-grabbing; cursor: grabbing;"></i></a></td>        
+  </tr> -->
+    </tbody>
+</table>
