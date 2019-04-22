@@ -4,9 +4,9 @@ public class TransactionDetailDto {
 
     private int id;
     private String name;
-    private long itemId;
+    private String itemId;
 
-    public TransactionDetailDto(int id, String name, long itemId) {
+    public TransactionDetailDto(int id, String name, String itemId) {
         this.id = id;
         this.name = name;
         this.itemId = itemId;
@@ -28,11 +28,11 @@ public class TransactionDetailDto {
         this.name = name;
     }
 
-    public long getItemId() {
+    public String getItemId() {
         return itemId;
     }
 
-    public void setItemId(long itemId) {
+    public void setItemId(String itemId) {
         this.itemId = itemId;
     }
 }

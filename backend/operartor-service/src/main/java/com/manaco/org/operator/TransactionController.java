@@ -15,6 +15,7 @@ import java.util.concurrent.Executors;
 
 @RestController
 @RequestMapping("/transaction")
+@CrossOrigin(origins = "*")
 public class TransactionController {
 
     @Autowired

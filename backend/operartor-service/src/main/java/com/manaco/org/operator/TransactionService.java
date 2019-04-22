@@ -1,15 +1,10 @@
 package com.manaco.org.operator;
 
-import com.manaco.org.common.model.Item;
-import com.manaco.org.common.model.MateriaDetail;
-import com.manaco.org.common.model.Proccess;
-import com.manaco.org.common.model.Transaction;
-import com.manaco.org.common.model.TransactionType;
+import com.manaco.org.common.model.*;
 
 import static com.manaco.org.common.model.TransactionOption.UPDATE_PROCESS;
 import static com.manaco.org.common.model.TransactionType.INITIAL;
 
-import com.manaco.org.common.model.Ufv;
 import com.manaco.org.common.repositories.ItemRepository;
 import com.manaco.org.common.repositories.ProccessRepository;
 import com.manaco.org.common.repositories.TransactionRepository;
@@ -113,7 +108,7 @@ public class TransactionService {
                 BigDecimal totalUpdate = operator.calculateUpdate(totalNormal, actual.getValue(), before.getValue());
                 BigDecimal newPrice = operator.newPrice(totalUpdate, item.getQuantity());
                 BigDecimal ufvValue = operator.caclulateUfvValue(totalUpdate, totalNormal);
-                item.setPrice(newPrice);
+                item.setPrice(newPrice.setScale(6, BigDecimal.ROUND_CEILING));
                 item.setLastUpdate(transaction.getDate());
                 saveMove(item, TransactionType.UPDATE, ufvValue, actual, transaction.getProcessId());
             }
@@ -123,7 +118,7 @@ public class TransactionService {
 
     private void saveMove(Item item, TransactionType type, BigDecimal ufvValue, Ufv ufv, int proccesID) {
         Transaction transaction = new Transaction();
-        MateriaDetail detail = new MateriaDetail();
+        TransactionDetail detail = new MateriaDetail();
         detail.setUfv(ufv);
         detail.setItem(item);
         transaction.setPriceActual(item.getPrice());
@@ -139,7 +134,7 @@ public class TransactionService {
 
     private void executeEntry(Item item, Transaction transaction, Ufv actual) {
         Transaction entry = new Transaction();
-        MateriaDetail detail = (MateriaDetail) transaction.getTransactionDetail();
+        TransactionDetail detail =  transaction.getTransactionDetail();
         entry.setType(TransactionType.ENTRY);
         entry.setPriceNeto(transaction.getPriceNeto());
         BigDecimal quantityTotal = item.getQuantity().add(transaction.getQuantity().setScale(6, BigDecimal.ROUND_CEILING));
@@ -167,7 +162,7 @@ public class TransactionService {
 
     private void executeEgress(Item item, Transaction transaction, Ufv actual) {
         Transaction egress = new Transaction();
-        MateriaDetail detail = (MateriaDetail) transaction.getTransactionDetail();
+        TransactionDetail detail = transaction.getTransactionDetail();
         egress.setType(TransactionType.EGRESS);
         egress.setPriceActual(item.getPrice());
         egress.setQuantity(transaction.getQuantity());

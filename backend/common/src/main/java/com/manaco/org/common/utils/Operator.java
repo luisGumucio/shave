@@ -16,12 +16,12 @@ public class Operator {
         if (quantity.compareTo(BigDecimal.ZERO) == 0) {
             return BigDecimal.ZERO;
         }
-        return quantity.multiply(price);
+        return quantity.multiply(price).setScale(6, BigDecimal.ROUND_CEILING);
     }
 
     public BigDecimal calculateUpdate(BigDecimal total, BigDecimal actualUfv, BigDecimal beforeUfv) {
         if (total.compareTo(BigDecimal.ZERO) != 0) {
-            return total.multiply(calculateUfv(actualUfv, beforeUfv));
+            return total.multiply(actualUfv.divide(beforeUfv, RoundingMode.DOWN));
         }
         return BigDecimal.ZERO;
     }
@@ -40,20 +40,6 @@ public class Operator {
     public BigDecimal calculateUfv(BigDecimal actualUfv, BigDecimal beforeUfv) {
         return actualUfv.divide(beforeUfv, RoundingMode.DOWN);
     }
-
-//    public BigDecimal calculatePU(BigDecimal quantity, BigDecimal price, BigDecimal actualUfv, BigDecimal beforeUfv) {
-//        return calculatePU(calculateNewPrice(calculateTotal(quantity, price), actualUfv, beforeUfv), quantity);
-//    }
-//
-//    public BigDecimal calculatePriceActual(BigDecimal quantityActual, BigDecimal priceActual,
-//                                           BigDecimal quantityUpdate, BigDecimal priceUpdate) {
-//        return calculatePU(calculateTotal(quantityActual, priceActual).add(calculateTotal(quantityUpdate, priceUpdate)),
-//                quantityActual.add(quantityUpdate));
-//    }
-//
-//    public BigDecimal getUfvValue() {
-//        return ufvValue;
-//    }
 }
 
 

@@ -26,7 +26,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 
 @RestController
 @RequestMapping("/files")
-@CrossOrigin(origins = "http://localhost:4200", methods= {RequestMethod.GET,RequestMethod.POST})
+@CrossOrigin(origins = "*", methods= {RequestMethod.GET,RequestMethod.POST})
 public class FileController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FileController.class);

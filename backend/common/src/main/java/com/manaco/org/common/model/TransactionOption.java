@@ -4,6 +4,7 @@ public enum TransactionOption {
     SALDO_INITIAL_MP,
     MATERIA_PRIMA,
     PRODUCTO_TERMINADO,
-    RESPUESTO,
-    UPDATE_PROCESS
+    REPUESTO,
+    UPDATE_PROCESS,
+    SALDO_INITIAL_R
 }

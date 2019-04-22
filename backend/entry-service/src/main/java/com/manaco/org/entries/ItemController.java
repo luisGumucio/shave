@@ -17,7 +17,7 @@ public class ItemController {
     private ItemRepository itemRepository;
 
     @GetMapping(path = "/{id}")
-    public Item getById(@PathVariable long id) {
+    public Item getById(@PathVariable String id) {
         return itemRepository.findById(id).get();
     }
 

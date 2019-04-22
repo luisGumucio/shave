@@ -3,22 +3,18 @@ package com.manaco.org.entries;
 import com.manaco.org.common.model.*;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.springframework.http.HttpEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -38,12 +34,26 @@ public class FileService {
             int numberProcess) {
         switch (option) {
             case SALDO_INITIAL_MP:
+            case SALDO_INITIAL_R:
                 executeFileRead(sheet, process);
                 break;
             case MATERIA_PRIMA:
                 executeMaterial(sheet, process, numberProcess);
+                break;
+            case REPUESTO:
+                executeReplacement(sheet, process, numberProcess);
         }
         return null;
+    }
+
+    private void executeReplacement(XSSFSheet sheet, int process, int numberProcess) {
+        List<Transaction> raws = new ArrayList<>();
+        for (int i = sheet.getFirstRowNum() + 1; i <= sheet.getLastRowNum(); i++) {
+            raws.add(executeReplacement(sheet.getRow(i), process));
+        }
+
+        Collections.sort(raws);
+        executeTransaction(raws);
     }
 
     private void executeMaterial(XSSFSheet sheet, int process, int numberProcess) {
@@ -71,7 +81,7 @@ public class FileService {
             try {
                 switch (j) {
                     case 0:
-                        item.setId(Long.parseLong(cell.getStringCellValue()));
+                        item.setId(cell.getStringCellValue());
                         break;
                     case 1:
                         item.setPrice(new BigDecimal(cell.getNumericCellValue()));
@@ -109,7 +119,7 @@ public class FileService {
             try {
                 switch (j) {
                     case 1:
-                        item.setId(Long.parseLong(cell.getStringCellValue()));
+                        item.setId(cell.getStringCellValue());
                         break;
                     case 3:
                         item.setInitialDate(cell.getDateCellValue()
@@ -123,7 +133,7 @@ public class FileService {
                         transaction.setQuantity(item.getQuantity());
                         break;
                     case 8:
-                        item.setPrice(new BigDecimal(cell.getNumericCellValue()).setScale(6, BigDecimal.ROUND_CEILING));
+                        item.setPrice(new BigDecimal(cell.getNumericCellValue()).setScale(6, BigDecimal.ROUND_DOWN));
                         transaction.setPriceActual(item.getPrice());
                         transaction.setPriceNeto(BigDecimal.ZERO);
                         break;
@@ -160,7 +170,7 @@ public class FileService {
                                 .toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
                         break;
                     case 1:
-                        item.setId(Integer.parseInt(cell.getStringCellValue()));
+                        item.setId(cell.getStringCellValue());
                         break;
                     case 2:
                         if (cell.getStringCellValue().equals("E")) {
@@ -208,7 +218,7 @@ public class FileService {
         executeTransaction(raws);
     }
 
-    private void removeAll(List<Transaction> raws, Long id) {
+    private void removeAll(List<Transaction> raws, String id) {
         List<Transaction> actual = raws.stream()
                 .filter(b -> Objects.equals(b.getTransactionDetail().getItem().getId(), id))
                 .collect(Collectors.toList());
@@ -216,5 +226,62 @@ public class FileService {
         restTemplate.postForObject(URL_MOVE, request, List.class);
         System.out.println(actual.get(0).getTransactionDetail().getItem().getId());
         raws.removeIf(b -> Objects.equals(b.getTransactionDetail().getItem().getId(), id));
+    }
+
+    private Transaction executeReplacement(Row row, int process) {
+        Transaction transaction = new Transaction();
+        ReplacementDetail detail = new ReplacementDetail();
+        Item item = new Item();
+        for (int j = row.getFirstCellNum(); j <= row.getLastCellNum(); j++) {
+            Cell cell = row.getCell(j);
+            try {
+                switch (j) {
+                    case 0:
+                        if (cell.getStringCellValue().equals("E")) {
+                            transaction.setType(TransactionType.ENTRY);
+                        } else if (cell.getStringCellValue().equals("S")) {
+                            transaction.setType(TransactionType.EGRESS);
+                        }
+                        break;
+                    case 1:
+                        detail.setTypeReplacement((int) cell.getNumericCellValue());
+                        break;
+                    case 2:
+                        detail.setNro(cell.getStringCellValue());
+                        break;
+                    case 3:
+                        item.setId(cell.getStringCellValue());
+
+                        break;
+                    case 5:
+                        detail.setSeccionReplacement(cell.getStringCellValue());
+                        break;
+                    case 7:
+                        transaction.setQuantity(new BigDecimal(cell.getNumericCellValue()));
+                        break;
+                    case 8:
+                        transaction.setPriceNeto(new BigDecimal(cell.getNumericCellValue()));
+
+                        break;
+                    case 9:
+                        Date date1=new SimpleDateFormat("dd/MM/yyyy").parse(cell.getStringCellValue());
+                        transaction.setDate(date1
+                                .toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+                        break;
+                    case 10:
+                        detail.setNroAccountReplacement(cell.getStringCellValue());
+                        break;
+                }
+            } catch (IllegalStateException ex) {
+                System.out.println(ex);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        detail.setItem(item);
+        transaction.setTransactionDetail(detail);
+        transaction.setProcessId(process);
+        System.out.println(transaction.getTransactionDetail().getItem().getId());
+        return transaction;
     }
 }

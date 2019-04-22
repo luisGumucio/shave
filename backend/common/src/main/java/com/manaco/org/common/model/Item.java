@@ -12,7 +12,7 @@ import java.time.LocalDate;
 public class Item {
 
     @Id
-    private long itemId;
+    private String itemId;
     @NotNull
     @Column(precision = 19, scale = 6)
     private BigDecimal quantity;
@@ -26,7 +26,7 @@ public class Item {
     public Item() {
     }
 
-    public Item(long itemId, LocalDate date) {
+    public Item(String itemId, LocalDate date) {
         this.itemId = itemId;
         quantity = BigDecimal.ZERO;
         price = BigDecimal.ZERO;
@@ -35,11 +35,11 @@ public class Item {
         isFailure = false;
     }
 
-    public Long getId() {
+    public String getId() {
         return itemId;
     }
 
-    public void setId(long id) {
+    public void setId(String id) {
         this.itemId = id;
     }
 

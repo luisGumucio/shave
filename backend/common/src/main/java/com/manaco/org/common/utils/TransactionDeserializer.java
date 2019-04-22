@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.manaco.org.common.model.MateriaDetail;
+import com.manaco.org.common.model.ReplacementDetail;
 import com.manaco.org.common.model.TransactionDetail;
 
 import java.io.IOException;
@@ -22,7 +23,7 @@ public class TransactionDeserializer extends JsonDeserializer<TransactionDetail>
         if (root.get("wareHouseId") != null) {
             instanceClass = MateriaDetail.class;
         } else {
-            instanceClass = null;
+            instanceClass = ReplacementDetail.class;
         }
 
         return mapper.readValue(root.toString(), instanceClass);
