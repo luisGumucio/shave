@@ -1,15 +1,14 @@
 package com.manaco.org.operator;
 
-import com.manaco.org.common.model.*;
+import static com.manaco.org.model.TransactionOption.UPDATE_PROCESS;
+import static com.manaco.org.model.TransactionType.INITIAL;
 
-import static com.manaco.org.common.model.TransactionOption.UPDATE_PROCESS;
-import static com.manaco.org.common.model.TransactionType.INITIAL;
-
-import com.manaco.org.common.repositories.ItemRepository;
-import com.manaco.org.common.repositories.ProccessRepository;
-import com.manaco.org.common.repositories.TransactionRepository;
-import com.manaco.org.common.repositories.UfvRepository;
-import com.manaco.org.common.utils.Operator;
+import com.manaco.org.model.*;
+import com.manaco.org.repositories.ItemRepository;
+import com.manaco.org.repositories.ProccessRepository;
+import com.manaco.org.repositories.TransactionRepository;
+import com.manaco.org.repositories.UfvRepository;
+import com.manaco.org.utils.Operator;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

@@ -1,9 +1,9 @@
 package com.manaco.org.entries;
 
-import com.manaco.org.common.dto.TransactionDetailDto;
-import com.manaco.org.common.model.Transaction;
-import com.manaco.org.common.repositories.TransactionDetailRepository;
-import com.manaco.org.common.repositories.TransactionRepository;
+import com.manaco.org.dto.TransactionDetailDto;
+import com.manaco.org.model.Transaction;
+import com.manaco.org.repositories.TransactionDetailRepository;
+import com.manaco.org.repositories.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,11 +24,11 @@ public class TransactionController {
 
     @RequestMapping(method = RequestMethod.GET, value = "/{id}")
     public Page<Transaction> findById(@PathVariable long id, @RequestParam(defaultValue = "0") int page) {
-        return transactionRepository.findByTransactionDetailItemItemIdOrderByDateAsc(new PageRequest(page, 4), id);
+        return transactionRepository.findByTransactionDetailItemIdOrderByDateAsc(new PageRequest(page, 4), id);
     }
 
-    @RequestMapping(method = RequestMethod.GET)
-    public List<TransactionDetailDto> find() {
-        return transactionDetailRepository.fetchTransactionDetailDtoJoin();
-    }
+//    @RequestMapping(method = RequestMethod.GET)
+//    public List<TransactionDetailDto> find() {
+//        return transactionDetailRepository.fetchTransactionDetailDtoJoin();
+//    }
 }

@@ -1,8 +1,7 @@
 package com.manaco.org.entries;
 
-import com.manaco.org.common.model.Item;
-import com.manaco.org.common.model.Ufv;
-import com.manaco.org.common.repositories.UfvRepository;
+import com.manaco.org.model.Ufv;
+import com.manaco.org.repositories.UfvRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

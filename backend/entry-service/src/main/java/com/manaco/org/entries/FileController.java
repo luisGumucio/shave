@@ -1,11 +1,11 @@
 package com.manaco.org.entries;
 
-import com.manaco.org.common.model.FileUpload;
-import com.manaco.org.common.model.Proccess;
-import com.manaco.org.common.model.TransactionOption;
-import com.manaco.org.common.model.Ufv;
-import com.manaco.org.common.repositories.ProccessRepository;
-import com.manaco.org.common.repositories.UfvRepository;
+import com.manaco.org.model.FileUpload;
+import com.manaco.org.model.Proccess;
+import com.manaco.org.model.TransactionOption;
+import com.manaco.org.model.Ufv;
+import com.manaco.org.repositories.ProccessRepository;
+import com.manaco.org.repositories.UfvRepository;
 import org.apache.poi.openxml4j.exceptions.OLE2NotOfficeXmlFileException;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;

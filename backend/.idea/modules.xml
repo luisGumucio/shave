@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/shave.iml" filepath="$PROJECT_DIR$/.idea/modules/shave.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/common/shave.common.iml" filepath="$PROJECT_DIR$/.idea/modules/common/shave.common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/common/shave.common.main.iml" filepath="$PROJECT_DIR$/.idea/modules/common/shave.common.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/common/shave.common.test.iml" filepath="$PROJECT_DIR$/.idea/modules/common/shave.common.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/entry-service/shave.entry-service.iml" filepath="$PROJECT_DIR$/.idea/modules/entry-service/shave.entry-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/entry-service/shave.entry-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/entry-service/shave.entry-service.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/entry-service/shave.entry-service.test.iml" filepath="$PROJECT_DIR$/.idea/modules/entry-service/shave.entry-service.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/shave.main.iml" filepath="$PROJECT_DIR$/.idea/modules/shave.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/operartor-service/shave.operartor-service.iml" filepath="$PROJECT_DIR$/.idea/modules/operartor-service/shave.operartor-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/operartor-service/shave.operartor-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/operartor-service/shave.operartor-service.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/operartor-service/shave.operartor-service.test.iml" filepath="$PROJECT_DIR$/.idea/modules/operartor-service/shave.operartor-service.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/shave.test.iml" filepath="$PROJECT_DIR$/.idea/modules/shave.test.iml" />
+    </modules>
+  </component>
+</project>
