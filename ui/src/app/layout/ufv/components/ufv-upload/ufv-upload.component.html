@@ -1,0 +1,23 @@
+<div class="card card-default mb-3">
+    <div class="card-header">
+        <i class="fa fa-bell fa-fw"></i> Añadir UFV
+    </div>
+    <!-- /.card-header -->
+    <div class="card-body">
+        <div class="list-group">
+            <form #fileForm ="ngForm" (ngSubmit)="onSubmit(fileForm)">
+                <div class="form-group">
+                    <label>UFV</label>
+                    <input required type="file" name="file" class="form-control-file" id="exampleInputFile" accept=".xlsx" (change)="onFileChange($event)" ngModel>
+                </div>
+                <div class="form-group">
+                    <button [disabled]="loading" class="btn btn-primary">Guardar</button>
+                    &nbsp;
+                    <button type="reset" class="btn btn-secondary" (click)="fileForm.reset()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<ngb-alert *ngIf="successMessage" type="success" (close)="successMessage = null">{{ successMessage }}</ngb-alert>
+<ngb-alert *ngIf="dangerMessage" type="danger" (close)="dangerMessage = null">{{ dangerMessage }}</ngb-alert>

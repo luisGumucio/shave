@@ -52,7 +52,8 @@ export class TimelineComponent implements OnInit {
   }
   onSubmit() {
     if (this.isValid()) {
-      this.ufvService.addUfvFile(this.file).subscribe(result => {
+      this.ufvService.addUfvFile(this.file)
+      .subscribe(result => {
         alert("Registro con exito");
         this.getUfvs();
       },

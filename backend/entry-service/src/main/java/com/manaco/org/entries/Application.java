@@ -1,6 +1,6 @@
 package com.manaco.org.entries;
 
-import com.manaco.org.common.model.Item;
+import com.manaco.org.model.Item;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -14,7 +14,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @SpringBootApplication
 @EntityScan(basePackageClasses = Item.class)
 @ComponentScan("com.manaco.org")
-@EnableJpaRepositories("com.manaco.org.common.repositories")
+@EnableJpaRepositories("com.manaco.org.repositories")
 @EnableAsync
 public class Application {
 

@@ -1,6 +1,6 @@
 package com.manaco.org.entries;
 
-import com.manaco.org.common.model.*;
+import com.manaco.org.model.*;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
