@@ -17,6 +17,6 @@ public class UfvController {
 
     @GetMapping
     public Page<Ufv> get(@RequestParam(defaultValue = "0") int page) {
-        return ufvRepository.findAll(new PageRequest(page, 4));
+        return ufvRepository.findAll(new PageRequest(page, 10));
     }
 }

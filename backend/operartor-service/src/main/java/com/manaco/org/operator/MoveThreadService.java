@@ -5,12 +5,9 @@
  */
 package com.manaco.org.operator;
 
-import com.manaco.org.common.model.Transaction;
-import java.util.ArrayDeque;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
+
+import com.manaco.org.model.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

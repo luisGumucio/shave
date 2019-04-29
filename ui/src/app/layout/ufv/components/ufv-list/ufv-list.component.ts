@@ -10,6 +10,7 @@ export class UfvListComponent implements OnInit {
 
   private searchText: string = '';
   private page: number = 0;
+  private Totalpages: Array<number>;
   private ufvs: Array<any>;
   private pages: Array<number>;
   constructor(private ufvService: UfvService) { }
@@ -17,7 +18,7 @@ export class UfvListComponent implements OnInit {
   ngOnInit() {
     this.ufvService.receiveUfv.subscribe(() => {
       this.getUfvs();
-    })
+    });
     this.getUfvs();
   }
 
@@ -26,8 +27,9 @@ export class UfvListComponent implements OnInit {
       data => {
         this.ufvs = data['content'];
         this.pages = new Array(data['totalPages']);
-        if (this.pages.length > 8) {
-          this.pages = [1, 2, 3, 4, 5, 6, 7, 8];
+        this.Totalpages = this.pages;
+        if (this.pages.length > 10) {
+          this.pages = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
         }
         this.ufvs.sort();
       },
@@ -35,5 +37,27 @@ export class UfvListComponent implements OnInit {
         console.log(error.error.message);
       }
     );
+  }
+
+  setPage(i, event: any) {
+    event.preventDefault();
+    this.page = i;
+    this.getUfvs();
+  }
+  previewPage(event: any) {
+    event.preventDefault();
+    const pageNumber = this.page - 1;
+    if (pageNumber >= 0) {
+      this.page = pageNumber;
+      this.getUfvs();
+    }
+  }
+  nextPage(event: any) {
+    event.preventDefault();
+    const pageNumber = this.page + 1;
+    if (pageNumber < this.Totalpages.length) {
+      this.page = pageNumber;
+      this.getUfvs();
+    }
   }
 }

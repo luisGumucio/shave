@@ -1,6 +1,6 @@
 package com.manaco.org.operator;
 
-import com.manaco.org.common.model.Item;
+import com.manaco.org.model.Item;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;

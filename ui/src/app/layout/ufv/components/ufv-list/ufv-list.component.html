@@ -29,19 +29,19 @@
                 </tr>
             </tbody>
         </table>
+        <hr>
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+              <li class="page-item">
+                <a class="page-link" href="" (click)="previewPage($event)">Previous</a>
+              </li>
+              <li class="page-item" *ngFor="let p of pages; let i = index">
+                <a href="" class="page-link" (click)="setPage(i, $event)">{{ i + 1 }}</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="" (click)="nextPage($event)">Next</a>
+              </li>
+            </ul>
+          </nav>
     </div>
-    <hr>
-    <!-- <nav aria-label="Page navigation example">
-        <ul class="pagination">
-            <li class="page-item">
-                <a class="page-link" href="">Previous</a>
-            </li>
-            <li class="page-item" *ngFor="let p of pages; let i=index">
-                <a href="" class="page-link" (click)="setPage(i, $event)">{{i +1}}</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="">Next</a>
-            </li>
-        </ul>
-    </nav> -->
 </div>

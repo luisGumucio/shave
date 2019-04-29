@@ -1,16 +1,12 @@
 <nav class="sidebar" [ngClass]="{sidebarPushRight: isActive, collapsed: collapsed}">
     <div class="list-group">
-        <a routerLink="/dashboard" [routerLinkActive]="['router-link-active']" class="list-group-item">
+        <a routerLink="/ufvs" [routerLinkActive]="['router-link-active']" class="list-group-item">
             <i class="fa fa-fw 	fa fa-server"></i>&nbsp;
             <span>{{ 'UFV' | translate }}</span>
         </a>
         <a [routerLink]="['/charts']" [routerLinkActive]="['router-link-active']" class="list-group-item">
             <i class="fa fa-fw 	fa fa-tag"></i>&nbsp;
             <span>{{ 'Materia Prima' | translate }}</span>
-        </a>
-        <a [routerLink]="['/ufvs']" [routerLinkActive]="['router-link-active']" class="list-group-item">
-            <i class="fa fa-fw 	fa fa-tag"></i>&nbsp;
-            <span>{{ 'Materia Primas' | translate }}</span>
         </a>
         <a [routerLink]="['/blank-page']" [routerLinkActive]="['router-link-active']" class="list-group-item">
             <i class="fa fa-fw 	fa fa-tags"></i>&nbsp;
