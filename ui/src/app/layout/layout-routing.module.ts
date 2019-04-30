@@ -13,12 +13,13 @@ const routes: Routes = [
             { path: 'tables', loadChildren: './tables/tables.module#TablesModule' },
             { path: 'forms', loadChildren: './form/form.module#FormModule' },
             { path: 'ufvs', loadChildren: './ufv/ufv.module#UfvModule' },
+            { path: 'primas', loadChildren: './prima/prima.module#PrimaModule' },
             { path: 'bs-element', loadChildren: './bs-element/bs-element.module#BsElementModule' },
             { path: 'grid', loadChildren: './grid/grid.module#GridModule' },
             { path: 'components', loadChildren: './bs-component/bs-component.module#BsComponentModule' },
             { path: 'blank-page', loadChildren: './blank-page/blank-page.module#BlankPageModule' },
             { path: 'item', loadChildren: './item-detail/item-detail.module#ItemDetailModule' },
-            { path: 'item/:id', loadChildren: './item-detail/item-detail.module#ItemDetailModule' }            
+            { path: 'item/:id', loadChildren: './item-detail/item-detail.module#ItemDetailModule' }
         ]
     }
 ];
