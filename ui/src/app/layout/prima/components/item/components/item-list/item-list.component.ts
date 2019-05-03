@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-
+import { ItemService } from '../../services/item.service';
 @Component({
   selector: 'app-item-list',
   templateUrl: './item-list.component.html',
@@ -8,7 +8,7 @@ import { Component, OnInit } from '@angular/core';
 export class ItemListComponent implements OnInit {
 
   private items: Array<any>;
-  constructor() { }
+  constructor(private itemService: ItemService) { }
 
   ngOnInit() {
     this.items = [ {
@@ -16,31 +16,11 @@ export class ItemListComponent implements OnInit {
       'price': 50.23,
       'quantity': 200.12,
       'lastUpdate': '2018-09-01'
-    },
-    {
-      'id': 1001,
-      'price': 50.23,
-      'quantity': 200.12,
-      'lastUpdate': '2018-09-01'
-    },
-    {
-      'id': 1001,
-      'price': 50.23,
-      'quantity': 200.12,
-      'lastUpdate': '2018-09-01'
-    },
-    {
-      'id': 1001,
-      'price': 50.23,
-      'quantity': 200.12,
-      'lastUpdate': '2018-09-01'
-    },
-    {
-      'id': 1001,
-      'price': 50.23,
-      'quantity': 200.12,
-      'lastUpdate': '2018-09-01'
     }];
+  }
+
+  show(): void {
+    this.itemService.showComponent();
   }
 
 }

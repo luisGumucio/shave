@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ItemService } from './services/item.service';
 
 @Component({
   selector: 'app-item',
@@ -7,10 +8,13 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ItemComponent implements OnInit {
 
-  show: boolean = true;
-  constructor() { }
+  show: boolean = false;
+  constructor(private itemService: ItemService) { }
 
   ngOnInit() {
+    this.itemService.receiveUfv.subscribe(() => {
+      this.show = true;
+    });
   }
 
 }

@@ -12,12 +12,12 @@ import {
     ItemListComponent,
     ItemListDetailComponent
 } from './components';
-// import { UfvService } from './services/ufv.service';
+import { ItemService } from './services/item.service';
 
 @NgModule({
     imports: [CommonModule, NgxSpinnerModule,
         ItemRoutingModule, FormsModule, NgbModule],
     declarations: [ItemComponent, ItemInfoComponent, ItemUpdateComponent, ItemListComponent, ItemListDetailComponent],
-    // providers: [UfvService],
+    providers: [ItemService],
 })
 export class ItemModule {}
