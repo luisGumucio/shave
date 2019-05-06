@@ -1,5 +1,6 @@
 package com.manaco.org.entries;
 
+import com.manaco.org.dto.ItemDto;
 import com.manaco.org.model.Item;
 import com.manaco.org.repositories.ItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,5 +24,10 @@ public class ItemController {
     @GetMapping
     public Page<Item> get(@RequestParam(defaultValue = "0") int page) {
         return itemRepository.findAll(new PageRequest(page, 4));
+    }
+
+    @GetMapping(path = "/sum")
+    public ItemDto getInfo() {
+        return itemRepository.fetchItemInformationDtoSum();
     }
 }

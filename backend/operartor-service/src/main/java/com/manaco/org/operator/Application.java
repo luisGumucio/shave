@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @SpringBootApplication
 @EntityScan(basePackageClasses = Item.class)
 @ComponentScan("com.manaco.org")
-@EnableJpaRepositories("com.manaco.org.common.repositories")
+@EnableJpaRepositories("com.manaco.org.repositories")
 public class Application {
 
     public static void main(String[] args) {

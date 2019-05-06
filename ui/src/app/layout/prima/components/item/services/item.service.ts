@@ -13,4 +13,12 @@ export class ItemService {
   showComponent() {
     this.receiveUfv.emit();
   }
+
+  getAllItems(page: number): Observable<any> {
+    return this.http.get('//localhost:4000/items?page=' + page);
+  }
+
+  getItemInformation(): Observable<any> {
+    return this.http.get('//localhost:4000/items/sum');
+  }
 }
