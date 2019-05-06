@@ -10,7 +10,7 @@ import java.util.List;
 
 @Service
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
-    Page<Transaction> findByTransactionDetailItemItemIdOrderByDateAsc(Pageable pageable, Long id);
+    Page<Transaction> findByTransactionDetailItemItemIdOrderByDateAsc(Pageable pageable, String id);
     List<Transaction> findByTransactionDetailItemItemIdOrderByDateAsc(String id);
 }
 

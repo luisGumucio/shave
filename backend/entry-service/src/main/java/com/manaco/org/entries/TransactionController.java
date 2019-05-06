@@ -23,7 +23,7 @@ public class TransactionController {
     private TransactionDetailRepository transactionDetailRepository;
 
     @RequestMapping(method = RequestMethod.GET, value = "/{id}")
-    public Page<Transaction> findById(@PathVariable long id, @RequestParam(defaultValue = "0") int page) {
+    public Page<Transaction> findById(@PathVariable String id, @RequestParam(defaultValue = "0") int page) {
         return transactionRepository.findByTransactionDetailItemItemIdOrderByDateAsc(new PageRequest(page, 4), id);
     }
 
