@@ -35,7 +35,7 @@
             <td>{{ item.lastUpdate }}</td>
             <td>
               <p>
-                <span class="fa fa-search-plus" style="cursor: -webkit-grabbing; cursor: grabbing;" (click)="show()"></span>
+                <span class="fa fa-search-plus" style="cursor: -webkit-grabbing; cursor: grabbing;" (click)="show(item.id)"></span>
               </p>
               <!-- <a [routerLink]="['/item', item.id]" class="edit" title="Edit" data-toggle="tooltip">
                                 <i class="fa fa-search-plus" style="cursor: -webkit-grabbing; cursor: grabbing;"></i>
@@ -44,6 +44,20 @@
           </tr>
         </tbody>
       </table>
+      <hr>
+      <nav aria-label="Page navigation example">
+          <ul class="pagination">
+            <li class="page-item">
+              <a class="page-link" href="" (click)="previewPage($event)">Previous</a>
+            </li>
+            <li class="page-item" *ngFor="let p of pages; let i = index">
+              <a href="" class="page-link" (click)="setPage(i, $event)">{{ i + 1 }}</a>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="" (click)="nextPage($event)">Next</a>
+            </li>
+          </ul>
+        </nav>
     </div>
   </div>
 </div>

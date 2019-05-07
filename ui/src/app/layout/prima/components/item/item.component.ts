@@ -8,13 +8,15 @@ import { ItemService } from './services/item.service';
 })
 export class ItemComponent implements OnInit {
 
-  show: boolean = false;
+  show: boolean = true;
   constructor(private itemService: ItemService) { }
 
   ngOnInit() {
     this.itemService.receiveUfv.subscribe(() => {
+      // alert(result);
       this.show = true;
     });
+    this.show = false;
   }
 
 }

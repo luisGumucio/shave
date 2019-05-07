@@ -6,12 +6,18 @@ import { Observable, throwError } from 'rxjs';
 export class ItemService {
 
   receiveUfv: any;
+  itemId: 0;
   constructor(private http: HttpClient) {
     this.receiveUfv = new EventEmitter();
   }
   
-  showComponent() {
+  showComponent(itemId: any) {
+    this.itemId = itemId;
     this.receiveUfv.emit();
+  }
+
+  getItemId() {
+    return this.itemId;
   }
 
   getAllItems(page: number): Observable<any> {
@@ -20,5 +26,9 @@ export class ItemService {
 
   getItemInformation(): Observable<any> {
     return this.http.get('//localhost:4000/items/sum');
+  }
+
+  getTransactionDetail(itemId: any): Observable<any> {
+    return this.http.get('//localhost:4000/transaction/' + itemId);
   }
 }

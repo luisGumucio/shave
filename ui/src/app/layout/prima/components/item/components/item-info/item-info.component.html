@@ -6,30 +6,20 @@
   <div class="card-body">
     <div class="container-fluid">
       <div class="row">
-        <div class="col-sm-8">
+        <div class="col-sm-10">
           <div class="card">
-            <div class="card-body">
+            <div class="card-body" style="font-weight: bold;">
                 <label>Total Items:&nbsp;</label>
                 <label>&nbsp; {{itemInfo.totalItem}}</label>
                 <p></p>
                 <label>Total precio:&nbsp;</label>
-                <label>&nbsp; {{itemInfo.total}}</label>
+                <label>&nbsp; {{itemInfo.total | number: "1.2-2" }}</label>
                 <p></p>
                 <label>Total cantidad:&nbsp;</label>
-                <label>&nbsp; {{itemInfo.totalQuantity}}</label>
+                <label>&nbsp;{{itemInfo.totalQuantity | number: "1.2-2" }}</label>
             </div>
           </div>
         </div>
-        <!-- <div class="col-sm-6">
-          <div class="card">
-            <div class="card-body">
-              <p class="card-text">
-                Looks like the Sun has returned. Here's why.
-              </p>
-              <a href="#" class="btn btn-primary">Download Report</a>
-            </div>
-          </div>
-        </div> -->
       </div>
     </div>
   </div>

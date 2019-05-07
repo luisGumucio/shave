@@ -60,6 +60,15 @@
     </thead>
     <tbody>
         <tr *ngFor="let item of items; let i = index;">
+                <td>{{item.type}}</td>
+                <td>{{item.date}}</td>
+         
+                        <td>0</td>
+                        <td *ngIf="item.type === 'INITIAL1';else content">{{item.priceActual}}</td>
+                        <td *ngIf="item.type === 'INITIAL';else content">{{item.priceActual}}</td>
+                        <ng-template #content><td>1</td></ng-template>
+        </tr>
+        <!-- <tr *ngFor="let item of items; let i = index;">
             <td>{{item.type}}</td>
             <td>{{item.transactionDetail.ufv.creationDate}}</td>
             <td *ngIf="item.type === 'INITIAL'"></td>
@@ -99,6 +108,6 @@
                     <i class="fa fa-search-plus" style="cursor: -webkit-grabbing; cursor: grabbing;"></i>
                 </a>
             </td>
-        </tr>
+        </tr> -->
     </tbody>
 </table>

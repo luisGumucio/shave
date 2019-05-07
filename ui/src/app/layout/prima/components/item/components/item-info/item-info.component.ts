@@ -6,8 +6,8 @@ import { ItemService } from '../../services/item.service';
   styleUrls: ['./item-info.component.scss']
 })
 export class ItemInfoComponent implements OnInit {
-  
-  private itemInfo: {
+
+  private itemInfo = {
     'totalItem': 0,
     'total': 0,
     'totalQuantity': 0
