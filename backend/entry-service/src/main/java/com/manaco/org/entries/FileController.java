@@ -1,7 +1,7 @@
 package com.manaco.org.entries;
 
 import com.manaco.org.model.FileUpload;
-import com.manaco.org.model.Proccess;
+import com.manaco.org.model.Process;
 import com.manaco.org.model.TransactionOption;
 import com.manaco.org.model.Ufv;
 import com.manaco.org.repositories.ProccessRepository;
@@ -42,21 +42,30 @@ public class FileController {
     public ResponseEntity<FileUpload> upload(@RequestParam("file") MultipartFile file,
             @RequestPart("option") String option, @RequestParam("process") String process) {
         LOGGER.info("adding new files");
-        FileUpload fileUpload;
+        FileUpload fileUpload = null;
         if (file == null) {
             throw new MultipartException("You must select the a file for uploading");
         }
         try {
             XSSFWorkbook workbook = new XSSFWorkbook(file.getInputStream());
             fileUpload = new FileUpload(file.getOriginalFilename(), TransactionOption.valueOf(option));
-            Proccess proccess = getProcess(Integer.parseInt(process), fileUpload.getOption());
-            fileService.readFile(workbook.getSheetAt(INDEX), fileUpload.getOption(), proccess.getId(),
-                    proccess.getNumberProcess());
-        } catch (IOException | OLE2NotOfficeXmlFileException exception) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        } catch (IllegalArgumentException exception) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            Process processActive = getProcess(Integer.parseInt(process), fileUpload.getOption());
+            fileService.readFile(workbook.getSheetAt(INDEX), processActive);
+
+        } catch (IOException ex) {
+
         }
+//        try {
+//            XSSFWorkbook workbook = new XSSFWorkbook(file.getInputStream());
+//            fileUpload = new FileUpload(file.getOriginalFilename(), TransactionOption.valueOf(option));
+//            Process proccess = getProcess(Integer.parseInt(process), fileUpload.getOption());
+//            fileService.readFile(workbook.getSheetAt(INDEX), fileUpload.getOption(), proccess.getId(),
+//                    proccess.getNumberProcess());
+//        } catch (IOException | OLE2NotOfficeXmlFileException exception) {
+//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//        } catch (IllegalArgumentException exception) {
+//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//        }
         return new ResponseEntity<>(fileUpload, HttpStatus.OK);
     }
 
@@ -152,13 +161,13 @@ public class FileController {
         }
     }
 
-    private Proccess getProcess(int numberProcess, TransactionOption option) {
-        Proccess process = proccessRepository.findByNumberProcessAndActiveIn(numberProcess, true);
+    private Process getProcess(int numberProcess, TransactionOption option) {
+        Process process = proccessRepository.findByNumberProcessAndIsActiveIn(numberProcess, true);
         if (process == null) {
-            return proccessRepository.save(new Proccess(numberProcess, option));
+            return proccessRepository.save(new Process(numberProcess, option));
         }
-        if (process.getType() != option && process.getNumberProcess() == numberProcess) {
-            return proccessRepository.save(new Proccess(numberProcess, option));
+        if (process.getTransactionOption() != option && process.getNumberProcess() == numberProcess) {
+            return proccessRepository.save(new Process(numberProcess, option));
         }
         return process;
     }

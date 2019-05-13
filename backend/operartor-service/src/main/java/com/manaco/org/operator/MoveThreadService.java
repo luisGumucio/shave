@@ -50,9 +50,9 @@ public class MoveThreadService implements Runnable {
     }
 
     private synchronized void executeMoving(List<Transaction> next) {
-        Collections.sort(next, (Transaction o1, Transaction o2) -> o1.getDate().compareTo(o2.getDate()));
+        Collections.sort(next, (Transaction o1, Transaction o2) -> o1.getTransactionDate().compareTo(o2.getTransactionDate()));
         next.forEach((transaction) -> {
-            transactionService.saveMoving(transaction);
+//            transactionService.saveMoving(transaction);
         });
     }
 }

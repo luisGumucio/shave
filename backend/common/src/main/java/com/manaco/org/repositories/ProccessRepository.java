@@ -5,13 +5,15 @@
  */
 package com.manaco.org.repositories;
 
-import com.manaco.org.model.Proccess;
+import com.manaco.org.model.Process;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
  * @author lucho
  */
-public interface ProccessRepository extends JpaRepository<Proccess, Integer>{
-    Proccess findByNumberProcessAndActiveIn(int id, boolean active);
+@Transactional
+public interface ProccessRepository extends JpaRepository<Process, Integer>{
+    Process findByNumberProcessAndIsActiveIn(int id, boolean active);
 }

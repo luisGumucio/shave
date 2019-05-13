@@ -21,9 +21,13 @@ public class Transaction implements Comparable<Transaction> {
     private BigDecimal priceActual;
     @Column(precision = 19, scale = 6)
     private BigDecimal ufvValue;
+
     @NotNull
-    private LocalDate date;
-    private int processId;
+    private LocalDate transactionDate;
+
+    @ManyToOne
+    @JoinColumn
+    private Process transactions;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "transactionDetail_id", referencedColumnName = "id")
@@ -77,12 +81,12 @@ public class Transaction implements Comparable<Transaction> {
         this.ufvValue = ufvValue;
     }
 
-    public LocalDate getDate() {
-        return date;
+    public LocalDate getTransactionDate() {
+        return transactionDate;
     }
 
-    public void setDate(LocalDate date) {
-        this.date = date;
+    public void setTransactionDate(LocalDate transactionDate) {
+        this.transactionDate = transactionDate;
     }
 
     public TransactionDetail getTransactionDetail() {
@@ -93,14 +97,14 @@ public class Transaction implements Comparable<Transaction> {
         this.transactionDetail = transactionDetail;
     }
 
-    public int getProcessId() {
-        return processId;
+    public Process getTransactions() {
+        return transactions;
     }
 
-    public void setProcessId(int processId) {
-        this.processId = processId;
+    public void setTransactions(Process transactions) {
+        this.transactions = transactions;
     }
-    
+
     @Override
     public int compareTo(Transaction o) {
         return this.getTransactionDetail().getItem().getId().compareTo(o.getTransactionDetail().getItem().getId());

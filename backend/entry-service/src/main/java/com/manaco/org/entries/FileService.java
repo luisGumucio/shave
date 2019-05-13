@@ -1,6 +1,7 @@
 package com.manaco.org.entries;
 
 import com.manaco.org.model.*;
+import com.manaco.org.model.Process;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -29,22 +30,22 @@ public class FileService {
         restTemplate = new RestTemplate();
     }
 
-    @Async("threadPoolTaskExecutor")
-    public CompletableFuture<Void> readFile(XSSFSheet sheet, TransactionOption option, int process,
-            int numberProcess) {
-        switch (option) {
-            case SALDO_INITIAL_MP:
-            case SALDO_INITIAL_R:
-                executeFileRead(sheet, process);
-                break;
-            case MATERIA_PRIMA:
-                executeMaterial(sheet, process, numberProcess);
-                break;
-            case REPUESTO:
-                executeReplacement(sheet, process, numberProcess);
-        }
-        return null;
-    }
+//    @Async("threadPoolTaskExecutor")
+//    public CompletableFuture<Void> readFile(XSSFSheet sheet, TransactionOption option, int process,
+//            int numberProcess) {
+//        switch (option) {
+//            case SALDO_INITIAL_MP:
+//            case SALDO_INITIAL_R:
+//                executeFileRead(sheet, process);
+//                break;
+//            case MATERIA_PRIMA:
+//                executeMaterial(sheet, process, numberProcess);
+//                break;
+//            case REPUESTO:
+//                executeReplacement(sheet, process, numberProcess);
+//        }
+//        return null;
+//    }
 
     private void executeReplacement(XSSFSheet sheet, int process, int numberProcess) {
         List<Transaction> raws = new ArrayList<>();
@@ -64,7 +65,7 @@ public class FileService {
             }
 
             Collections.sort(raws);
-            System.out.println(raws.get(0).getDate());
+            System.out.println(raws.get(0).getTransactionDate());
             executeTransaction(raws);
         } else if (numberProcess == 2) {
             for (int i = sheet.getFirstRowNum() + 1; i <= sheet.getLastRowNum(); i++) {
@@ -97,66 +98,6 @@ public class FileService {
         System.out.println(item.getId());
     }
 
-    private void executeFileRead(XSSFSheet sheet, int process) {
-        for (int i = sheet.getFirstRowNum() + 1; i <= sheet.getLastRowNum(); i++) {
-            HttpEntity<Transaction> request = new HttpEntity(executeInitial(sheet.getRow(i), process));
-            try {
-                restTemplate.postForObject(URL, request, Transaction.class);
-            } catch (RestClientException exRestTemplate) {
-                System.out.println("failed to execute" + exRestTemplate.getMessage());
-            }
-
-        }
-    }
-
-    private Transaction executeInitial(Row row, int process) {
-        Transaction transaction = new Transaction();
-        MateriaDetail detail = new MateriaDetail();
-        Item item = new Item();
-        Ufv ufv = new Ufv();
-        for (int j = row.getFirstCellNum(); j <= row.getLastCellNum(); j++) {
-            Cell cell = row.getCell(j);
-            try {
-                switch (j) {
-                    case 1:
-                        item.setId(cell.getStringCellValue());
-                        break;
-                    case 3:
-                        item.setInitialDate(cell.getDateCellValue()
-                                .toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-                        item.setLastUpdate(cell.getDateCellValue()
-                                .toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-                        transaction.setDate(item.getLastUpdate());
-                        break;
-                    case 6:
-                        item.setQuantity(new BigDecimal(cell.getNumericCellValue()));
-                        transaction.setQuantity(item.getQuantity());
-                        break;
-                    case 8:
-                        item.setPrice(new BigDecimal(cell.getNumericCellValue()).setScale(6, BigDecimal.ROUND_DOWN));
-                        transaction.setPriceActual(item.getPrice());
-                        transaction.setPriceNeto(BigDecimal.ZERO);
-                        break;
-                    case 9:
-                        BigDecimal decimal = new BigDecimal(cell.getNumericCellValue());
-                        ufv.setValue(decimal.setScale(5, BigDecimal.ROUND_DOWN));
-                        ufv.setCreationDate(item.getLastUpdate());
-                        break;
-                }
-
-            } catch (IllegalStateException ex) {
-                System.out.print(ex);
-            }
-        }
-        detail.setUfv(ufv);
-        detail.setItem(item);
-        transaction.setType(TransactionType.INITIAL);
-        transaction.setUfvValue(BigDecimal.ZERO);
-        transaction.setTransactionDetail(detail);
-        transaction.setProcessId(process);
-        return transaction;
-    }
-
     private Transaction executeMaterial(Row row, int process) {
         Transaction transaction = new Transaction();
         MateriaDetail detail = new MateriaDetail();
@@ -166,7 +107,7 @@ public class FileService {
             try {
                 switch (j) {
                     case 0:
-                        transaction.setDate(cell.getDateCellValue()
+                        transaction.setTransactionDate(cell.getDateCellValue()
                                 .toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
                         break;
                     case 1:
@@ -205,7 +146,7 @@ public class FileService {
         }
         detail.setItem(item);
         transaction.setTransactionDetail(detail);
-        transaction.setProcessId(process);
+//        transaction.setProcessId(process);
         return transaction;
     }
 
@@ -265,7 +206,7 @@ public class FileService {
                         break;
                     case 9:
                         Date date1=new SimpleDateFormat("dd/MM/yyyy").parse(cell.getStringCellValue());
-                        transaction.setDate(date1
+                        transaction.setTransactionDate(date1
                                 .toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
                         break;
                     case 10:
@@ -280,8 +221,80 @@ public class FileService {
         }
         detail.setItem(item);
         transaction.setTransactionDetail(detail);
-        transaction.setProcessId(process);
+//        transaction.setProcessId(process);
         System.out.println(transaction.getTransactionDetail().getItem().getId());
+        return transaction;
+    }
+
+    @Async("threadPoolTaskExecutor")
+    public CompletableFuture<Void> readFile(XSSFSheet sheet, Process processActive) {
+
+        switch (processActive.getTransactionOption()) {
+            case SALDO_INITIAL_MP:
+            case SALDO_INITIAL_R:
+                executeFileRead(sheet, processActive);
+                break;
+        }
+        return null;
+    }
+
+    private void executeFileRead(XSSFSheet sheet, Process process) {
+        for (int i = sheet.getFirstRowNum() + 1; i <= sheet.getLastRowNum(); i++) {
+            HttpEntity<Transaction> request = new HttpEntity(executeInitial(sheet.getRow(i), process));
+            try {
+                restTemplate.postForObject(URL, request, Transaction.class);
+            } catch (RestClientException exRestTemplate) {
+                System.out.println("failed to execute" + exRestTemplate.getMessage());
+            }
+
+        }
+    }
+
+    private Transaction executeInitial(Row row, Process process) {
+        Transaction transaction = new Transaction();
+        MateriaDetail detail = new MateriaDetail();
+        Item item = new Item();
+        Ufv ufv = new Ufv();
+        for (int j = row.getFirstCellNum(); j <= row.getLastCellNum(); j++) {
+            Cell cell = row.getCell(j);
+            try {
+                switch (j) {
+                    case 1:
+                        item.setId(cell.getStringCellValue());
+                        break;
+                    case 3:
+                        item.setInitialDate(cell.getDateCellValue()
+                                .toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+                        item.setLastUpdate(cell.getDateCellValue()
+                                .toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+                        transaction.setTransactionDate(item.getLastUpdate());
+                        break;
+                    case 6:
+                        item.setQuantity(new BigDecimal(cell.getNumericCellValue()));
+                        transaction.setQuantity(item.getQuantity());
+                        break;
+                    case 8:
+                        item.setPrice(new BigDecimal(cell.getNumericCellValue()).setScale(6, BigDecimal.ROUND_DOWN));
+                        transaction.setPriceActual(item.getPrice());
+                        transaction.setPriceNeto(BigDecimal.ZERO);
+                        break;
+                    case 9:
+                        BigDecimal decimal = new BigDecimal(cell.getNumericCellValue());
+                        ufv.setValue(decimal.setScale(5, BigDecimal.ROUND_DOWN));
+                        ufv.setCreationDate(item.getLastUpdate());
+                        break;
+                }
+
+            } catch (IllegalStateException ex) {
+                System.out.print(ex);
+            }
+        }
+        detail.setUfv(ufv);
+        detail.setItem(item);
+        transaction.setType(TransactionType.INITIAL);
+        transaction.setUfvValue(BigDecimal.ZERO);
+        transaction.setTransactionDetail(detail);
+        process.addComment(transaction);
         return transaction;
     }
 }

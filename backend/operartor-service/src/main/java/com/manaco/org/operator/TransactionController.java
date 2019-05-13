@@ -54,6 +54,6 @@ public class TransactionController {
     @RequestMapping(method = RequestMethod.PUT)
     public void updateItem(@RequestBody String date) {
         LocalDate localDate = LocalDate.parse(date);
-        transactionService.updateItem(localDate);
+//        transactionService.updateItem(localDate);
     }
 }

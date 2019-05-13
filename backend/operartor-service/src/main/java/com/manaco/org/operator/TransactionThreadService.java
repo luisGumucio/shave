@@ -47,7 +47,7 @@ public class TransactionThreadService implements Runnable {
         if (next instanceof Transaction) {
             transactionService.saveItem((Transaction) next);
         } else if (next instanceof Item) {
-            transactionService.executeItem((Item) next);
+//            transactionService.executeItem((Item) next);
         }
     }
 
