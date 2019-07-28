@@ -2,7 +2,7 @@ package com.manaco.org.operator;
 
 import com.manaco.org.model.*;
 
-import static com.manaco.org.model.TransactionOption.UPDATE_PROCESS;
+//import static com.manaco.org.model.TransactionOption.UPDATE_PROCESS;
 import static com.manaco.org.model.TransactionType.INITIAL;
 
 import com.manaco.org.model.Process;
@@ -16,6 +16,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +25,8 @@ import javax.transaction.Transactional;
 
 @Service
 public class TransactionService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(TransactionService.class);
 
     @Autowired
     private UfvRepository ufvRepository;
@@ -35,17 +39,21 @@ public class TransactionService {
     @Autowired
     private Operator operator;
 
-    public void saveItem(Transaction next) {
-        checkUfv(next.getTransactionDetail().getUfv());
-        next.getTransactionDetail().setUfv(checkUfv(next.getTransactionDetail().getUfv()));
-        if (next.getTransactionDetail().getItem().getQuantity().intValue() < 0) {
-            next.getTransactionDetail().getItem().setIsFailure(Boolean.TRUE);
-        } else {
-            next.getTransactionDetail().getItem().setIsFailure(Boolean.FALSE);
-        }
-        itemRepository.save(next.getTransactionDetail().getItem());
-        transactionRepository.save(next);
-        System.out.println("saved successfully with id " + next.getTransactionDetail().getItem().getId());
+    public void saveItem(Transaction transaction) {
+        itemRepository.save(transaction.getItem());
+        transactionRepository.save(transaction);
+        LOGGER.info("adding initial transaction with item id" + transaction.getItem().getId());
+
+//        checkUfv(next.getTransactionDetail().getUfv());
+//        next.getTransactionDetail().setUfv(checkUfv(next.getTransactionDetail().getUfv()));
+//        if (next.getTransactionDetail().getItem().getQuantity().intValue() < 0) {
+//            next.getTransactionDetail().getItem().setIsFailure(Boolean.TRUE);
+//        } else {
+//            next.getTransactionDetail().getItem().setIsFailure(Boolean.FALSE);
+//        }
+//        itemRepository.save(next.getTransactionDetail().getItem());
+//        transactionRepository.save(next);
+//        System.out.println("saved successfully with id " + next.getTransactionDetail().getItem().getId());
     }
 
     private synchronized Ufv checkUfv(Ufv ufv) {

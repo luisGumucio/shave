@@ -49,7 +49,7 @@ public class Process {
         this.numberProcess = numberProcess;
         processTime = LocalDate.now();
         isActive = true;
-        transactionList = new ArrayList<>();
+//        transactionList = new ArrayList<>();
     }
 
     public int getId() {

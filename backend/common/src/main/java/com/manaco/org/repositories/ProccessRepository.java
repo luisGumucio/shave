@@ -15,5 +15,5 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Transactional
 public interface ProccessRepository extends JpaRepository<Process, Integer>{
-    Process findByNumberProcessAndIsActiveIn(int id, boolean active);
+//    Process findByNumberProcessAndIsActiveIn(int id, boolean active);
 }

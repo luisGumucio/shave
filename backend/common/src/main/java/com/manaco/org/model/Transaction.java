@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
+@Table(name = "transaction")
 public class Transaction implements Comparable<Transaction> {
 
     @Id
@@ -29,9 +30,10 @@ public class Transaction implements Comparable<Transaction> {
     @JoinColumn
     private Process transactions;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "transactionDetail_id", referencedColumnName = "id")
-    private TransactionDetail transactionDetail;
+    private String itemId;
+
+    @Transient
+    private Item item;
 
     public long getId() {
         return id;
@@ -89,12 +91,12 @@ public class Transaction implements Comparable<Transaction> {
         this.transactionDate = transactionDate;
     }
 
-    public TransactionDetail getTransactionDetail() {
-        return transactionDetail;
+    public Item getItem() {
+        return item;
     }
 
-    public void setTransactionDetail(TransactionDetail transactionDetail) {
-        this.transactionDetail = transactionDetail;
+    public void setItem(Item item) {
+        this.item = item;
     }
 
     public Process getTransactions() {
@@ -105,8 +107,16 @@ public class Transaction implements Comparable<Transaction> {
         this.transactions = transactions;
     }
 
+    public String getItemId() {
+        return itemId;
+    }
+
+    public void setItemId(String itemId) {
+        this.itemId = itemId;
+    }
+
     @Override
     public int compareTo(Transaction o) {
-        return this.getTransactionDetail().getItem().getId().compareTo(o.getTransactionDetail().getItem().getId());
+        return this.getItem().getId().compareTo(o.getItem().getId());
     }
 }

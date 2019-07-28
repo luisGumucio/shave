@@ -1,6 +1,7 @@
 package com.manaco.org.entries;
 
 import com.manaco.org.model.Item;
+import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -16,6 +17,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @ComponentScan("com.manaco.org")
 @EnableJpaRepositories("com.manaco.org.repositories")
 @EnableAsync
+@EnableRabbit
 public class Application {
 
     public static void main(String[] args) {

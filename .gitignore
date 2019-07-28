@@ -1,0 +1,6 @@
+backend/common/out/
+backend/.gradle/\
+backend/.idea/
+backend/entry-service/out/
+backend/operartor-service/out/
+ui/node_modules/

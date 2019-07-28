@@ -1,10 +1,6 @@
 package com.manaco.org.model;
 
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -14,7 +10,7 @@ import java.time.LocalDate;
 public class Item {
 
     @Id
-    private String itemId;
+    private String id;
     @NotNull
     @Column(precision = 19, scale = 6)
     private BigDecimal quantity;
@@ -23,13 +19,13 @@ public class Item {
     private BigDecimal price;
     private LocalDate initialDate;
     private LocalDate lastUpdate;
-     private Boolean isFailure;
+    private Boolean isFailure;
 
     public Item() {
     }
 
     public Item(String itemId, LocalDate date) {
-        this.itemId = itemId;
+        this.id = itemId;
         quantity = BigDecimal.ZERO;
         price = BigDecimal.ZERO;
         lastUpdate = date;
@@ -38,11 +34,11 @@ public class Item {
     }
 
     public String getId() {
-        return itemId;
+        return id;
     }
 
     public void setId(String id) {
-        this.itemId = id;
+        this.id = id;
     }
 
     public BigDecimal getQuantity() {
@@ -84,5 +80,4 @@ public class Item {
     public void setIsFailure(Boolean isFailure) {
         this.isFailure = isFailure;
     }
-    
 }

@@ -9,6 +9,6 @@ import org.springframework.stereotype.Service;
 @Service
 public interface ItemRepository extends JpaRepository<Item, String> {
 //    Page<Item> findAllByOrderByItemIdAsc(PageRequest pageRequest);
-    @Query(value = "SELECT new com.manaco.org.dto.ItemDto(COUNT(i.itemId), SUM(i.price * i.quantity), SUM(i.quantity)) FROM Item i")
-    ItemDto fetchItemInformationDtoSum();
+//    @Query(value = "SELECT new com.manaco.org.dto.ItemDto(COUNT(i.itemId), SUM(i.price * i.quantity), SUM(i.quantity)) FROM Item i")
+//    ItemDto fetchItemInformationDtoSum();
 }
