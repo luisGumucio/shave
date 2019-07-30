@@ -1,45 +1,40 @@
 package com.manaco.org.model;
 
-import javax.persistence.*;
+import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
+import sun.jvm.hotspot.debugger.cdbg.EnumType;
+
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-@Entity
-@Table(name = "transaction")
 public class Transaction implements Comparable<Transaction> {
 
     @Id
-    @GeneratedValue
-    private long id;
-    @Enumerated(EnumType.STRING)
+    private String id;
     private TransactionType type;
-    @Column(precision = 19, scale = 6)
     private BigDecimal quantity;
-    @Column(precision = 19, scale = 6)
     private BigDecimal priceNeto;
-    @Column(precision = 19, scale = 6)
     private BigDecimal priceActual;
-    @Column(precision = 19, scale = 6)
+
     private BigDecimal ufvValue;
 
     @NotNull
     private LocalDate transactionDate;
 
-    @ManyToOne
-    @JoinColumn
-    private Process transactions;
+    private String processId;
 
     private String itemId;
 
     @Transient
     private Item item;
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -99,12 +94,12 @@ public class Transaction implements Comparable<Transaction> {
         this.item = item;
     }
 
-    public Process getTransactions() {
-        return transactions;
+    public String getProcessId() {
+        return processId;
     }
 
-    public void setTransactions(Process transactions) {
-        this.transactions = transactions;
+    public void setProcessId(String processId) {
+        this.processId = processId;
     }
 
     public String getItemId() {

@@ -1,7 +1,7 @@
 package com.manaco.org.entries;
 
-import com.manaco.org.model.Process;
 import com.manaco.org.repositories.ProccessRepository;
+import com.manaco.org.model.Process;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

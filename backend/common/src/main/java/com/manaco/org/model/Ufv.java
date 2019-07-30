@@ -1,32 +1,34 @@
 package com.manaco.org.model;
 
+import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
+
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 
-import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.UUID;
 
-@Entity
+
 public class Ufv {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private ObjectId id;
 
     @Digits(integer = 1, fraction = 5)
     @NotNull
-    @Column(precision = 6, scale = 5)
+//    @Column(precision = 6, scale = 5)
     private BigDecimal value;
 
     @NotNull
     private LocalDate creationDate;
 
-    public int getId() {
+    public ObjectId getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(ObjectId id) {
         this.id = id;
     }
 

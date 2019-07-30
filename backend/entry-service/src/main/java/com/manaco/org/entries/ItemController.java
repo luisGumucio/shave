@@ -28,6 +28,6 @@ public class ItemController {
 
 //    @GetMapping(path = "/sum")
 //    public ItemDto getInfo() {
-//        return itemRepository.fetchItemInformationDtoSum();
+////        return itemRepository.fetchItemInformationDtoSum();
 //    }
 }

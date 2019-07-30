@@ -3,25 +3,19 @@ package com.manaco.org.operator;
 import com.manaco.org.model.*;
 
 //import static com.manaco.org.model.TransactionOption.UPDATE_PROCESS;
-import static com.manaco.org.model.TransactionType.INITIAL;
 
-import com.manaco.org.model.Process;
 import com.manaco.org.repositories.ItemRepository;
 import com.manaco.org.repositories.ProccessRepository;
 import com.manaco.org.repositories.TransactionRepository;
 import com.manaco.org.repositories.UfvRepository;
 import com.manaco.org.utils.Operator;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
+//import javax.transaction.Transactional;
 
 @Service
 public class TransactionService {

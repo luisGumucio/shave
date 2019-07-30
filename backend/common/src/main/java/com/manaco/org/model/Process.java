@@ -6,8 +6,12 @@
 package com.manaco.org.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
+import sun.jvm.hotspot.debugger.cdbg.EnumType;
 
-import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
@@ -17,26 +21,19 @@ import java.util.List;
  *
  * @author lucho
  */
-@Entity
+@Document
 public class Process {
     
     @Id
-    @GeneratedValue
-    private int id;
+    private ObjectId id;
 
     private LocalDate processTime;
 
-    @Enumerated(EnumType.STRING)
     private TransactionOption transactionOption;
 
     private int numberProcess;
 
-    @OneToMany(
-            mappedBy = "transactions",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true,
-            fetch = FetchType.EAGER
-    )
+    @DBRef
     private List<Transaction> transactionList;
 
     private boolean isActive;
@@ -49,14 +46,14 @@ public class Process {
         this.numberProcess = numberProcess;
         processTime = LocalDate.now();
         isActive = true;
-//        transactionList = new ArrayList<>();
+        transactionList = new ArrayList<>();
     }
 
-    public int getId() {
-        return id;
+    public String getId() {
+        return id.toHexString();
     }
 
-    public void setId(int id) {
+    public void setId(ObjectId id) {
         this.id = id;
     }
 
@@ -99,15 +96,5 @@ public class Process {
 
     public void setNumberProcess(int numberProcess) {
         this.numberProcess = numberProcess;
-    }
-
-    public void addComment(Transaction transaction) {
-        transactionList.add(transaction);
-        transaction.setTransactions(this);
-    }
-
-    public void removeComment(Transaction transaction) {
-        transactionList.remove(transaction);
-        transaction.setTransactions(null);
     }
 }

@@ -1,21 +1,20 @@
 package com.manaco.org.model;
 
-import javax.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-@Entity
-@Table(name = "item")
+@Document
 public class Item {
 
     @Id
     private String id;
     @NotNull
-    @Column(precision = 19, scale = 6)
     private BigDecimal quantity;
     @NotNull
-    @Column(precision = 19, scale = 6)
     private BigDecimal price;
     private LocalDate initialDate;
     private LocalDate lastUpdate;

@@ -1,12 +1,35 @@
-<div class="row">
+<!-- <div class="row">
   <div class="col-lg-8">
     <app-item-list></app-item-list>
   </div>
   <div class="col-lg-4">
     <app-item-info></app-item-info>
-    <app-item-update ></app-item-update>
   </div>
 </div>
 <div *ngIf="show">
     <app-item-list-detail ></app-item-list-detail>
-</div>
+</div> -->
+
+
+<ng-container
+*ngIf="show; then userloggedIn; else userloggedOut">
+</ng-container>
+
+<ng-template #userloggedIn>
+    <div class="row">
+        <div class="col-lg-8">
+            <app-item-list-detail ></app-item-list-detail>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #userloggedOut>
+    <div class="row">
+        <div class="col-lg-8">
+          <app-item-list></app-item-list>
+        </div>
+        <div class="col-lg-4">
+          <app-item-info></app-item-info>
+        </div>
+      </div>
+</ng-template>

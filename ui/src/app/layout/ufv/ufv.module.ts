@@ -12,10 +12,12 @@ import {
 } from './components';
 import { UfvService } from './services/ufv.service';
 
+import { FilterPipe } from './filter.pipe';
+
 @NgModule({
     imports: [CommonModule, NgxSpinnerModule,
          UfvRoutingModule, FormsModule, NgbModule],
-    declarations: [UfvComponent, UfvUploadComponent, UfvListComponent],
+    declarations: [UfvComponent, UfvUploadComponent, UfvListComponent, FilterPipe],
     providers: [UfvService],
 })
 export class UfvModule {}

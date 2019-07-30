@@ -38,7 +38,7 @@ public class ProcesatorInitial implements ProcesatorObject {
         transaction.setUfvValue(BigDecimal.ZERO);
         transaction.setItem(item);
         transaction.setItemId(item.getId());
-        transaction.setTransactions(processActive);
+        transaction.setProcessId(processActive.getId());
 
         publisher.sentToTransaction(transaction, option);
     }
