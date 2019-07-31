@@ -12,6 +12,9 @@ plugins {
 	id 'java'
 }
 
+bootJar {
+    enabled = false
+}
 allprojects {
 
 	repositories {

@@ -3,7 +3,6 @@ package com.manaco.org.model;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
-import sun.jvm.hotspot.debugger.cdbg.EnumType;
 
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
