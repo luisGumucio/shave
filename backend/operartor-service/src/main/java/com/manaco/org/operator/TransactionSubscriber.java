@@ -28,7 +28,7 @@ public class TransactionSubscriber {
     }
 
     @RabbitListener(queues = "${prima.rabbitmq.queue}")
-    public void receivedPrima(Transaction transaction) {
+    public synchronized void receivedPrima(Transaction transaction) {
         switch (transaction.getType()) {
             case INITIAL:
                 service.saveItem(transaction);
@@ -37,10 +37,10 @@ public class TransactionSubscriber {
     }
 
     @RabbitListener(queues = "${producto.rabbitmq.queue}")
-    public void receivedProducto(Transaction transaction) {
+    public synchronized void receivedProducto(Transaction transaction) {
         switch (transaction.getType()) {
             case INITIAL:
-                service.saveItem(transaction);
+                service.saveItemProduct(transaction);
                 break;
         }
     }

@@ -85,14 +85,6 @@ public class Item {
         this.isFailure = isFailure;
     }
 
-    public Boolean getFailure() {
-        return isFailure;
-    }
-
-    public void setFailure(Boolean failure) {
-        isFailure = failure;
-    }
-
     public TransactionOption getIdentifier() {
         return identifier;
     }

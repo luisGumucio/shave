@@ -31,24 +31,22 @@ public class TransactionService {
     private Operator operator;
     @Autowired
     private TransactionDetailRepository detailRepository;
+    @Autowired
+    private StockRepository stockRepository;
 
 
     public void saveItem(Transaction transaction) {
+
+        if (transaction.getItem().getQuantity().intValue() < 0) {
+            transaction.getItem().setIsFailure(Boolean.TRUE);
+        } else {
+            transaction.getItem().setIsFailure(Boolean.FALSE);
+        }
+
         itemRepository.save(transaction.getItem());
         detailRepository.save(transaction.getDetail());
         transactionRepository.save(transaction);
-//        LOGGER.info("adding initial transaction with item id" + transaction.getItem().getId());
-
-//        checkUfv(next.getTransactionDetail().getUfv());
-//        next.getTransactionDetail().setUfv(checkUfv(next.getTransactionDetail().getUfv()));
-//        if (next.getTransactionDetail().getItem().getQuantity().intValue() < 0) {
-//            next.getTransactionDetail().getItem().setIsFailure(Boolean.TRUE);
-//        } else {
-//            next.getTransactionDetail().getItem().setIsFailure(Boolean.FALSE);
-//        }
-//        itemRepository.save(next.getTransactionDetail().getItem());
-//        transactionRepository.save(next);
-//        System.out.println("saved successfully with id " + next.getTransactionDetail().getItem().getId());
+        LOGGER.info("adding initial transaction with item id" + transaction.getItem().getId());
     }
 
     private synchronized Ufv checkUfv(Ufv ufv) {
@@ -57,6 +55,48 @@ public class TransactionService {
             ufvRepository.save(ufv);
         }
         return actual;
+    }
+
+    public void saveItemProduct(Transaction transaction) {
+        if (transaction.getItem().getQuantity().intValue() < 0) {
+            transaction.getItem().setIsFailure(Boolean.TRUE);
+        } else {
+            transaction.getItem().setIsFailure(Boolean.FALSE);
+        }
+
+        Item item = itemRepository.findById(transaction.getItem().getId()).orElse(null);
+
+        if(item == null) {
+            itemRepository.save(transaction.getItem());
+        } else {
+            item.setQuantity(item.getQuantity().add(transaction.getQuantity()));
+            itemRepository.save(item);
+        }
+        saveStock(transaction, item);
+        detailRepository.save(transaction.getDetail());
+        transactionRepository.save(transaction);
+        LOGGER.info("adding initial transaction with item id" + transaction.getItem().getId());
+    }
+
+    private void saveStock(Transaction transaction, Item item) {
+        Stock stock = stockRepository.findById(Long.valueOf(transaction.getDetail().getInformation().get("TIENDA"))).orElse(null);
+        if(stock == null && item == null) {
+            stock = new Stock();
+            stock.setId(Long.valueOf(transaction.getDetail().getInformation().get("TIENDA")));
+            stock.setQuantity(transaction.getQuantity());
+            stock.setItem(transaction.getItem());
+            stockRepository.save(stock);
+        } else if(stock == null && item != null) {
+            stock = new Stock();
+            stock.setId(Long.valueOf(transaction.getDetail().getInformation().get("TIENDA")));
+            stock.setQuantity(transaction.getQuantity());
+            stock.setItem(item);
+            stockRepository.save(stock);
+        } else {
+            stock.setQuantity(stock.getQuantity().add(transaction.getQuantity()));
+            stock.setItem(item);
+            stockRepository.save(stock);
+        }
     }
 
 //    void saveMoving(Transaction transaction, Item current) {
