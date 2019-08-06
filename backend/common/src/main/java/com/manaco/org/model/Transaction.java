@@ -3,6 +3,7 @@ package com.manaco.org.model;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
@@ -11,7 +12,7 @@ import java.time.LocalDate;
 public class Transaction implements Comparable<Transaction> {
 
     @Id
-    private String id;
+    private ObjectId id;
     private TransactionType type;
     private BigDecimal quantity;
     private BigDecimal priceNeto;
@@ -26,14 +27,17 @@ public class Transaction implements Comparable<Transaction> {
 
     private String itemId;
 
+    @DBRef
+    private TransactionDetail detail;
+
     @Transient
     private Item item;
 
-    public String getId() {
+    public ObjectId getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(ObjectId id) {
         this.id = id;
     }
 
@@ -107,6 +111,14 @@ public class Transaction implements Comparable<Transaction> {
 
     public void setItemId(String itemId) {
         this.itemId = itemId;
+    }
+
+    public TransactionDetail getDetail() {
+        return detail;
+    }
+
+    public void setDetail(TransactionDetail detail) {
+        this.detail = detail;
     }
 
     @Override

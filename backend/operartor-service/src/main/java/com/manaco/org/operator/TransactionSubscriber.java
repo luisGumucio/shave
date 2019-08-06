@@ -20,12 +20,24 @@ public class TransactionSubscriber {
 
     @RabbitListener(queues="${repuestos.rabbitmq.queue}")
     public synchronized void receiveInitial(Transaction transaction) {
-        LOGGER.info("adding new transaction" + new Date().getTime());
-//        transactionRepository.save(transaction);
+        switch (transaction.getType()) {
+            case INITIAL:
+                service.saveItem(transaction);
+                break;
+        }
     }
 
     @RabbitListener(queues = "${prima.rabbitmq.queue}")
     public void receivedPrima(Transaction transaction) {
+        switch (transaction.getType()) {
+            case INITIAL:
+                service.saveItem(transaction);
+                break;
+        }
+    }
+
+    @RabbitListener(queues = "${producto.rabbitmq.queue}")
+    public void receivedProducto(Transaction transaction) {
         switch (transaction.getType()) {
             case INITIAL:
                 service.saveItem(transaction);

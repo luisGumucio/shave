@@ -4,10 +4,7 @@ import com.manaco.org.model.*;
 
 //import static com.manaco.org.model.TransactionOption.UPDATE_PROCESS;
 
-import com.manaco.org.repositories.ItemRepository;
-import com.manaco.org.repositories.ProccessRepository;
-import com.manaco.org.repositories.TransactionRepository;
-import com.manaco.org.repositories.UfvRepository;
+import com.manaco.org.repositories.*;
 import com.manaco.org.utils.Operator;
 
 import org.slf4j.Logger;
@@ -32,11 +29,15 @@ public class TransactionService {
     private ProccessRepository proccessRepository;
     @Autowired
     private Operator operator;
+    @Autowired
+    private TransactionDetailRepository detailRepository;
+
 
     public void saveItem(Transaction transaction) {
         itemRepository.save(transaction.getItem());
+        detailRepository.save(transaction.getDetail());
         transactionRepository.save(transaction);
-        LOGGER.info("adding initial transaction with item id" + transaction.getItem().getId());
+//        LOGGER.info("adding initial transaction with item id" + transaction.getItem().getId());
 
 //        checkUfv(next.getTransactionDetail().getUfv());
 //        next.getTransactionDetail().setUfv(checkUfv(next.getTransactionDetail().getUfv()));

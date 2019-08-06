@@ -1,6 +1,8 @@
 package com.manaco.org.model;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.IndexDirection;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotNull;
@@ -19,6 +21,9 @@ public class Item {
     private LocalDate initialDate;
     private LocalDate lastUpdate;
     private Boolean isFailure;
+
+    @Indexed(name = "identifier_index", direction = IndexDirection.DESCENDING)
+    private TransactionOption identifier;
 
     public Item() {
     }
@@ -78,5 +83,21 @@ public class Item {
 
     public void setIsFailure(Boolean isFailure) {
         this.isFailure = isFailure;
+    }
+
+    public Boolean getFailure() {
+        return isFailure;
+    }
+
+    public void setFailure(Boolean failure) {
+        isFailure = failure;
+    }
+
+    public TransactionOption getIdentifier() {
+        return identifier;
+    }
+
+    public void setIdentifier(TransactionOption identifier) {
+        this.identifier = identifier;
     }
 }

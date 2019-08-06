@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 @Component
@@ -28,6 +29,7 @@ public class ProcesatorInitial implements ProcesatorObject {
         item.setQuantity(new BigDecimal(map.get("F_SALDO").replace(",", "")));
         item.setInitialDate(new Date(map.get("FECHA")).toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
         item.setLastUpdate(item.getInitialDate());
+        item.setIdentifier(option);
 
         transaction.setType(TransactionType.INITIAL);
         transaction.setPriceActual(item.getPrice());
@@ -39,7 +41,31 @@ public class ProcesatorInitial implements ProcesatorObject {
         transaction.setItem(item);
         transaction.setItemId(item.getId());
         transaction.setProcessId(processActive.getId());
-
+        transaction.setDetail(buildDetail(map, option));
         publisher.sentToTransaction(transaction, option);
     }
+
+    private TransactionDetail buildDetail(Map<String, String> map, TransactionOption option) {
+        switch (option) {
+            case PRIMA:
+                return buildPrimaDetail(map);
+//            case REPUESTOS:
+//                initialExecute(file, processatorInitial, TransactionOption.REPUESTOS, processActive);
+//                break;
+//            case PRODUCTO:
+//                initialExecute(file, processatorInitial, TransactionOption.PRODUCTO, processActive);
+//                break;
+        }
+        return null;
+    }
+
+    private TransactionDetail buildPrimaDetail(Map<String, String> map) {
+        TransactionDetail detail = new TransactionDetail();
+        Map<String, String> info = new HashMap<>();
+        info.put("CUENTA", map.get("CUENTA"));
+        info.put("ALMACEN", map.get("ALMACEN"));
+        detail.setInformation(info);
+        return detail;
+    }
+
 }

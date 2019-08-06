@@ -35,6 +35,16 @@ public class RabbitConfig {
     private String routingKeyPrima;
 
 
+    @Value("${producto.rabbitmq.queue}")
+    private String queueProducto;
+
+    @Value("${producto.rabbitmq.exchange}")
+    private String exchangeProducto;
+
+    @Value("${producto.rabbitmq.routingkey}")
+    private String routingKeyProducto;
+
+
     @Bean
     Queue queueRepuestos() {
         return new Queue(queueName, false);
@@ -43,6 +53,11 @@ public class RabbitConfig {
     @Bean
     Queue queuePrima() {
         return new Queue(queuePrima, false);
+    }
+
+    @Bean
+    Queue queueProducto() {
+        return new Queue(queueProducto, false);
     }
 
 
@@ -54,6 +69,16 @@ public class RabbitConfig {
     @Bean
     TopicExchange exchangePrima() {
         return new TopicExchange(exchangePrima);
+    }
+
+    @Bean
+    TopicExchange exchangeProducto() {
+        return new TopicExchange(exchangeProducto);
+    }
+
+    @Bean
+    Binding bindingProducto() {
+        return BindingBuilder.bind(queueProducto()).to(exchangeProducto()).with(routingKeyProducto);
     }
 
     @Bean
