@@ -3,7 +3,10 @@ package com.manaco.org.model;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
+import org.springframework.data.mongodb.core.index.IndexDirection;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
@@ -21,17 +24,19 @@ public class Transaction implements Comparable<Transaction> {
     private BigDecimal ufvValue;
 
     @NotNull
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDate transactionDate;
 
     private String processId;
 
-    private String itemId;
-
     @DBRef
     private TransactionDetail detail;
 
-    @Transient
+    @DBRef
     private Item item;
+
+    @Indexed(name = "identifier_index", direction = IndexDirection.DESCENDING)
+    private TransactionOption identifier;
 
     public ObjectId getId() {
         return id;
@@ -105,13 +110,6 @@ public class Transaction implements Comparable<Transaction> {
         this.processId = processId;
     }
 
-    public String getItemId() {
-        return itemId;
-    }
-
-    public void setItemId(String itemId) {
-        this.itemId = itemId;
-    }
 
     public TransactionDetail getDetail() {
         return detail;
@@ -119,6 +117,14 @@ public class Transaction implements Comparable<Transaction> {
 
     public void setDetail(TransactionDetail detail) {
         this.detail = detail;
+    }
+
+    public TransactionOption getIdentifier() {
+        return identifier;
+    }
+
+    public void setIdentifier(TransactionOption identifier) {
+        this.identifier = identifier;
     }
 
     @Override

@@ -14,5 +14,7 @@ import java.util.List;
 public interface TransactionRepository extends MongoRepository<Transaction, ObjectId> {
 //    Page<Transaction> findByTransactionDetailItemItemIdOrderByDateAsc(Pageable pageable, String id);
 //    List<Transaction> findByTransactionDetailItemItemIdOrderByDateAsc(String id);
+
+    Page<Transaction> findByIdentifier(Pageable pageable, String identifier);
 }
 

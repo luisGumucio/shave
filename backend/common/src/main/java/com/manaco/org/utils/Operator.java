@@ -22,7 +22,7 @@ public class Operator {
 
     public BigDecimal calculateUpdate(BigDecimal total, BigDecimal actualUfv, BigDecimal beforeUfv) {
         if (total.compareTo(BigDecimal.ZERO) != 0) {
-            return total.multiply(actualUfv.divide(beforeUfv, RoundingMode.DOWN));
+            return total.multiply(actualUfv.divide(beforeUfv, RoundingMode.CEILING));
         }
         return BigDecimal.ZERO;
     }

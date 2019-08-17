@@ -21,8 +21,8 @@ public class StockController {
         return stockRepository.findAll(new PageRequest(page, 10));
     }
 
-    @GetMapping(path = "/{id}")
-    public Page<Stock>getByItem(@RequestParam(defaultValue = "0") int page, @PathVariable String id) {
-        return stockRepository.findByItemId(new PageRequest(page, 10), id);
-    }
+//    @GetMapping(path = "/{id}")
+//    public Stock getByItem(@RequestParam(defaultValue = "0") int page, @PathVariable String id) {
+//        return stockRepository.findByItemId(id);
+//    }
 }

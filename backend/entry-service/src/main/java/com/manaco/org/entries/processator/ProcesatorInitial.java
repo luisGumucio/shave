@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashMap;
@@ -27,7 +30,8 @@ public class ProcesatorInitial implements ProcesatorObject {
         item.setPrice(new BigDecimal(map.get("PU_ACTUAL").replace(",", ""))
                 .setScale(6, BigDecimal.ROUND_DOWN));
         item.setQuantity(new BigDecimal(map.get("F_SALDO").replace(",", "")));
-        item.setInitialDate(new Date(map.get("FECHA")).toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+        LocalDate currentDate = convertToDate(map.get("FECHA")).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        item.setInitialDate(currentDate);
         item.setLastUpdate(item.getInitialDate());
         item.setIdentifier(option);
 
@@ -39,9 +43,9 @@ public class ProcesatorInitial implements ProcesatorObject {
         transaction.setPriceNeto(BigDecimal.ZERO);
         transaction.setUfvValue(BigDecimal.ZERO);
         transaction.setItem(item);
-        transaction.setItemId(item.getId());
         transaction.setProcessId(processActive.getId());
         transaction.setDetail(buildDetail(map, option));
+        transaction.setIdentifier(option);
         publisher.sentToTransaction(transaction, option);
     }
 
@@ -73,6 +77,17 @@ public class ProcesatorInitial implements ProcesatorObject {
         info.put("ALMACEN", map.get("ALMACEN"));
         detail.setInformation(info);
         return detail;
+    }
+
+    private Date convertToDate(String receivedDate) {
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        Date date = null;
+        try {
+            date = formatter.parse(receivedDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return date;
     }
 
 }

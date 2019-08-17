@@ -11,4 +11,6 @@ dependencies {
     
     implementation('com.fasterxml.jackson.core:jackson-databind')
     compile group: 'javax.validation', name: 'validation-api', version: '2.0.1.Final'
+    compile group: 'org.springframework.data', name: 'spring-data-mongodb', version: '2.1.10.RELEASE'
+
 }

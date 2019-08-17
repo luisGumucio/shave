@@ -2,6 +2,7 @@ package com.manaco.org.model;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
@@ -22,6 +23,7 @@ public class Ufv {
     private BigDecimal value;
 
     @NotNull
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDate creationDate;
 
     public ObjectId getId() {

@@ -33,7 +33,11 @@ public class TransactionSubscriber {
             case INITIAL:
                 service.saveItem(transaction);
                 break;
+            default:
+                service.executeMoving(transaction);
+                break;
         }
+        LOGGER.info("recibido");
     }
 
     @RabbitListener(queues = "${producto.rabbitmq.queue}")

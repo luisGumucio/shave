@@ -1,24 +1,28 @@
 package com.manaco.org.entries;
 
-import com.manaco.org.model.FileUpload;
+import com.manaco.org.entries.excel.ExcelGenerator;
+import com.manaco.org.model.*;
 import com.manaco.org.model.Process;
-import com.manaco.org.model.TransactionType;
-import com.manaco.org.model.Ufv;
+import com.manaco.org.repositories.ItemRepository;
 import com.manaco.org.repositories.TransactionRepository;
 import com.manaco.org.repositories.UfvRepository;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -31,6 +35,9 @@ public class FileController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FileController.class);
     private static final int INDEX = 0;
+
+    @Autowired
+    private ItemRepository itemRepository;
 
     @Autowired
     private FileService fileService;
@@ -65,11 +72,29 @@ public class FileController {
 
         try {
             XSSFWorkbook workbook = new XSSFWorkbook(file.getInputStream());
-//            executeUfv(workbook.getSheetAt(0));
+            executeUfv(workbook.getSheetAt(0));
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+
+    @GetMapping(value = "/download/customers.xlsx")
+    public ResponseEntity<InputStreamResource> excelCustomersReport() throws IOException {
+        List<Item> customers = itemRepository.findAll();
+
+        ByteArrayInputStream in = ExcelGenerator.customersToExcel(customers);
+        // return IOUtils.toByteArray(in);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=customers.xlsx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .body(new InputStreamResource(in));
+    }
+
 
     private void executeUfv(XSSFSheet sheet) {
         int day = 0;

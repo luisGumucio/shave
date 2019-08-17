@@ -5,6 +5,7 @@ import com.manaco.org.entries.excel.ExcelReader;
 import com.manaco.org.entries.excel.ExcelSheetCallback;
 import com.manaco.org.entries.excel.ExcelWorkSheetRowCallbackHandler;
 import com.manaco.org.entries.processator.ProcesatorInitial;
+import com.manaco.org.entries.processator.ProcesatorMoving;
 import com.manaco.org.model.*;
 import com.manaco.org.model.Process;
 import com.manaco.org.utils.ProcesatorObject;
@@ -33,6 +34,10 @@ public class FileService {
     @Autowired
     ProcesatorInitial processatorInitial;
 
+    @Autowired
+    private ProcesatorMoving procesatorMoving;
+
+
     @Async("threadPoolTaskExecutor")
     public CompletableFuture<Void> readFile(InputStream file, Process processActive) {
 
@@ -46,10 +51,14 @@ public class FileService {
             case SALDO_INITIAL_PRODUCTO:
                 initialExecute(file, processatorInitial, TransactionOption.PRODUCTO, processActive);
                 break;
+            case PRIMA:
+                initialExecute(file, procesatorMoving, TransactionOption.PRIMA, processActive);
+                break;
+
         }
         return null;
     }
-//
+
     public void initialExecute(InputStream file, ProcesatorObject procesatorObject, TransactionOption option, Process processActive) {
         OPCPackage pkg = null;
         try {
@@ -103,4 +112,6 @@ public class FileService {
         process.setTransactionOption(TransactionOption.valueOf(option));
         return processService.createProcess(process);
     }
+
+
 }

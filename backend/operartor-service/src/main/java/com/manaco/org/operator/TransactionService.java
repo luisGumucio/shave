@@ -10,7 +10,13 @@ import com.manaco.org.utils.Operator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 
 //import javax.transaction.Transactional;
 
@@ -34,6 +40,9 @@ public class TransactionService {
     @Autowired
     private StockRepository stockRepository;
 
+    @Autowired
+    protected MongoTemplate mongoTemplate;
+
 
     public void saveItem(Transaction transaction) {
 
@@ -46,6 +55,7 @@ public class TransactionService {
         itemRepository.save(transaction.getItem());
         detailRepository.save(transaction.getDetail());
         transactionRepository.save(transaction);
+        savePrimaStock(transaction, transaction.getItem());
         LOGGER.info("adding initial transaction with item id" + transaction.getItem().getId());
     }
 
@@ -84,43 +94,60 @@ public class TransactionService {
             stock = new Stock();
             stock.setId(Long.valueOf(transaction.getDetail().getInformation().get("TIENDA")));
             stock.setQuantity(transaction.getQuantity());
-            stock.setItem(transaction.getItem());
+            stock.addItem(transaction.getItem());
             stockRepository.save(stock);
         } else if(stock == null && item != null) {
             stock = new Stock();
             stock.setId(Long.valueOf(transaction.getDetail().getInformation().get("TIENDA")));
             stock.setQuantity(transaction.getQuantity());
-            stock.setItem(item);
+            stock.addItem(item);
             stockRepository.save(stock);
         } else {
             stock.setQuantity(stock.getQuantity().add(transaction.getQuantity()));
-            stock.setItem(item);
+            stock.addItem(item);
             stockRepository.save(stock);
         }
     }
 
-//    void saveMoving(Transaction transaction, Item current) {
-//        Item item = itemRepository.findById(current.getId()).orElse(null);
-//        if (item != null) {
-//            MateriaDetail materiaDetail = (MateriaDetail) transaction.getTransactionDetail();
-//            materiaDetail.setId(0);
-//            materiaDetail.setItem(item);
-//            transaction.setTransactionDetail(materiaDetail);
-//            Ufv actual = ufvRepository.findByCreationDate(transaction.getTransactionDate());
-//            updateItem(item, transaction, actual);
-//            switch (transaction.getType()) {
-//                case ENTRY:
-//                    executeEntry(item, transaction, actual);
-//                    break;
-//                case EGRESS:
-//                    executeEgress(item, transaction, actual);
-//                    break;
-//            }
-//            System.out.println("saved successfully with id " + transaction.getTransactionDetail().getItem().getId());
-//        } else {
-//            System.out.println("item not found with  id " + transaction.getTransactionDetail().getItem().getId());
-//        }
-//    }
+    private void savePrimaStock(Transaction transaction, Item item) {
+        Stock stock = stockRepository.findById(Long.valueOf(transaction.getDetail().getInformation().get("ALMACEN"))).orElse(null);
+        if(stock == null && item == null) {
+            stock = new Stock();
+            stock.setId(Long.valueOf(transaction.getDetail().getInformation().get("ALMACEN")));
+            stock.setQuantity(transaction.getQuantity());
+            stock.addItem(transaction.getItem());
+            stockRepository.save(stock);
+        } else if(stock == null && item != null) {
+            stock = new Stock();
+            stock.setId(Long.valueOf(transaction.getDetail().getInformation().get("ALMACEN")));
+            stock.setQuantity(transaction.getQuantity());
+            stock.addItem(item);
+            stockRepository.save(stock);
+        } else {
+            stock.setQuantity(stock.getQuantity().add(transaction.getQuantity()));
+            stock.addItem(item);
+            stockRepository.save(stock);
+        }
+    }
+
+    public void executeMoving(Transaction transaction) {
+        Item item = itemRepository.findById(transaction.getItem().getId()).orElse(null);
+        if (item != null) {
+            Ufv actual = ufvRepository.findByCreationDate(transaction.getTransactionDate());
+            updateItem(item, transaction, actual);
+            switch (transaction.getType()) {
+                case ENTRY:
+                    executeEntry(item, transaction, actual);
+                    break;
+                case EGRESS:
+                    executeEgress(item, transaction, actual);
+                    break;
+            }
+            LOGGER.info("saved successfully with id " + transaction.getItem());
+        } else {
+            System.out.println("item not found with  id " + transaction.getItem());
+        }
+    }
 //
 //    void saveMoving(Transaction transaction) {
 //        Item item = itemRepository.findById(transaction.getTransactionDetail().getItem().getId()).orElse(null);
@@ -144,84 +171,79 @@ public class TransactionService {
 //        }
 //    }
 
-//    private Item updateItem(Item item, Transaction transaction, Ufv actual) {
-//        if (!item.getLastUpdate().equals(transaction.getTransactionDate())) {
-//            Ufv before = ufvRepository.findByCreationDate(item.getLastUpdate());
-//            if (item.getQuantity().intValue() != 0) {
-//                BigDecimal totalNormal = operator.calculateTotal(item.getQuantity(), item.getPrice());
-//                BigDecimal totalUpdate = operator.calculateUpdate(totalNormal, actual.getValue(), before.getValue());
-//                BigDecimal newPrice = operator.newPrice(totalUpdate, item.getQuantity());
-//                BigDecimal ufvValue = operator.caclulateUfvValue(totalUpdate, totalNormal);
-//                item.setPrice(newPrice.setScale(6, BigDecimal.ROUND_CEILING));
-//                item.setLastUpdate(transaction.getTransactionDate());
-//                saveMove(item, TransactionType.UPDATE, ufvValue, actual, transaction.getProcessId());
-//            }
-//        }
-//        return item;
-//    }
+    private Item updateItem(Item item, Transaction transaction, Ufv actual) {
+        if (!item.getLastUpdate().equals(transaction.getTransactionDate())) {
+            Ufv before = ufvRepository.findByCreationDate(item.getLastUpdate());
+            if (item.getQuantity().intValue() != 0) {
+                BigDecimal totalNormal = operator.calculateTotal(item.getQuantity(), item.getPrice());
+                BigDecimal totalUpdate = operator.calculateUpdate(totalNormal, actual.getValue(), before.getValue());
+                BigDecimal newPrice = operator.newPrice(totalUpdate, item.getQuantity());
+                BigDecimal ufvValue = operator.caclulateUfvValue(totalUpdate, totalNormal);
+                item.setPrice(newPrice.setScale(6, BigDecimal.ROUND_CEILING));
+                item.setLastUpdate(transaction.getTransactionDate());
+                saveMove(item, TransactionType.UPDATE, ufvValue, actual, transaction.getProcessId());
+            }
+        }
+        return item;
+    }
 //
-//    private void saveMove(Item item, TransactionType type, BigDecimal ufvValue, Ufv ufv, int proccesID) {
-//        Transaction transaction = new Transaction();
-//        TransactionDetail detail = new MateriaDetail();
-//        detail.setUfv(ufv);
-//        detail.setItem(item);
-//        transaction.setPriceActual(item.getPrice());
-//        transaction.setQuantity(item.getQuantity());
-//        transaction.setType(type);
-//        transaction.setUfvValue(ufvValue);
-//        transaction.setTransactionDate(item.getLastUpdate());
-//        transaction.setProcessId(proccesID);
-//        transaction.setTransactionDetail(detail);
-//        itemRepository.save(item);
-//        transactionRepository.save(transaction);
-//    }
+    private void saveMove(Item item, TransactionType type, BigDecimal ufvValue, Ufv ufv, String proccesID) {
+        Transaction transaction = new Transaction();
+        transaction.setPriceActual(item.getPrice());
+        transaction.setQuantity(item.getQuantity());
+        transaction.setType(type);
+        transaction.setUfvValue(ufvValue);
+        transaction.setTransactionDate(item.getLastUpdate());
+        transaction.setProcessId(proccesID);
+        itemRepository.save(item);
+        transactionRepository.save(transaction);
+    }
 //
-//    private void executeEntry(Item item, Transaction transaction, Ufv actual) {
-//        Transaction entry = new Transaction();
-//        TransactionDetail detail =  transaction.getTransactionDetail();
-//        entry.setType(TransactionType.ENTRY);
-//        entry.setPriceNeto(transaction.getPriceNeto());
-//        BigDecimal quantityTotal = item.getQuantity().add(transaction.getQuantity().setScale(6, BigDecimal.ROUND_CEILING));
-//        if (quantityTotal.intValue() != 0) {
-//            BigDecimal totalNormal = operator.calculateTotal(transaction.getQuantity(), transaction.getPriceNeto());
-//            BigDecimal totalUpdate = operator.calculateTotal(item.getQuantity(), item.getPrice());
-//            BigDecimal newPrice = operator.newPrice(totalUpdate.add(totalNormal), quantityTotal);
-//            entry.setPriceActual(newPrice.setScale(6, BigDecimal.ROUND_CEILING));
-//        } else {
-//            entry.setPriceActual(item.getPrice());
-//        }
-//
-//        entry.setQuantity(transaction.getQuantity().setScale(6, BigDecimal.ROUND_CEILING));
-//        entry.setTransactionDate(transaction.getTransactionDate());
+    private void executeEntry(Item item, Transaction transaction, Ufv actual) {
+        Transaction entry = new Transaction();
+        entry.setType(TransactionType.ENTRY);
+        entry.setPriceNeto(transaction.getPriceNeto());
+        BigDecimal quantityTotal = item.getQuantity().add(transaction.getQuantity().setScale(6, BigDecimal.ROUND_CEILING));
+        if (quantityTotal.intValue() != 0) {
+            BigDecimal totalNormal = operator.calculateTotal(transaction.getQuantity(), transaction.getPriceNeto());
+            BigDecimal totalUpdate = operator.calculateTotal(item.getQuantity(), item.getPrice());
+            BigDecimal newPrice = operator.newPrice(totalUpdate.add(totalNormal), quantityTotal);
+            entry.setPriceActual(newPrice.setScale(6, BigDecimal.ROUND_CEILING));
+        } else {
+            entry.setPriceActual(item.getPrice());
+        }
+
+        entry.setQuantity(transaction.getQuantity().setScale(6, BigDecimal.ROUND_CEILING));
+        entry.setTransactionDate(transaction.getTransactionDate());
 //        entry.setTransactionDetail(detail);
-//        entry.setUfvValue(BigDecimal.ZERO);
-//        entry.setProcessId(transaction.getProcessId());
-//        item.setPrice(entry.getPriceActual());
-//        item.setQuantity(quantityTotal);
+        entry.setUfvValue(BigDecimal.ZERO);
+        entry.setProcessId(transaction.getProcessId());
+        item.setPrice(entry.getPriceActual());
+        item.setQuantity(quantityTotal);
 //        detail.setUfv(actual);
 //        detail.setItem(item);
-//        itemRepository.save(item);
-//        transactionRepository.save(entry);
-//    }
+        itemRepository.save(item);
+        transactionRepository.save(entry);
+    }
 //
-//    private void executeEgress(Item item, Transaction transaction, Ufv actual) {
-//        Transaction egress = new Transaction();
+    private void executeEgress(Item item, Transaction transaction, Ufv actual) {
+        Transaction egress = new Transaction();
 //        TransactionDetail detail = transaction.getTransactionDetail();
-//        egress.setType(TransactionType.EGRESS);
-//        egress.setPriceActual(item.getPrice());
-//        egress.setQuantity(transaction.getQuantity());
-//
+        egress.setType(TransactionType.EGRESS);
+        egress.setPriceActual(item.getPrice());
+        egress.setQuantity(transaction.getQuantity());
+
 //        egress.setTransactionDetail(detail);
-//        egress.setTransactionDate(transaction.getTransactionDate());
-//        egress.setUfvValue(new BigDecimal(0));
-//        egress.setProcessId(transaction.getProcessId());
-//        item.setQuantity(item.getQuantity().subtract(transaction.getQuantity()));
-//        item.setLastUpdate(transaction.getTransactionDate());
+        egress.setTransactionDate(transaction.getTransactionDate());
+        egress.setUfvValue(new BigDecimal(0));
+        egress.setProcessId(transaction.getProcessId());
+        item.setQuantity(item.getQuantity().subtract(transaction.getQuantity()));
+        item.setLastUpdate(transaction.getTransactionDate());
 //        detail.setUfv(actual);
 //        detail.setItem(item);
-//        itemRepository.save(item);
-//        transactionRepository.save(egress);
-//    }
+        itemRepository.save(item);
+        transactionRepository.save(egress);
+    }
 //
 //    public void executeItem(Item actual) {
 //        Item item = itemRepository.findById(actual.getId()).orElse(null);
@@ -258,27 +280,6 @@ public class TransactionService {
 //        }
 //    }
 //
-//    @Transactional
-//    private synchronized Item saveItemInit(Transaction transaction) {
-//        Transaction current = new Transaction();
-//        Item item = new Item();
-//        item.setId(transaction.getTransactionDetail().getItem().getId());
-//        item.setPrice(transaction.getPriceNeto());
-//        item.setQuantity(BigDecimal.ZERO);
-//        item.setInitialDate(transaction.getTransactionDate());
-//        item.setLastUpdate(transaction.getTransactionDate());
-//        item.setIsFailure(false);
-//        current.setPriceNeto(item.getPrice());
-//        current.setPriceActual(item.getPrice());
-//        current.setTransactionDate(transaction.getTransactionDate());
-//        current.setProcessId(transaction.getProcessId());
-//        current.setQuantity(item.getQuantity());
-//        current.setUfvValue(BigDecimal.ZERO);
-//        current.setType(INITIAL);
-//        itemRepository.save(item);
-//        transactionRepository.save(current);
-//        return item;
-//    }
 //
 //    public void updateItem(LocalDate localDate) {
 //        Ufv actual = ufvRepository.findByCreationDate(localDate);
@@ -306,5 +307,11 @@ public class TransactionService {
 //            saveMove(item, TransactionType.UPDATE, BigDecimal.ZERO, actual, proccess.getId());
 //        }
 //    }
+
+    public void pushMethod(Long objectId, Object... events) {
+        mongoTemplate.updateFirst(
+                Query.query(Criteria.where("id").is(objectId)),
+                new Update().push("items", events), Stock.class);
+    }
 
 }

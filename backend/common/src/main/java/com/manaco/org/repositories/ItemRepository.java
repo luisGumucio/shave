@@ -15,4 +15,16 @@ public interface ItemRepository extends MongoRepository<Item, String> {
 
 
     Page<Item> findByIdentifier(Pageable pageable, String identifier);
+
+//    @Aggregation("{ $group : { _id : null, total : { $sum : $age } } }")
+
+//    Long sumAge();
 }
+//    "$group" : {
+//            "_id" : null,
+//            "prices" : {
+//            "$sum" : {
+//            "$multiply" : ["$price", "$quantity"]
+//            }
+//            }
+//            }

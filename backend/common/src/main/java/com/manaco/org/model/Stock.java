@@ -1,11 +1,14 @@
 package com.manaco.org.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Document
 public class Stock {
@@ -19,7 +22,11 @@ public class Stock {
     private BigDecimal quantity;
 
     @DBRef
-    private Item item;
+    private List<Item> items;
+
+    public Stock() {
+        items = new ArrayList<>();
+    }
 
     public long getId() {
         return id;
@@ -45,11 +52,15 @@ public class Stock {
         this.name = name;
     }
 
-    public Item getItem() {
-        return item;
+    public List<Item> getItems() {
+        return items;
     }
 
-    public void setItem(Item item) {
-        this.item = item;
+    public void setItems(List<Item> items) {
+        this.items = items;
+    }
+
+    public void addItem(Item item) {
+        this.items.add(item);
     }
 }
