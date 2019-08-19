@@ -13,5 +13,4 @@ public class TotalItemReport {
     public void setTotal(BigDecimal total) {
         this.total = total;
     }
-
 }

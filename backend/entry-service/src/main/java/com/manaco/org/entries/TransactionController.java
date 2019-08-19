@@ -2,16 +2,24 @@ package com.manaco.org.entries;
 
 import com.manaco.org.dto.FilterDate;
 import com.manaco.org.dto.TransactionDto;
+import com.manaco.org.entries.reports.TotalItemReport;
 import com.manaco.org.model.Transaction;
 import com.manaco.org.model.TransactionDetail;
 import com.manaco.org.repositories.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.*;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.group;
 
 @RestController
 @RequestMapping("/transaction")
@@ -20,6 +28,9 @@ public class TransactionController {
 
     @Autowired
     private TransactionService transactionService;
+    @Autowired
+    MongoTemplate mongoTemplate;
+
 
     @Autowired
     private TransactionRepository transactionRepository;
@@ -49,13 +60,26 @@ public class TransactionController {
     @PostMapping(path = "/reportTransaction")
     public Page<Transaction> getType1(@RequestParam(defaultValue = "0") int page,
                                       @RequestBody FilterDate filterDate,
-                                     @RequestParam(defaultValue = "0") String id) {
+                                      @RequestParam(defaultValue = "0") String id) {
 
-        if(filterDate.getLastDate() == null) {
+        if (filterDate.getLastDate() == null) {
             return transactionRepository.findByItemIdAndTransactionDate(PageRequest.of(page, 20),
                     id, filterDate.getInitDate());
         }
         return null;
+    }
+
+    @GetMapping(path = "/transactionTotal")
+    public List<TotalItemReport> getItemTotal(@RequestParam String id) {
+        Aggregation agg = newAggregation(match(Criteria.where("item").is(id)),
+                group("item")
+                        .sum("increment").as("total"),
+                sort(Sort.Direction.ASC, previousOperation(), "item"));
+        AggregationResults<TotalItemReport> groupResults
+                = mongoTemplate.aggregate(agg, Transaction.class, TotalItemReport.class);
+
+        List<TotalItemReport> result = groupResults.getMappedResults();
+        return result;
     }
 
 

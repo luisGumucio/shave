@@ -3,37 +3,7 @@
     <h4 class="card-title">Detalle del articulo: {{ $route.params.id }}</h4>
     <div class="row">
       <transaction-filter @add:filterDate="addFilter" />
-      <div class="col-xl-4 col-lg-4 col-md-3 col-sm-6 grid-margin stretch-card">
-        <div class="card card-statistics">
-          <div class="card-body">
-            <h4 class="card-title">Articulo detalle</h4>
-            <div class="template-demo">
-              <table class="table mb-0">
-                <thead>
-                  <tr>
-                    <th class="pl-0">Item</th>
-                    <th class="text-right">Total</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td class="pl-0">Cantidad total</td>
-                    <td class="pr-0 text-right">
-                      <b-badge pill variant="primary">5</b-badge>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="pl-0">Precio total</td>
-                    <td class="pr-0 text-right">
-                      <b-badge pill variant="primary">124,425.23</b-badge>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
+      <transaction-detail :item="item" :increment="increment" />
     </div>
     <div class="row">
       <div class="col-12 grid-margin">
@@ -52,20 +22,26 @@
 <script>
 import TransactionTable from "./detail/transactionTable.vue";
 import TransactionFilter from "./detail/TransactionFilter.vue";
+import TransactionDetail from "./detail/TransactionDetail.vue";
+import { async } from "q";
 
 export default {
   components: {
     TransactionTable,
-    TransactionFilter
+    TransactionFilter,
+    TransactionDetail
   },
   data() {
     return {
       items: [],
+      item: {},
+      increment: undefined,
       baseUrl: "http://localhost:4000/transaction"
     };
   },
   mounted() {
     this.getItems();
+    this.getTotal();
   },
   methods: {
     async getItems() {
@@ -75,6 +51,8 @@ export default {
         );
         const data = await response.json();
         this.items = data["content"];
+        this.item = this.items[0].item;
+        console.log(this.item);
       } catch (error) {
         console.error(error);
       }
@@ -97,7 +75,21 @@ export default {
       } catch (error) {
         console.error(error);
       }
-    }
+    },
+
+        async getTotal() {
+      try {
+        const response = await fetch(
+          "http://localhost:4000/transaction/transactionTotal?id=" + this.$route.params.id
+        );
+        
+        const data = await response.json();
+        this.increment = data[0].total;
+      } catch (error) {
+        console.error(error);
+      }
+    },
+
   }
 };
 </script>
