@@ -1,132 +1,105 @@
 <template>
-  <div class="col-md-14 grid-margin stretch-card">
-    <div class="card">
-      <div class="card-body">
-        <h4 class="card-title">Detalle del articulo 1003</h4>
-        <div class="form-group">
-            <label class="control-label" for="date">Desde</label>
-            <input class="form-control" id="date" name="date" placeholder="MM/DD/YYY" type="date" />
-                        <label class="control-label" for="date">Hasta</label>
-            <input class="form-control" id="date" name="date" placeholder="MM/DD/YYY" type="date" />
+  <section class="dashboard">
+    <h4 class="card-title">Detalle del articulo: {{ $route.params.id }}</h4>
+    <div class="row">
+      <transaction-filter @add:filterDate="addFilter" />
+      <div class="col-xl-4 col-lg-4 col-md-3 col-sm-6 grid-margin stretch-card">
+        <div class="card card-statistics">
+          <div class="card-body">
+            <h4 class="card-title">Articulo detalle</h4>
+            <div class="template-demo">
+              <table class="table mb-0">
+                <thead>
+                  <tr>
+                    <th class="pl-0">Item</th>
+                    <th class="text-right">Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="pl-0">Cantidad total</td>
+                    <td class="pr-0 text-right">
+                      <b-badge pill variant="primary">5</b-badge>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="pl-0">Precio total</td>
+                    <td class="pr-0 text-right">
+                      <b-badge pill variant="primary">124,425.23</b-badge>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
-        <table class="table">
-          <thead class="thead-dark">
-            <tr>
-              <th scope="col">Tipo</th>
-              <th scope="col">Fecha</th>
-              <th scope="col">Ingreso</th>
-              <th scope="col">Egreso</th>
-              <th scope="col">Cantidad</th>
-              <th scope="col">Precio Neto</th>
-              <th scope="col">Precio Actual</th>
-              <th scope="col">Ufv</th>
-              <th scope="col">Ingreso total</th>
-              <th scope="col">Egreso total</th>
-              <th scope="col">Total</th>
-              <th scope="col">Total actualizado</th>
-              <th scope="col">Incremento</th>
-              <th scope="col">Accion</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <th scope="row">Act</th>
-              <td>01/04/2018</td>
-              <td>0.00</td>
-              <td>0.00</td>
-              <td>14,484.00</td>
-              <td>0.00</td>
-              <td>3.53</td>
-              <td>2.23758</td>
-              <td>0.00</td>
-              <td>0.00</td>
-              <td>50,465.79</td>
-              <td>51,174.86</td>
-              <td>14.64</td>
-              <td>
-                <p data-placement="top" data-toggle="tooltip" title="Informacion">
-                  <router-link class="btn btn-primary btn-xs" to="/rtransaction/">
-                    <span class="mdi mdi-file-chart"></span>
-                  </router-link>
-                </p>
-              </td>
-            </tr>
-                        <tr>
-              <th scope="row">Ing</th>
-              <td>01/04/2018</td>
-              <td>12</td>
-              <td>0.00</td>
-              <td>15,484.00</td>
-              <td>4.00</td>
-              <td>3.53</td>
-              <td>2.23758</td>
-              <td>20,465.79</td>
-              <td>0.00</td>
-              <td>60,465.79</td>
-              <td>61,174.86</td>
-              <td>1.64</td>
-              <td>
-                <p data-placement="top" data-toggle="tooltip" title="Informacion">
-                  <router-link class="btn btn-primary btn-xs" to="/rtransaction/">
-                    <span class="mdi mdi-file-chart"></span>
-                  </router-link>
-                </p>
-              </td>
-            </tr>
-                        <tr>
-              <th scope="row">Act</th>
-              <td>01/05/2018</td>
-              <td>0.00</td>
-              <td>0.00</td>
-              <td>14,484.00</td>
-              <td>0.00</td>
-              <td>3.53</td>
-              <td>2.23758</td>
-              <td>0.00</td>
-              <td>0.00</td>
-              <td>50,465.79</td>
-              <td>51,174.86</td>
-              <td>14.64</td>
-              <td>
-                <p data-placement="top" data-toggle="tooltip" title="Informacion">
-                  <router-link class="btn btn-primary btn-xs" to="/rtransaction/">
-                    <span class="mdi mdi-file-chart"></span>
-                  </router-link>
-                </p>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <nav aria-label="Page navigation example">
-          <ul class="pagination">
-            <li class="page-item">
-              <a class="page-link" href="#" aria-label="Previous">
-                <span aria-hidden="true">&laquo;</span>
-              </a>
-            </li>
-            <li class="page-item">
-              <a class="page-link" href="#">1</a>
-            </li>
-            <li class="page-item">
-              <a class="page-link" href="#">2</a>
-            </li>
-            <li class="page-item">
-              <a class="page-link" href="#">3</a>
-            </li>
-            <li class="page-item">
-              <a class="page-link" href="#" aria-label="Next">
-                <span aria-hidden="true">&raquo;</span>
-              </a>
-            </li>
-          </ul>
-        </nav>
       </div>
     </div>
-  </div>
+    <div class="row">
+      <div class="col-12 grid-margin">
+        <div class="card">
+          <div class="card-body">
+            <div class="table-responsive">
+              <transaction-table :items="items" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 </template>
 
 <script>
-export default {};
+import TransactionTable from "./detail/transactionTable.vue";
+import TransactionFilter from "./detail/TransactionFilter.vue";
+
+export default {
+  components: {
+    TransactionTable,
+    TransactionFilter
+  },
+  data() {
+    return {
+      items: [],
+      baseUrl: "http://localhost:4000/transaction"
+    };
+  },
+  mounted() {
+    this.getItems();
+  },
+  methods: {
+    async getItems() {
+      try {
+        const response = await fetch(
+          this.baseUrl + "/" + this.$route.params.id
+        );
+        const data = await response.json();
+        this.items = data["content"];
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    async addFilter(filterDate) {
+      console.log(filterDate.initDate);
+      console.log(filterDate.lastDate);
+
+      try {
+        const response = await fetch(
+          this.baseUrl + "/reportTransaction?id=" + this.$route.params.id,
+          {
+            method: "POST",
+            body: JSON.stringify(filterDate),
+            headers: { "Content-type": "application/json; charset=UTF-8" }
+          }
+        );
+        const data = await response.json();
+        this.items = data["content"];
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  }
+};
 </script>
 
 <style scoped>

@@ -17,35 +17,41 @@ public class TransactionSubscriber {
     @Autowired
     private TransactionService service;
 
+    @Autowired
+    private TransactionRepuestosService transactionRepuestosService;
 
-    @RabbitListener(queues="${repuestos.rabbitmq.queue}")
+
+    @RabbitListener(queues = "${repuestos.rabbitmq.queue}")
     public synchronized void receiveInitial(Transaction transaction) {
         switch (transaction.getType()) {
             case INITIAL:
-                service.saveItem(transaction);
-                break;
-        }
-    }
-
-    @RabbitListener(queues = "${prima.rabbitmq.queue}")
-    public synchronized void receivedPrima(Transaction transaction) {
-        switch (transaction.getType()) {
-            case INITIAL:
-                service.saveItem(transaction);
+                transactionRepuestosService.saveItem(transaction);
                 break;
             default:
                 service.executeMoving(transaction);
                 break;
         }
-        LOGGER.info("recibido");
     }
 
-    @RabbitListener(queues = "${producto.rabbitmq.queue}")
-    public synchronized void receivedProducto(Transaction transaction) {
-        switch (transaction.getType()) {
-            case INITIAL:
-                service.saveItemProduct(transaction);
-                break;
-        }
-    }
+//    @RabbitListener(queues = "${prima.rabbitmq.queue}")
+//    public synchronized void receivedPrima(Transaction transaction) {
+//        switch (transaction.getType()) {
+//            case INITIAL:
+//                service.saveItem(transaction);
+//                break;
+//            default:
+//                service.executeMoving(transaction);
+//                break;
+//        }
+//        LOGGER.info("recibido");
+//    }
+//
+//    @RabbitListener(queues = "${producto.rabbitmq.queue}")
+//    public synchronized void receivedProducto(Transaction transaction) {
+//        switch (transaction.getType()) {
+//            case INITIAL:
+//                service.saveItemProduct(transaction);
+//                break;
+//        }
+//    }
 }

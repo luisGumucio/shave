@@ -1,5 +1,5 @@
 <template lang="html">
-<section class="col-md-14">
+<section class="dashboard">
         <div class="col-md-12">
             <h4 class="card-title">Repuestos</h4>
             <div class="template-demo ">

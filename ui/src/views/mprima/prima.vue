@@ -22,7 +22,7 @@ export default {
         },
         {
           text: "Almacen",
-          to: "/ralmacen"
+          to: "/mAlmacen"
         },
         {
           text: "Procesos",

@@ -5,23 +5,10 @@ import dashboard from './views/dashboard'
 import widgets from './views/widgets'
 
 // UI Components
-import alerts from './views/ui-components/alerts'
-import badges from './views/ui-components/badges'
-import breadcrumbs from './views/ui-components/breadcrumbs'
-import buttons from './views/ui-components/buttons'
-import carousel from './views/ui-components/carousel'
-import dropdowns from './views/ui-components/dropdowns'
-import icons from './views/ui-components/icons'
-import modals from './views/ui-components/modals'
-import paginations from './views/ui-components/paginations'
-import progress from './views/ui-components/progress'
-import tables from './views/ui-components/tables'
-import typography from './views/ui-components/typography'
-import tabs from './views/ui-components/tabs'
-import tooltips from './views/ui-components/tooltips'
 import upload from './views/upload'
-import repuestos from './views/repuestos'
-import ritem from './views/ritem'
+// repuestos
+import repuestos from './views/repuestos/repuestos'
+import ritem from './views/repuestos/ritem'
 import rtransaction from './views/repuestos/rtransaction'
 import ralmacen from './views/repuestos/ralmacen'
 //producto terminado
@@ -33,6 +20,7 @@ import ptienda from './views/producto/ptienda'
 import prima from './views/mprima/prima'
 import mtransaction from './views/mprima/mtransaction'
 import mitem from './views/mprima/mitem'
+import mAlmacen from './views/mprima/mAlmacen'
 
 // Form Components
 import forms from './views/forms/forms'
@@ -46,101 +34,6 @@ const routes = [{
   path: '/',
   name: 'dashboard',
   component: dashboard
-},
-{
-  path: '/widgets',
-  name: 'widgets',
-  component: widgets
-},
-{
-  path: '/404',
-  name: 'error-404',
-  component: error404
-},
-{
-  path: '/500',
-  name: 'error-500',
-  component: error500
-},
-{
-  path: '/login',
-  name: 'login',
-  component: login
-},
-{
-  path: '/register',
-  name: 'register',
-  component: register
-},
-{
-  path: '/alerts',
-  name: 'alerts',
-  component: alerts
-},
-{
-  path: '/badges',
-  name: 'badges',
-  component: badges
-},
-{
-  path: '/breadcrumbs',
-  name: 'breadcrumbs',
-  component: breadcrumbs
-},
-{
-  path: '/buttons',
-  name: 'buttons',
-  component: buttons
-},
-{
-  path: '/carousel',
-  name: 'carousel',
-  component: carousel
-},
-{
-  path: '/dropdowns',
-  name: 'dropdowns',
-  component: dropdowns
-},
-{
-  path: '/icons',
-  name: 'icons',
-  component: icons
-},
-{
-  path: '/modals',
-  name: 'modals',
-  component: modals
-},
-{
-  path: '/paginations',
-  name: 'paginations',
-  component: paginations
-},
-{
-  path: '/progress',
-  name: 'progress',
-  component: progress
-},
-{
-  path: '/tables',
-  name: 'tables',
-  component: tables
-},
-{
-  path: '/typography',
-  name: 'typography',
-  component: typography
-},
-{
-  path: '/tabs',
-  name: 'tabs',
-  component: tabs
-},
-{
-  path: '/tooltips',
-  name: 'tooltips',
-  component: tooltips
 },
 {
   path: '/prima',
@@ -161,6 +54,11 @@ const routes = [{
       path: '',
       name: 'mitem',
       component: mitem
+    },
+    {
+      path: '/mAlmacen',
+      name: 'mAlmacen',
+      component: mAlmacen
     }]
 },
 {
@@ -213,7 +111,7 @@ const routes = [{
     },
     ,
     {
-      path: '/rtransaction',
+      path: '/rtransaction/:id',
       name: 'rtransaction',
       component: rtransaction
     },
