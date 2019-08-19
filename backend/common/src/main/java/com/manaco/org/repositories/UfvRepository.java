@@ -12,7 +12,7 @@ import java.util.UUID;
 
 
 //@Service
-public interface UfvRepository extends MongoRepository<Ufv, ObjectId> {
+public interface UfvRepository extends MongoRepository<Ufv, String> {
 
     Ufv findByCreationDate(LocalDate creationDate);
 }

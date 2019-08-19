@@ -41,6 +41,14 @@ public class Operator {
     public BigDecimal calculateUfv(BigDecimal actualUfv, BigDecimal beforeUfv) {
         return actualUfv.divide(beforeUfv, RoundingMode.DOWN);
     }
+
+    public BigDecimal calculateQuantityTotal(BigDecimal quantity, BigDecimal price) {
+        return quantity.multiply(price);
+    }
+
+    public BigDecimal calculateEgressBalance(BigDecimal itemQuantityTotal, BigDecimal quantity) {
+        return itemQuantityTotal.subtract(quantity);
+    }
 }
 
 

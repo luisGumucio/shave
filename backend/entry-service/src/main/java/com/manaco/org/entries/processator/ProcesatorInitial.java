@@ -3,6 +3,7 @@ package com.manaco.org.entries.processator;
 import com.manaco.org.entries.Publisher;
 import com.manaco.org.model.*;
 import com.manaco.org.model.Process;
+import com.manaco.org.repositories.UfvRepository;
 import com.manaco.org.utils.ProcesatorObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -22,6 +23,9 @@ public class ProcesatorInitial implements ProcesatorObject {
     @Autowired
     private Publisher publisher;
 
+    @Autowired
+    private UfvRepository ufvRepository;
+
     @Override
     public void execute(Map<String, String> map, TransactionOption option, Process processActive) {
         Transaction transaction = new Transaction();
@@ -34,17 +38,20 @@ public class ProcesatorInitial implements ProcesatorObject {
         item.setInitialDate(currentDate);
         item.setLastUpdate(item.getInitialDate());
         item.setIdentifier(option);
+        item.setTotal(item.getPrice().multiply(item.getQuantity()));
 
         transaction.setType(TransactionType.INITIAL);
         transaction.setPriceActual(item.getPrice());
         transaction.setPriceNeto(BigDecimal.ZERO);
-        transaction.setQuantity(item.getQuantity());
+        transaction.setBalance(item.getQuantity());
         transaction.setTransactionDate(item.getInitialDate());
-        transaction.setPriceNeto(BigDecimal.ZERO);
-        transaction.setUfvValue(BigDecimal.ZERO);
         transaction.setItem(item);
+        transaction.setTotalNormal(item.getTotal());
+        transaction.setTotalUpdate(item.getTotal());
+        transaction.setIncrement(BigDecimal.ZERO);
         transaction.setProcessId(processActive.getId());
-        transaction.setDetail(buildDetail(map, option));
+        transaction.setUfv(ufvRepository.findByCreationDate(item.getLastUpdate()));
+//        transaction.setDetail(buildDetail(map, option));
         transaction.setIdentifier(option);
         publisher.sentToTransaction(transaction, option);
     }

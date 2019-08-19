@@ -54,6 +54,9 @@ public class FileService {
             case PRIMA:
                 initialExecute(file, procesatorMoving, TransactionOption.PRIMA, processActive);
                 break;
+            case REPUESTOS:
+                initialExecute(file, procesatorMoving, TransactionOption.REPUESTOS, processActive);
+                break;
 
         }
         return null;

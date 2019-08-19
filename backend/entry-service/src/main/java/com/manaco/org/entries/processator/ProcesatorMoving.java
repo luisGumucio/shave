@@ -33,18 +33,19 @@ public class ProcesatorMoving implements ProcesatorObject {
 
         if (map.get("TIPO").equals("E")) {
             transaction.setType(TransactionType.ENTRY);
+            transaction.setPriceActual(item.getPrice());
+            transaction.setPriceNeto(item.getPrice());
         } else if (map.get("TIPO").equals("S")) {
             transaction.setType(TransactionType.EGRESS);
+            transaction.setPriceActual(item.getPrice());
+            transaction.setPriceNeto(BigDecimal.ZERO);
         }
 
         LocalDate currentDate = convertToDate(map.get("FECHA")).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
-        transaction.setPriceActual(item.getPrice());
-        transaction.setPriceNeto(BigDecimal.ZERO);
-        transaction.setQuantity(item.getQuantity());
+//        transaction.setQuantity(item.getQuantity());
         transaction.setTransactionDate(currentDate);
-        transaction.setPriceNeto(BigDecimal.ZERO);
-        transaction.setUfvValue(BigDecimal.ZERO);
+//        transaction.setUfvValue(BigDecimal.ZERO);
         transaction.setItem(item);
         transaction.setProcessId(processActive.getId());
         transaction.setDetail(buildDetail(map, option));
@@ -55,14 +56,23 @@ public class ProcesatorMoving implements ProcesatorObject {
         switch (option) {
             case PRIMA:
                 return buildPrimaDetail(map);
-//            case REPUESTOS:
-//                initialExecute(file, processatorInitial, TransactionOption.REPUESTOS, processActive);
-//                break;
+            case REPUESTOS:
+                return buildRepuestos(map);
 //            case PRODUCTO:
 //                return buildProductDetail(map);
         }
         return null;
     }
+
+    private TransactionDetail buildRepuestos(Map<String, String> map) {
+        TransactionDetail detail = new TransactionDetail();
+        Map<String, String> info = new HashMap<>();
+        info.put("DESCRIPCION", map.get("DESCRIPCION"));
+        detail.setInformation(info);
+        return detail;
+    }
+
+
     private Date convertToDate(String receivedDate) {
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
         Date date = null;
@@ -84,21 +94,4 @@ public class ProcesatorMoving implements ProcesatorObject {
         detail.setInformation(info);
         return detail;
     }
-
-//    private void executeMaterial(XSSFSheet sheet, int process, int numberProcess) {
-//        if (numberProcess == 1) {
-//            List<Transaction> raws = new ArrayList<>();
-//            for (int i = sheet.getFirstRowNum() + 1; i <= sheet.getLastRowNum(); i++) {
-//                raws.add(executeMaterial(sheet.getRow(i), process));
-//            }
-//
-//            Collections.sort(raws);
-//            System.out.println(raws.get(0).getDate());
-//            executeTransaction(raws);
-//        } else if (numberProcess == 2) {
-//            for (int i = sheet.getFirstRowNum() + 1; i <= sheet.getLastRowNum(); i++) {
-//                executeSecondProcess(sheet.getRow(i));
-//            }
-//        }
-//    }
 }

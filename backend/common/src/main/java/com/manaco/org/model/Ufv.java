@@ -15,7 +15,7 @@ import java.util.UUID;
 public class Ufv {
 
     @Id
-    private ObjectId id;
+    private String id;
 
     @Digits(integer = 1, fraction = 5)
     @NotNull
@@ -26,11 +26,11 @@ public class Ufv {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDate creationDate;
 
-    public ObjectId getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(ObjectId id) {
+    public void setId(String id) {
         this.id = id;
     }
 

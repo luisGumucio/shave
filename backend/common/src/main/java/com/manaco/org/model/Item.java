@@ -23,6 +23,7 @@ public class Item {
     private LocalDate initialDate;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDate lastUpdate;
+    private BigDecimal total;
     private Boolean isFailure;
 
     @Indexed(name = "identifier_index", direction = IndexDirection.DESCENDING)
@@ -94,5 +95,13 @@ public class Item {
 
     public void setIdentifier(TransactionOption identifier) {
         this.identifier = identifier;
+    }
+
+    public BigDecimal getTotal() {
+        return total;
+    }
+
+    public void setTotal(BigDecimal total) {
+        this.total = total;
     }
 }
