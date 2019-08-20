@@ -19,8 +19,8 @@ export default {
         text: 'Articulo',
         to: '/ritem'
       }, {
-        text: 'Almacen',
-        to: '/ralmacen'
+        text: 'Transaciones',
+        to: '/rtransactiongeneral'
       }, {
         text: 'Procesos',
         active: true

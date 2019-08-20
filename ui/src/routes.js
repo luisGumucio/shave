@@ -11,6 +11,8 @@ import repuestos from './views/repuestos/repuestos'
 import ritem from './views/repuestos/ritem'
 import rtransaction from './views/repuestos/rtransaction'
 import ralmacen from './views/repuestos/ralmacen'
+import rtransactiongeneral from './views/repuestos/rtransactiongeneral'
+
 //producto terminado
 import producto from './views/producto/productoD'
 import pitem from './views/producto/pitem'
@@ -116,9 +118,9 @@ const routes = [{
       component: rtransaction
     },
     {
-      path: '/ralmacen',
-      name: 'ralmacen',
-      component: ralmacen
+      path: '/rtransactiongeneral',
+      name: 'rtransactiongeneral',
+      component: rtransactiongeneral
     }
   ]
 }];

@@ -27,11 +27,7 @@ import static org.springframework.data.mongodb.core.aggregation.Aggregation.grou
 public class TransactionController {
 
     @Autowired
-    private TransactionService transactionService;
-    @Autowired
     MongoTemplate mongoTemplate;
-
-
     @Autowired
     private TransactionRepository transactionRepository;
 
@@ -41,9 +37,9 @@ public class TransactionController {
 //        return transactionDetail.findByIdentifier(new PageRequest(page, 10), identifier);
 //    }
 
-    @GetMapping
-    public List<TransactionDto> get(@RequestParam(defaultValue = "0") int page, @RequestParam String identifier) {
-        return transactionService.getTransactionDto(page, identifier);
+    @GetMapping(path = "/identifier/{identifier}")
+    public Page<Transaction> get(@RequestParam(defaultValue = "0") int page, @PathVariable String identifier) {
+        return transactionRepository.findByIdentifier(PageRequest.of(page, 10), identifier);
     }
 
     @GetMapping(path = "/{id}")
@@ -51,22 +47,25 @@ public class TransactionController {
         return transactionRepository.findByItemId(PageRequest.of(page, 20), id);
     }
 
-    @GetMapping(path = "/identifier")
-    public Page<Transaction> getType(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "EGRESS") String type,
-                                     @RequestParam(defaultValue = "REPUESTOS") String identifier) {
-        return transactionRepository.findByTypeAndIdentifier(PageRequest.of(page, 20), type, identifier);
-    }
+//    @GetMapping(path = "/identifier")
+//    public Page<Transaction> getType(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "EGRESS") String type,
+//                                     @RequestParam(defaultValue = "REPUESTOS") String identifier) {
+//        return transactionRepository.findByTypeAndIdentifier(PageRequest.of(page, 20), type, identifier);
+//    }
 
-    @PostMapping(path = "/reportTransaction")
+    @PostMapping(path = "/reportTransaction/{id}")
     public Page<Transaction> getType1(@RequestParam(defaultValue = "0") int page,
                                       @RequestBody FilterDate filterDate,
-                                      @RequestParam(defaultValue = "0") String id) {
+                                      @PathVariable String id) {
 
         if (filterDate.getLastDate() == null) {
             return transactionRepository.findByItemIdAndTransactionDate(PageRequest.of(page, 20),
                     id, filterDate.getInitDate());
+        } else {
+//            return transactionRepository.findByItemIdAndTransactionDateBetween(PageRequest.of(page, 20),
+//                    id, filterDate.getInitDate(), filterDate.getLastDate());
+            return transactionRepository.findByTransactionDateBetween(PageRequest.of(page, 10), filterDate.getInitDate(), filterDate.getLastDate());
         }
-        return null;
     }
 
     @GetMapping(path = "/transactionTotal")

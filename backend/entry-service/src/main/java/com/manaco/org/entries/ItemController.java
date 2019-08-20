@@ -4,6 +4,7 @@ import com.manaco.org.entries.reports.TotalItemReport;
 import com.manaco.org.entries.reports.TotalItemSumReport;
 import com.manaco.org.model.Item;
 import com.manaco.org.repositories.ItemRepository;
+import com.manaco.org.repositories.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
