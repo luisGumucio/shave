@@ -11,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -58,6 +60,7 @@ public class FileController {
         try {
             Process processActive = fileService.saveProcess(option, process);
             fileService.readFile(file.getInputStream(), processActive);
+            fileUpload = fileService.saveFile(processActive, file.getOriginalFilename());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -93,6 +96,11 @@ public class FileController {
                 .ok()
                 .headers(headers)
                 .body(new InputStreamResource(in));
+    }
+
+    @GetMapping
+    public Page<FileUpload> get(@RequestParam(defaultValue = "0") int page) {
+        return fileService.getFiles(PageRequest.of(page, 10));
     }
 
 

@@ -77,7 +77,7 @@ export default {
       }
     },
 
-        async getTotal() {
+    async getTotal() {
       try {
         const response = await fetch(
           "http://localhost:4000/transaction/transactionTotal?id=" + this.$route.params.id

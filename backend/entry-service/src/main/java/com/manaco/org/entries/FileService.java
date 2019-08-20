@@ -8,6 +8,7 @@ import com.manaco.org.entries.processator.ProcesatorInitial;
 import com.manaco.org.entries.processator.ProcesatorMoving;
 import com.manaco.org.model.*;
 import com.manaco.org.model.Process;
+import com.manaco.org.repositories.FilesRepository;
 import com.manaco.org.utils.ProcesatorObject;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.openxml4j.opc.OPCPackage;
@@ -15,6 +16,8 @@ import org.apache.poi.util.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +36,9 @@ public class FileService {
 
     @Autowired
     ProcesatorInitial processatorInitial;
+
+    @Autowired
+    FilesRepository filesRepository;
 
     @Autowired
     private ProcesatorMoving procesatorMoving;
@@ -116,5 +122,15 @@ public class FileService {
         return processService.createProcess(process);
     }
 
+    public FileUpload saveFile(Process process, String name) {
+        FileUpload fileUpload = new FileUpload();
+        fileUpload.setName(name);
+        fileUpload.setOption(process.getTransactionOption());
+        return filesRepository.save(fileUpload);
+    }
 
+
+    public Page<FileUpload> getFiles(PageRequest of) {
+        return filesRepository.findAll(of);
+    }
 }
