@@ -33,18 +33,18 @@ public class TransactionSubscriber {
         }
     }
 
-//    @RabbitListener(queues = "${prima.rabbitmq.queue}")
-//    public synchronized void receivedPrima(Transaction transaction) {
-//        switch (transaction.getType()) {
-//            case INITIAL:
-//                service.saveItem(transaction);
-//                break;
-//            default:
-//                service.executeMoving(transaction);
-//                break;
-//        }
-//        LOGGER.info("recibido");
-//    }
+    @RabbitListener(queues = "${prima.rabbitmq.queue}")
+    public synchronized void receivedPrima(Transaction transaction) {
+        switch (transaction.getType()) {
+            case INITIAL:
+                service.saveItem(transaction);
+                break;
+            default:
+                service.executeMoving(transaction);
+                break;
+        }
+        LOGGER.info("recibido");
+    }
 //
 //    @RabbitListener(queues = "${producto.rabbitmq.queue}")
 //    public synchronized void receivedProducto(Transaction transaction) {

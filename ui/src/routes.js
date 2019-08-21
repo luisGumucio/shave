@@ -6,6 +6,7 @@ import widgets from './views/widgets'
 
 // UI Components
 import upload from './views/upload'
+import ufv from './views/ufv/ufv'
 // repuestos
 import repuestos from './views/repuestos/repuestos'
 import ritem from './views/repuestos/ritem'
@@ -34,8 +35,13 @@ import login from './views/sample-pages/login'
 import register from './views/sample-pages/register'
 const routes = [{
   path: '/',
-  name: 'dashboard',
-  component: dashboard
+  name: 'ufv',
+  component: ufv
+},
+{
+  path: '/ufv',
+  name: 'ufv',
+  component: ufv
 },
 {
   path: '/prima',

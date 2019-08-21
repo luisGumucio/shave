@@ -5,12 +5,30 @@
       <div class="col-md-8 grid-margin stretch-card">
         <div class="card">
           <div class="card-body">
-            <h4 class="card-title">Archivos subidos</h4>
+            <h4 class="card-title">Ufv</h4>
+            <form @submit.prevent="handleSubmit">
+              <label class="control-label" for="date">Buscar</label>
+              <input
+                class="form-control"
+                id="date"
+                name="date"
+                placeholder="MM/DD/YYY"
+                type="date"
+                :class="{ 'has-error': submitting && invalidInitDate}"
+                v-model="filterDate.initDate"
+                @focus="clearStatus"
+                @keypress="clearStatus"
+              />
+              <p v-if="error && submitting" class="error-message">❗Por favor llene las fechas</p>
+              <!-- <p v-if="success" class="success-message">✅ Employee successfully added</p> -->
+              <button class="btn btn-success">
+                <i class="mdi mdi-magnify"></i> Buscar
+              </button>
+            </form>
             <b-table responsive striped hover :items="items" :fields="fields"></b-table>
           </div>
         </div>
       </div>
-
       <div class="col-md-4 grid-margin stretch-card">
         <div class="card">
           <div class="card-body">
@@ -24,21 +42,16 @@
                   placeholder="buscar un archivo..."
                 ></b-form-file>
               </b-form-group>
-              <b-form-group label="Default Input" label-for="input11">
-                <b-form-select v-model="selected" :options="options" />
-              </b-form-group>
-              <b-form-group label="Tipo" label-for="input11">
-                <b-form-radio-group id="radios2" v-model="picked" name="radioSubComponent">
-                  <b-form-radio value="inicial" v-model="picked">Saldo Inicial</b-form-radio>
-                  <b-form-radio value="move" v-model="picked">Movimiento</b-form-radio>
-                </b-form-radio-group>
-              </b-form-group>
-              <b-form-group label="Processo" label-for="input12">
-                <b-form-radio-group id="radios3" v-model="process" name="radioSubComponent1">
-                  <b-form-radio value="1" v-model="process">1</b-form-radio>
-                  <b-form-radio value="2" v-model="process">2</b-form-radio>
-                </b-form-radio-group>
-              </b-form-group>
+              <label class="control-label" for="date">Año</label>
+              <input
+                class="form-control"
+                id="year"
+                name="year"
+                placeholder="2018"
+                type="text"
+                :class="{ 'has-error': submitting && invalidYear}"
+                v-model="year"
+              />
               <b-button type="submit" variant="success" class="mr-2">Cargar</b-button>
               <b-button variant="light" v-on:click="clear()">Cancelar</b-button>
             </form>
@@ -59,29 +72,27 @@ export default {
   },
   data() {
     return {
-      baseUrl: "http://localhost:4000/files",
+      baseUrl: "http://localhost:4000/",
       file: null,
-      picked: null,
-      selected: "",
-      process: null,
-      options: [
-        { value: null, text: "Seleccione una opcion" },
-        { value: "REPUESTOS", text: "Repuestos" },
-        { value: "PRIMA", text: "Materia Prima" },
-        { value: "PRODUCTO", text: "Producto Terminado" }
-      ],
-      fileData: null,
+      submitting: false,
+      error: false,
+      success: false,
+      filterDate: {
+        initDate: "",
+        lastDate: ""
+      },
+      year: "",
       fields: [
         {
           key: "id",
           label: "ID"
         },
         {
-          key: "name",
-          label: "Archivo"
+          key: "value",
+          label: "Valor"
         },
         {
-          key: "creationTime",
+          key: "creationDate",
           label: "Fecha Subida"
         }
       ],
@@ -92,20 +103,9 @@ export default {
     this.getItems();
   },
   methods: {
-    loadData() {
-      let formData = new FormData();
-      formData.append("file", this.file);
-      formData.append("process", this.process);
-      if (this.picked === "inicial") {
-        formData.append("option", "SALDO_INITIAL_" + this.selected);
-      } else {
-        formData.append("option", this.process);
-      }
-      this.fileData = formData;
-    },
     async getItems() {
       try {
-        const response = await fetch(this.baseUrl);
+        const response = await fetch(this.baseUrl + "ufvs");
         const data = await response.json();
         this.items = data["content"];
       } catch (error) {
@@ -115,12 +115,7 @@ export default {
     async submitFile() {
       let formData = new FormData();
       formData.append("file", this.file);
-      formData.append("process", this.process);
-      if (this.picked === "inicial") {
-        formData.append("option", "SALDO_INITIAL_" + this.selected);
-      } else {
-        formData.append("option", this.process);
-      }
+      formData.append("year", this.year);
       this.$refs.Spinner.show();
       setTimeout(
         function() {
@@ -128,23 +123,48 @@ export default {
         }.bind(this),
         10000
       );
-      const response = await fetch(this.baseUrl, {
+      const response = await fetch(this.baseUrl + "files/ufv", {
         method: "POST",
         body: formData
       });
-
       const data = await response.json();
       this.clear();
       this.$refs.Spinner.hide();
-      this.items.push(data);
+      this.getItems();
     },
     handleFileUpload() {
       this.file = this.$refs.file.files[0];
     },
-    clear() {
-      this.process = null;
-      this.selected = null;
-      this.picked = null;
+    async handleSubmit() {
+      this.submitting = true;
+      this.clearStatus();
+      if (this.invalidInitDate) {
+        this.error = true;
+        return;
+      }
+
+      const response = await fetch(
+        this.baseUrl + "ufvs/fecha/" + this.filterDate.initDate
+      );
+      const data = await response.json();
+      this.items = [];
+      this.items.push(data);
+
+      this.error = false;
+      this.success = true;
+      this.submitting = false;
+    },
+    clearStatus() {
+      this.success = false;
+      this.error = false;
+    }
+  },
+  computed: {
+    invalidInitDate() {
+      return this.filterDate.initDate === "";
+    },
+    invalidYear() {
+      return this.year === "";
     }
   }
 };

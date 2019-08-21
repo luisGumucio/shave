@@ -68,14 +68,15 @@ public class FileController {
     }
 
     @PostMapping(path = "/ufv")
-    public void uploadUfv(@RequestParam("file") MultipartFile file) {
+    public void uploadUfv(@RequestParam("file") MultipartFile file, @RequestParam String year) {
         if (file == null) {
             throw new MultipartException("You must select the a file for uploading");
         }
 
         try {
+//            fileService.ufvUpload(file.getInputStream());
             XSSFWorkbook workbook = new XSSFWorkbook(file.getInputStream());
-            executeUfv(workbook.getSheetAt(0));
+            executeUfv(workbook.getSheetAt(0), year);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -104,7 +105,7 @@ public class FileController {
     }
 
 
-    private void executeUfv(XSSFSheet sheet) {
+    private void executeUfv(XSSFSheet sheet, String year) {
         int day = 0;
         for (int i = sheet.getFirstRowNum() + 1; i <= sheet.getLastRowNum(); i++) {
             Row row = sheet.getRow(i);
@@ -116,51 +117,51 @@ public class FileController {
                             day = (int) cell.getNumericCellValue();
                             break;
                         case 1:
-                            saveUfv(day, new BigDecimal(cell.getStringCellValue().replace(",", ".")), 1);
+                            saveUfv(day, new BigDecimal(cell.getStringCellValue().replace(",", ".")), 1, year);
                             break;
                         case 2:
                             if (!cell.getStringCellValue().equals("")) {
-                                saveUfv(day, new BigDecimal(cell.getStringCellValue().replace(",", ".")), 2);
+                                saveUfv(day, new BigDecimal(cell.getStringCellValue().replace(",", ".")), 2, year);
                             }
                             break;
                         case 3:
-                            saveUfv(day, new BigDecimal(cell.getStringCellValue().replace(",", ".")), 3);
+                            saveUfv(day, new BigDecimal(cell.getStringCellValue().replace(",", ".")), 3, year);
                             break;
                         case 4:
                             if (!cell.getStringCellValue().equals("")) {
-                                saveUfv(day, new BigDecimal(cell.getStringCellValue().replace(",", ".")), 4);
+                                saveUfv(day, new BigDecimal(cell.getStringCellValue().replace(",", ".")), 4, year);
                             }
                             break;
                         case 5:
-                            saveUfv(day, new BigDecimal(cell.getStringCellValue().replace(",", ".")), 5);
+                            saveUfv(day, new BigDecimal(cell.getStringCellValue().replace(",", ".")), 5, year);
                             break;
                         case 6:
                             if (!cell.getStringCellValue().equals("")) {
-                                saveUfv(day, new BigDecimal(cell.getStringCellValue().replace(",", ".")), 6);
+                                saveUfv(day, new BigDecimal(cell.getStringCellValue().replace(",", ".")), 6, year);
                             }
                             break;
                         case 7:
-                            saveUfv(day, new BigDecimal(cell.getStringCellValue().replace(",", ".")), 7);
+                            saveUfv(day, new BigDecimal(cell.getStringCellValue().replace(",", ".")), 7, year);
                             break;
                         case 8:
-                            saveUfv(day, new BigDecimal(cell.getStringCellValue().replace(",", ".")), 8);
+                            saveUfv(day, new BigDecimal(cell.getStringCellValue().replace(",", ".")), 8, year);
                             break;
                         case 9:
                             if (!cell.getStringCellValue().equals("")) {
-                                saveUfv(day, new BigDecimal(cell.getStringCellValue().replace(",", ".")), 9);
+                                saveUfv(day, new BigDecimal(cell.getStringCellValue().replace(",", ".")), 9, year);
                             }
                             break;
                         case 10:
-                            saveUfv(day, new BigDecimal(cell.getStringCellValue().replace(",", ".")), 10);
+                            saveUfv(day, new BigDecimal(cell.getStringCellValue().replace(",", ".")), 10, year);
                             break;
                         case 11:
                             if (!cell.getStringCellValue().equals("")) {
-                                saveUfv(day, new BigDecimal(cell.getStringCellValue().replace(",", ".")), 11);
+                                saveUfv(day, new BigDecimal(cell.getStringCellValue().replace(",", ".")), 11, year);
                             }
                             ;
                             break;
                         case 12:
-                            saveUfv(day, new BigDecimal(cell.getStringCellValue().replace(",", ".")), 12);
+                            saveUfv(day, new BigDecimal(cell.getStringCellValue().replace(",", ".")), 12, year);
                             break;
                     }
 
@@ -171,12 +172,13 @@ public class FileController {
         }
     }
 
-    private void saveUfv(int day, BigDecimal numericCellValue, int month) {
-        LocalDate date = LocalDate.of(2018, month, day);
+    private void saveUfv(int day, BigDecimal numericCellValue, int month, String year) {
+        int years = Integer.parseInt(year);
+        LocalDate date = LocalDate.of(years, month, day);
         Ufv ufv = ufvRepository.findByCreationDate(date);
         if (ufv == null) {
             ufv = new Ufv();
-            ufv.setCreationDate(LocalDate.of(2018, month, day));
+            ufv.setCreationDate(LocalDate.of(years, month, day));
             ufv.setValue(numericCellValue);
             ufvRepository.save(ufv);
         }

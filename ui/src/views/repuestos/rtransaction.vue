@@ -7,13 +7,9 @@
     </div>
     <div class="row">
       <div class="col-12 grid-margin">
-        <div class="card">
-          <div class="card-body">
             <div class="table-responsive">
               <transaction-table :items="items" />
             </div>
-          </div>
-        </div>
       </div>
     </div>
   </section>
@@ -23,7 +19,6 @@
 import TransactionTable from "./detail/transactionTable.vue";
 import TransactionFilter from "./detail/TransactionFilter.vue";
 import TransactionDetail from "./detail/TransactionDetail.vue";
-import { async } from "q";
 
 export default {
   components: {
@@ -58,12 +53,13 @@ export default {
       }
     },
     async addFilter(filterDate) {
-      console.log(filterDate.initDate);
-      console.log(filterDate.lastDate);
-
+      if(filterDate.lastDate != null) {
+        filterDate.initDate.setDate(filterDate.initDate.getDate() - 1);
+        filterDate.lastDate.setDate(filterDate.lastDate.getDate() + 1);
+      }
       try {
         const response = await fetch(
-          this.baseUrl + "/reportTransaction?id=" + this.$route.params.id,
+          this.baseUrl + "/reportTransaction/" + this.$route.params.id,
           {
             method: "POST",
             body: JSON.stringify(filterDate),
