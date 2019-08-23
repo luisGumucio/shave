@@ -1,7 +1,7 @@
 <template>
   <div id="item-table">
     <p v-if="items.length < 1" class="empty-table">No items</p>
-    <table class="table" v-else id="my-table"> 
+    <table class="table" v-else id="my-table">
       <thead class="thead-dark">
         <tr>
           <th scope="col">ID</th>
@@ -20,18 +20,13 @@
           <td>{{ item.price | currency }}</td>
           <td>{{ item.lastUpdate }}</td>
           <td>{{ item.quantity * item.price | currency }}</td>
-          <!-- <td>{{ item.id | getAlmancen }}</td> -->
           <td>
-            <p data-placement="top" data-toggle="tooltip" title="Transaction">
-              <button
-                class="btn btn-primary btn-xs"
-                data-title="Transaction"
-                data-toggle="modal"
-                data-target="#edit"
-              >
-                <span class="mdi mdi-file-chart"></span>
-              </button>
-            </p>
+            <router-link
+              :to="{name: 'mtransaction', params: {id: item.id}}"
+              class="btn btn-primary btn-xs"
+            >
+              <span class="mdi mdi-file-chart"></span>
+            </router-link>
           </td>
         </tr>
       </tbody>
@@ -44,7 +39,7 @@ export default {
   name: "item-table",
   props: {
     items: Array,
-    currentPage: 0 
+    currentPage: 0
   },
   filters: {
     currency(amount) {
@@ -53,12 +48,12 @@ export default {
         (amt && amt.toLocaleString(undefined, { maximumFractionDigits: 3 })) ||
         "0"
       );
-    },
+    }
   },
   computed: {
     getAlmancen: function(id) {
-    //   return this.messages.map(m => this.decode(m, this.trigger)); 
-    return "pepe";
+      //   return this.messages.map(m => this.decode(m, this.trigger));
+      return "pepe";
     }
   }
 };

@@ -45,9 +45,9 @@ public class FileService {
 
 
     @Async("threadPoolTaskExecutor")
-    public CompletableFuture<Void> readFile(InputStream file, Process processActive) {
-
-        switch (processActive.getTransactionOption()) {
+    public CompletableFuture<Void> readFile(InputStream file, Process processActive, String option) {
+        TransactionOption transactionOption = TransactionOption.valueOf(option);
+        switch (transactionOption) {
             case SALDO_INITIAL_PRIMA:
                 initialExecute(file, processatorInitial, TransactionOption.PRIMA, processActive);
                 break;
@@ -116,16 +116,24 @@ public class FileService {
     }
 
     public Process saveProcess(String option, String number) {
-        Process process = new Process();
-        process.setNumberProcess(Integer.valueOf(number));
-        process.setTransactionOption(TransactionOption.valueOf(option));
+        Process process = processService.findByNumberProcessAndIsActive(Integer.valueOf(number), true);
+        TransactionOption transactionOption = TransactionOption.valueOf(option);
+        if (process != null) {
+            process.addTransaction(transactionOption);
+        } else {
+            process = new Process();
+            process.setNumberProcess(Integer.valueOf(number));
+            process.addTransaction(transactionOption);
+        }
+
         return processService.createProcess(process);
     }
 
-    public FileUpload saveFile(Process process, String name) {
+    public FileUpload saveFile(String option, String name) {
         FileUpload fileUpload = new FileUpload();
+        TransactionOption transactionOption = TransactionOption.valueOf(option);
         fileUpload.setName(name);
-        fileUpload.setOption(process.getTransactionOption());
+        fileUpload.setOption(transactionOption);
         return filesRepository.save(fileUpload);
     }
 

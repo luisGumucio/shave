@@ -27,10 +27,6 @@ export default {
         {
           text: "Procesos",
           active: true
-        },
-        {
-          text: "Transaction",
-          to: "/mtransaction"
         }
       ]
     };

@@ -28,24 +28,24 @@ public class Process {
 
     private LocalDate processTime;
 
-    private TransactionOption transactionOption;
 
     private int numberProcess;
 
-    @DBRef
-    private List<Transaction> transactionList;
+    private List<TransactionOption> transactionOptions;
 
     private boolean isActive;
 
     public Process() {
+        processTime = LocalDate.now();
+        isActive = true;
+        transactionOptions = new ArrayList<>();
     }
 
-    public Process(int numberProcess, TransactionOption transactionOption) {
-        this.transactionOption = transactionOption;
+    public Process(int numberProcess) {
         this.numberProcess = numberProcess;
         processTime = LocalDate.now();
         isActive = true;
-        transactionList = new ArrayList<>();
+        transactionOptions = new ArrayList<>();
     }
 
     public String getId() {
@@ -64,21 +64,12 @@ public class Process {
         this.processTime = processTime;
     }
 
-    public TransactionOption getTransactionOption() {
-        return transactionOption;
+    public List<TransactionOption> getTransactionOptions() {
+        return transactionOptions;
     }
 
-    public void setTransactionOption(TransactionOption transactionOption) {
-        this.transactionOption = transactionOption;
-    }
-
-    @JsonIgnore
-    public List<Transaction> getTransactionList() {
-        return transactionList;
-    }
-
-    public void setTransactionList(List<Transaction> transactionList) {
-        this.transactionList = transactionList;
+    public void setTransactionOptions(List<TransactionOption> transactionOptions) {
+        this.transactionOptions = transactionOptions;
     }
 
     public boolean isActive() {
@@ -95,5 +86,9 @@ public class Process {
 
     public void setNumberProcess(int numberProcess) {
         this.numberProcess = numberProcess;
+    }
+
+    public void addTransaction(TransactionOption option) {
+        transactionOptions.add(option);
     }
 }

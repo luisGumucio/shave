@@ -17,13 +17,11 @@ public class ProcessService {
     }
 
     public Process createProcess(Process process) {
-//        Process current = processRepository.findByNumberAndActiveIn(process.getNumber(), process.getActive());
-//        if (current == null) {
-//            return  processRepository.save(process);
-//        }
-//        throw new ProcessIlegalException("failed to create");
-
         return processRepository.save(process);
+    }
+
+    public Process findByNumberProcessAndIsActive(Integer number, boolean active) {
+        return processRepository.findByNumberProcessAndIsActive(number, active);
     }
 }
 

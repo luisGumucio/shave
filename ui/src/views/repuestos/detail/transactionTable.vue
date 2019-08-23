@@ -4,20 +4,20 @@
     <table class="table" v-else id="my-table">
       <thead class="thead-dark">
         <tr>
-              <th scope="col">Tipo</th>
-              <th scope="col">Fecha</th>
-              <th scope="col">Ingreso</th>
-              <th scope="col">Egreso</th>
-              <th scope="col">Cantidad</th>
-              <th scope="col">Precio Neto</th>
-              <th scope="col">Precio Actual</th>
-              <th scope="col">Ufv</th>
-              <th scope="col">Ingreso total</th>
-              <th scope="col">Egreso total</th>
-              <th scope="col">Total</th>
-              <th scope="col">Total actualizado</th>
-              <th scope="col">Incremento</th>
-              <th scope="col">Accion</th>
+          <th scope="col">Tipo</th>
+          <th scope="col">Fecha</th>
+          <th scope="col">Ingreso</th>
+          <th scope="col">Egreso</th>
+          <th scope="col">Cantidad</th>
+          <th scope="col">Precio Neto</th>
+          <th scope="col">Precio Actual</th>
+          <th scope="col">Ufv</th>
+          <th scope="col">Ingreso total</th>
+          <th scope="col">Egreso total</th>
+          <th scope="col">Total</th>
+          <th scope="col">Total actualizado</th>
+          <th scope="col">Incremento</th>
+          <th scope="col">Accion</th>
         </tr>
       </thead>
       <tbody>
@@ -36,10 +36,9 @@
           <td>{{ item.totalUpdate | currency }}</td>
           <td>{{ item.increment | currency }}</td>
           <td>
-              <!-- <router-link class="btn btn-primary btn-xs" :to="{name: 'rtransaction', params: {id: item.id}} > -->
-              <router-link :to="{name: 'rtransaction', params: {id: item.id}}" class="btn btn-primary btn-xs">
-                <span class="mdi mdi-file-chart"></span>
-              </router-link>
+            <button class="btn btn-primary btn-xs" @click="$emit('detail:item', item.detail)">
+              <span class="mdi mdi-file-chart"></span>
+            </button>
           </td>
         </tr>
       </tbody>
@@ -63,17 +62,17 @@ export default {
       );
     },
     type(name) {
-      if(name === "INITIAL") {
+      if (name === "INITIAL") {
         return "init";
       }
-      if(name == "EGRESS") {
-          return "egre";
+      if (name == "EGRESS") {
+        return "egre";
       }
-      if(name == "UPDATE") {
-          return "act";
+      if (name == "UPDATE") {
+        return "act";
       }
-      if(name== "ENTRY") {
-          return  "ingr";
+      if (name == "ENTRY") {
+        return "ingr";
       }
     }
   }

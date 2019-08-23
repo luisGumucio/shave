@@ -1,128 +1,166 @@
 <template>
-  <div class="col-md-14 grid-margin stretch-card">
-    <div class="card">
-      <div class="card-body">
-        <table class="table">
-          <thead class="thead-dark">
-            <tr>
-              <th scope="col">Tipo</th>
-              <th scope="col">Fecha</th>
-              <th scope="col">Ingreso</th>
-              <th scope="col">Egreso</th>
-              <th scope="col">Cantidad</th>
-              <th scope="col">Precio Neto</th>
-              <th scope="col">Precio Actual</th>
-              <th scope="col">Ufv</th>
-              <th scope="col">Ingreso total</th>
-              <th scope="col">Egreso total</th>
-              <th scope="col">Total</th>
-              <th scope="col">Total actualizado</th>
-              <th scope="col">Incremento</th>
-              <th scope="col">Accion</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <th scope="row">Act</th>
-              <td>01/04/2018</td>
-              <td>0.00</td>
-              <td>0.00</td>
-              <td>14,484.00</td>
-              <td>0.00</td>
-              <td>3.53</td>
-              <td>2.23758</td>
-              <td>0.00</td>
-              <td>0.00</td>
-              <td>50,465.79</td>
-              <td>51,174.86</td>
-              <td>14.64</td>
-              <td>
-                <p data-placement="top" data-toggle="tooltip" title="Informacion">
-                  <router-link class="btn btn-primary btn-xs" to="/rtransaction/">
-                    <span class="mdi mdi-file-chart"></span>
-                  </router-link>
-                </p>
-              </td>
-            </tr>
-                        <tr>
-              <th scope="row">Ing</th>
-              <td>01/04/2018</td>
-              <td>12</td>
-              <td>0.00</td>
-              <td>15,484.00</td>
-              <td>4.00</td>
-              <td>3.53</td>
-              <td>2.23758</td>
-              <td>20,465.79</td>
-              <td>0.00</td>
-              <td>60,465.79</td>
-              <td>61,174.86</td>
-              <td>1.64</td>
-              <td>
-                <p data-placement="top" data-toggle="tooltip" title="Informacion">
-                  <router-link class="btn btn-primary btn-xs" to="/rtransaction/">
-                    <span class="mdi mdi-file-chart"></span>
-                  </router-link>
-                </p>
-              </td>
-            </tr>
-                        <tr>
-              <th scope="row">Act</th>
-              <td>01/05/2018</td>
-              <td>0.00</td>
-              <td>0.00</td>
-              <td>14,484.00</td>
-              <td>0.00</td>
-              <td>3.53</td>
-              <td>2.23758</td>
-              <td>0.00</td>
-              <td>0.00</td>
-              <td>50,465.79</td>
-              <td>51,174.86</td>
-              <td>14.64</td>
-              <td>
-                <p data-placement="top" data-toggle="tooltip" title="Informacion">
-                  <router-link class="btn btn-primary btn-xs" to="/rtransaction/">
-                    <span class="mdi mdi-file-chart"></span>
-                  </router-link>
-                </p>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <nav aria-label="Page navigation example">
-          <ul class="pagination">
-            <li class="page-item">
-              <a class="page-link" href="#" aria-label="Previous">
-                <span aria-hidden="true">&laquo;</span>
-              </a>
-            </li>
-            <li class="page-item">
-              <a class="page-link" href="#">1</a>
-            </li>
-            <li class="page-item">
-              <a class="page-link" href="#">2</a>
-            </li>
-            <li class="page-item">
-              <a class="page-link" href="#">3</a>
-            </li>
-            <li class="page-item">
-              <a class="page-link" href="#" aria-label="Next">
-                <span aria-hidden="true">&raquo;</span>
-              </a>
-            </li>
-          </ul>
-        </nav>
+  <section class="dashboard">
+    <h4 class="card-title">Detalle del articulo: {{ $route.params.id }}</h4>
+    <div class="row">
+      <transaction-filter @add:filterDate="addFilter" />
+      <transaction-detail :item="item" :increment="increment" />
+    </div>
+    <div class="row">
+      <div class="col-12 grid-margin">
+        <div class="table-responsive">
+          <transaction-table :items="items" @detail:item="detail" />
+        </div>
       </div>
     </div>
-  </div>
+
+  </section>
 </template>
 
 <script>
+import TransactionTable from "../repuestos/detail/transactionTable.vue";
+import TransactionFilter from "../repuestos/detail/TransactionFilter.vue";
+import TransactionDetail from "../repuestos/detail/TransactionDetail.vue";
+
 export default {
-    
-}
+  components: {
+    TransactionTable,
+    TransactionFilter,
+    TransactionDetail
+  },
+  data() {
+    return {
+      items: [],
+      item: {},
+      increment: undefined,
+      baseUrl: "http://localhost:4000/transaction",
+      showModal: false
+    };
+  },
+  mounted() {
+    this.getItems();
+    this.getTotal();
+  },
+  methods: {
+    async getItems() {
+      try {
+        const response = await fetch(
+          this.baseUrl + "/" + this.$route.params.id
+        );
+        const data = await response.json();
+        this.items = data["content"];
+        this.item = this.items[0].item;
+        console.log(this.item);
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    async addFilter(filterDate) {
+      if (filterDate.lastDate != null) {
+        filterDate.initDate.setDate(filterDate.initDate.getDate() - 1);
+        filterDate.lastDate.setDate(filterDate.lastDate.getDate() + 1);
+      }
+      try {
+        const response = await fetch(
+          this.baseUrl + "/reportTransaction/" + this.$route.params.id,
+          {
+            method: "POST",
+            body: JSON.stringify(filterDate),
+            headers: { "Content-type": "application/json; charset=UTF-8" }
+          }
+        );
+        const data = await response.json();
+        this.items = data["content"];
+      } catch (error) {
+        console.error(error);
+      }
+    },
+
+    async getTotal() {
+      try {
+        const response = await fetch(
+          "http://localhost:4000/transaction/transactionTotal?id=" +
+            this.$route.params.id
+        );
+
+        const data = await response.json();
+        this.increment = data[0].total;
+      } catch (error) {
+        console.error(error);
+      }
+    },
+
+    detail(detail) {
+      // console.log(detail.information.ALMACEN);
+      alert("Almacen: " + detail.information.ALMACEN 
+      + " Cuenta: " + detail.information.CUENTA);
+    }
+  }
+};
 </script>
 
-<style scoped lang="scss">
+<style>
+
+.modal-mask {
+  position: fixed;
+  z-index: 9998;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, .5);
+  display: table;
+  transition: opacity .3s ease;
+}
+
+.modal-wrapper {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.modal-container {
+  width: 300px;
+  margin: 0px auto;
+  padding: 20px 30px;
+  background-color: #fff;
+  border-radius: 2px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
+  transition: all .3s ease;
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+.modal-header h3 {
+  margin-top: 0;
+  color: #42b983;
+}
+
+.modal-body {
+  margin: 20px 0;
+}
+
+.modal-default-button {
+  float: right;
+}
+
+/*
+ * The following styles are auto-applied to elements with
+ * transition="modal" when their visibility is toggled
+ * by Vue.js.
+ *
+ * You can easily play with the modal transition by editing
+ * these styles.
+ */
+
+.modal-enter {
+  opacity: 0;
+}
+
+.modal-leave-active {
+  opacity: 0;
+}
+
+.modal-enter .modal-container,
+.modal-leave-active .modal-container {
+  -webkit-transform: scale(1.1);
+  transform: scale(1.1);
+}
 </style>

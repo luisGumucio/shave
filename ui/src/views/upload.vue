@@ -24,7 +24,7 @@
                   placeholder="buscar un archivo..."
                 ></b-form-file>
               </b-form-group>
-              <b-form-group label="Default Input" label-for="input11">
+              <b-form-group label="tipo de transaccion" label-for="input11">
                 <b-form-select v-model="selected" :options="options" />
               </b-form-group>
               <b-form-group label="Tipo" label-for="input11">
@@ -99,7 +99,7 @@ export default {
       if (this.picked === "inicial") {
         formData.append("option", "SALDO_INITIAL_" + this.selected);
       } else {
-        formData.append("option", this.process);
+        formData.append("option", this.selected);
       }
       this.fileData = formData;
     },
@@ -119,7 +119,7 @@ export default {
       if (this.picked === "inicial") {
         formData.append("option", "SALDO_INITIAL_" + this.selected);
       } else {
-        formData.append("option", this.process);
+        formData.append("option", this.selected);
       }
       this.$refs.Spinner.show();
       setTimeout(
@@ -145,6 +145,7 @@ export default {
       this.process = null;
       this.selected = null;
       this.picked = null;
+      this.file = null;
     }
   }
 };

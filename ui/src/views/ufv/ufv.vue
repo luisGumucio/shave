@@ -121,14 +121,14 @@ export default {
         function() {
           this.$refs.Spinner.hide();
         }.bind(this),
-        10000
+        90000
       );
       const response = await fetch(this.baseUrl + "files/ufv", {
         method: "POST",
         body: formData
       });
-      const data = await response.json();
-      this.clear();
+      await response;
+      this.clearStatus();
       this.$refs.Spinner.hide();
       this.getItems();
     },
@@ -157,6 +157,8 @@ export default {
     clearStatus() {
       this.success = false;
       this.error = false;
+      this.file = null;
+      this.year = null;
     }
   },
   computed: {

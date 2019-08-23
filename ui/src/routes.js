@@ -13,6 +13,7 @@ import ritem from './views/repuestos/ritem'
 import rtransaction from './views/repuestos/rtransaction'
 import ralmacen from './views/repuestos/ralmacen'
 import rtransactiongeneral from './views/repuestos/rtransactiongeneral'
+import rprocess from './views/repuestos/rprocess'
 
 //producto terminado
 import producto from './views/producto/productoD'
@@ -49,7 +50,7 @@ const routes = [{
   component: prima,
   children: [
     {
-      path: '/mtransaction',
+      path: '/mtransaction/:id',
       name: 'mtransaction',
       component: mtransaction
     },
@@ -127,6 +128,11 @@ const routes = [{
       path: '/rtransactiongeneral',
       name: 'rtransactiongeneral',
       component: rtransactiongeneral
+    },
+    {
+      path: '/rprocess',
+      name: 'rprocess',
+      component: rprocess
     }
   ]
 }];

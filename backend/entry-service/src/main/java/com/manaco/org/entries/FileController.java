@@ -59,8 +59,8 @@ public class FileController {
         }
         try {
             Process processActive = fileService.saveProcess(option, process);
-            fileService.readFile(file.getInputStream(), processActive);
-            fileUpload = fileService.saveFile(processActive, file.getOriginalFilename());
+            fileService.readFile(file.getInputStream(), processActive, option);
+            fileUpload = fileService.saveFile(option, file.getOriginalFilename());
         } catch (IOException e) {
             e.printStackTrace();
         }

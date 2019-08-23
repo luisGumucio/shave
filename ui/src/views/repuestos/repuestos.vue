@@ -21,8 +21,14 @@ export default {
       }, {
         text: 'Transaciones',
         to: '/rtransactiongeneral'
-      }, {
-        text: 'Procesos',
+      },
+      {
+        text: "Procesos",
+        // to: "/rprocess"
+        
+      },
+      {
+        text: "",
         active: true
       }]
     }
