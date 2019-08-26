@@ -15,7 +15,7 @@
             </div>
           </div>
           <br />
-          <b-button variant="success" @click="download()">
+          <b-button variant="success spce" @click="download()">
             <i class="mdi mdi-cloud-download"></i>Exportar
           </b-button>
           <br />
@@ -50,21 +50,22 @@
                 </tr>
               </tbody>
             </table>
-            <b-button variant="success" @click="update()">
-              <i class="mdi mdi-file"></i>Actualizar Articulos
-            </b-button>
           </div>
         </div>
+        <br/>
+        <item-update />
       </div>
     </div>
   </div>
 </template>
 <script>
 import ItemTable from "./detail/itemTable.vue";
+import ItemUpdate from "./detail/itemUpdate.vue";
 
 export default {
   components: {
-    ItemTable
+    ItemTable,
+    ItemUpdate
   },
   data() {
     return {
@@ -154,5 +155,8 @@ export default {
 </script>
 
 <style scoped>
+.spce {
+  margin-bottom: 5px;
+}
 </style>
 

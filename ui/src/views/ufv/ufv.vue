@@ -27,7 +27,7 @@
             <br />
             <b-alert v-model="showDismissibleAlert" variant="danger" dismissible>Ufv no encontrado</b-alert>
             <b-table responsive striped hover :items="items" :fields="fields"></b-table>
-            <div class="clearfix btn-group col-md-2 offset-md-5">
+            <!-- <div class="clearfix btn-group col-md-2 offset-md-5">
               <button
                 type="button"
                 class="btn btn-sm btn-outline-secondary"
@@ -46,7 +46,8 @@
                 v-if="page < pages.length"
                 class="btn btn-sm btn-outline-secondary"
               >>></button>
-            </div>
+            </div>-->
+            <item-pagination :pagiItem ="pagiItem" />
           </div>
         </div>
       </div>
@@ -94,11 +95,13 @@
 <script>
 import VueInstantLoadingSpinner from "vue-instant-loading-spinner/src/components/VueInstantLoadingSpinner.vue";
 import { setTimeout } from "timers";
+import ItemPagination from "../utils/pagination.vue";
 
 export default {
   name: "upload",
   components: {
-    VueInstantLoadingSpinner
+    VueInstantLoadingSpinner,
+    ItemPagination
   },
   data() {
     return {
@@ -127,10 +130,12 @@ export default {
       showDismissibleAlert: false,
       showDismissibleAlertUfv: false,
       errorUpload: false,
-      page: 1,
-      perPage: 10,
-      pages: [],
-      totalPages: 0
+      pagiItem: {
+        page: 1,
+        perPage: 10,
+        pages: [],
+        totalPages: 0
+      }
     };
   },
   mounted() {
@@ -152,7 +157,7 @@ export default {
         const response = await fetch(this.baseUrl + "ufvs?page=" + page);
         const data = await response.json();
         this.items = data["content"];
-        this.totalPages = data["totalPages"];
+        this.pagiItem.totalPages = data["totalPages"];
       } catch (error) {
         console.error(error);
       }
