@@ -15,17 +15,38 @@
                 placeholder="MM/DD/YYY"
                 type="date"
                 :class="{ 'has-error': submitting && invalidInitDate}"
-                v-model="filterDate.initDate"
+                v-model="initDate"
                 @focus="clearStatus"
                 @keypress="clearStatus"
               />
               <p v-if="error && submitting" class="error-message">❗Por favor llene las fechas</p>
-              <!-- <p v-if="success" class="success-message">✅ Employee successfully added</p> -->
-              <button class="btn btn-success">
+              <button class="btn btn-success spce">
                 <i class="mdi mdi-magnify"></i> Buscar
               </button>
             </form>
+            <br />
+            <b-alert v-model="showDismissibleAlert" variant="danger" dismissible>Ufv no encontrado</b-alert>
             <b-table responsive striped hover :items="items" :fields="fields"></b-table>
+            <div class="clearfix btn-group col-md-2 offset-md-5">
+              <button
+                type="button"
+                class="btn btn-sm btn-outline-secondary"
+                v-if="page != 1"
+                @click="page--"
+              ><<</button>
+              <button
+                type="button"
+                class="btn btn-sm btn-outline-secondary"
+                v-for="pageNumber in pages.slice(page-1, page+5)"
+                @click="page = pageNumber"
+              >{{pageNumber}}</button>
+              <button
+                type="button"
+                @click="page++"
+                v-if="page < pages.length"
+                class="btn btn-sm btn-outline-secondary"
+              >>></button>
+            </div>
           </div>
         </div>
       </div>
@@ -51,10 +72,18 @@
                 type="text"
                 :class="{ 'has-error': submitting && invalidYear}"
                 v-model="year"
+                @keypress="clearStatus"
               />
-              <b-button type="submit" variant="success" class="mr-2">Cargar</b-button>
-              <b-button variant="light" v-on:click="clear()">Cancelar</b-button>
+              <p v-if="errorUpload && submitting" class="error-message">❗Por favor agrege el año</p>
+              <b-button type="submit" variant="success" class="mr-2 spce">Cargar</b-button>
+              <b-button variant="light" v-on:click="clearStatus()" class="spce">Cancelar</b-button>
             </form>
+            <b-alert
+              v-model="showDismissibleAlertUfv"
+              variant="danger"
+              dismissible
+              class="spce"
+            >Fallo al cargar..</b-alert>
           </div>
         </div>
       </div>
@@ -64,6 +93,7 @@
 
 <script>
 import VueInstantLoadingSpinner from "vue-instant-loading-spinner/src/components/VueInstantLoadingSpinner.vue";
+import { setTimeout } from "timers";
 
 export default {
   name: "upload",
@@ -77,10 +107,7 @@ export default {
       submitting: false,
       error: false,
       success: false,
-      filterDate: {
-        initDate: "",
-        lastDate: ""
-      },
+      initDate: "",
       year: "",
       fields: [
         {
@@ -96,7 +123,14 @@ export default {
           label: "Fecha Subida"
         }
       ],
-      items: []
+      items: [],
+      showDismissibleAlert: false,
+      showDismissibleAlertUfv: false,
+      errorUpload: false,
+      page: 1,
+      perPage: 10,
+      pages: [],
+      totalPages: 0
     };
   },
   mounted() {
@@ -108,11 +142,27 @@ export default {
         const response = await fetch(this.baseUrl + "ufvs");
         const data = await response.json();
         this.items = data["content"];
+        this.totalPages = data["totalPages"];
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    async getItemsPagination(page) {
+      try {
+        const response = await fetch(this.baseUrl + "ufvs?page=" + page);
+        const data = await response.json();
+        this.items = data["content"];
+        this.totalPages = data["totalPages"];
       } catch (error) {
         console.error(error);
       }
     },
     async submitFile() {
+      this.submitting = true;
+      if (this.invalidYear) {
+        this.errorUpload = true;
+        return;
+      }
       let formData = new FormData();
       formData.append("file", this.file);
       formData.append("year", this.year);
@@ -121,56 +171,97 @@ export default {
         function() {
           this.$refs.Spinner.hide();
         }.bind(this),
-        90000
+        2000
       );
-      const response = await fetch(this.baseUrl + "files/ufv", {
-        method: "POST",
-        body: formData
-      });
-      await response;
-      this.clearStatus();
-      this.$refs.Spinner.hide();
-      this.getItems();
+      this.axios
+        .post(this.baseUrl + "files/ufv", formData)
+        .then(response => {
+          this.clearStatus();
+          this.$refs.Spinner.hide();
+          this.getItems();
+        })
+        .catch(error => {
+          this.showDismissibleAlertUfv = true;
+          this.$refs.Spinner.hide();
+          setTimeout(() => {
+            this.showDismissibleAlertUfv = false;
+          }, 3000);
+        });
     },
     handleFileUpload() {
       this.file = this.$refs.file.files[0];
     },
     async handleSubmit() {
       this.submitting = true;
-      this.clearStatus();
       if (this.invalidInitDate) {
         this.error = true;
         return;
       }
-
-      const response = await fetch(
-        this.baseUrl + "ufvs/fecha/" + this.filterDate.initDate
-      );
-      const data = await response.json();
-      this.items = [];
-      this.items.push(data);
-
-      this.error = false;
-      this.success = true;
-      this.submitting = false;
+      this.axios
+        .get(this.baseUrl + "ufvs/fecha/" + this.initDate)
+        .then(response => {
+          this.items = [];
+          this.items.push(response.data);
+          this.clearStatus();
+        })
+        .catch(error => {
+          this.showDismissibleAlert = true;
+          setTimeout(() => {
+            this.showDismissibleAlert = false;
+          }, 2000);
+        });
     },
     clearStatus() {
       this.success = false;
       this.error = false;
       this.file = null;
+      this.submitting = false;
       this.year = null;
+      this.errorUpload = false;
+    },
+    setPages() {
+      for (let index = 1; index <= this.totalPages; index++) {
+        this.pages.push(index);
+      }
+    },
+    paginate() {
+      let page = this.page;
+      let perPage = this.perPage;
+      let from = page * perPage - perPage;
+      let to = page * perPage;
+      return this.getItemsPagination(page);
     }
   },
   computed: {
     invalidInitDate() {
-      return this.filterDate.initDate === "";
+      return this.initDate === "";
     },
     invalidYear() {
       return this.year === "";
+    },
+    displayedPosts() {
+      return this.paginate(this.items);
+    }
+  },
+  watch: {
+    initDate: function(val) {
+      if (val === "" && this.items.length <= 1) {
+        this.getItems();
+      }
+    },
+    items() {
+      console.log("holas");
+      this.setPages();
+    },
+    page: function(val) {
+      this.paginate();
     }
   }
 };
 </script>
 
 <style scoped>
+.spce {
+  margin-top: 10px;
+}
 </style>

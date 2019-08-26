@@ -14,9 +14,11 @@
               />
             </div>
           </div>
+          <br />
           <b-button variant="success" @click="download()">
             <i class="mdi mdi-cloud-download"></i>Exportar
           </b-button>
+          <br />
           <item-table :items="items" :current-page="currentPage" />
         </div>
       </div>
@@ -48,6 +50,9 @@
                 </tr>
               </tbody>
             </table>
+            <b-button variant="success" @click="update()">
+              <i class="mdi mdi-file"></i>Actualizar Articulos
+            </b-button>
           </div>
         </div>
       </div>
@@ -107,24 +112,22 @@ export default {
     },
     async getItemById(value) {
       try {
-        const response = await fetch(
-          this.baseUrl + "/" + value
-        );
+        const response = await fetch(this.baseUrl + "/" + value);
         const data = await response.json();
-        if(data != null) {
+        if (data != null) {
           this.items = [];
-            this.items.push(data);
+          this.items.push(data);
         } else {
-            this.items = [];
+          this.items = [];
         }
-        
       } catch (error) {
         console.error(error);
         this.items = [];
       }
     },
     download() {
-        window.location.href = 'http://localhost:4000/files/download/customers.xlsx';
+      window.location.href =
+        "http://localhost:4000/files/download/customers.xlsx";
     }
   },
   filters: {
@@ -140,10 +143,10 @@ export default {
     search: function(value) {
       if (this.search.length == 0) {
         this.items = this.itemstemporal;
-      } else if(this.search.length >= 4) {
+      } else if (this.search.length >= 4) {
         this.getItemById(value);
       } else {
-          this.items = [];
+        this.items = [];
       }
     }
   }

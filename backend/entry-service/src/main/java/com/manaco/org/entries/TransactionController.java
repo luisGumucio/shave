@@ -3,6 +3,7 @@ package com.manaco.org.entries;
 import com.manaco.org.dto.FilterDate;
 import com.manaco.org.dto.TransactionDto;
 import com.manaco.org.entries.reports.TotalItemReport;
+import com.manaco.org.entries.reports.TransactionTotalReport;
 import com.manaco.org.model.Transaction;
 import com.manaco.org.model.TransactionDetail;
 import com.manaco.org.repositories.TransactionRepository;
@@ -32,10 +33,6 @@ public class TransactionController {
     private TransactionRepository transactionRepository;
 
 
-//    @GetMapping
-//    public Page<Transaction> get(@RequestParam(defaultValue = "0") int page, @RequestParam String identifier) {
-//        return transactionDetail.findByIdentifier(new PageRequest(page, 10), identifier);
-//    }
 
     @GetMapping(path = "/identifier/{identifier}")
     public Page<Transaction> get(@RequestParam(defaultValue = "0") int page, @PathVariable String identifier) {
@@ -47,12 +44,8 @@ public class TransactionController {
         return transactionRepository.findByItemId(PageRequest.of(page, 20), id);
     }
 
-//    @GetMapping(path = "/identifier")
-//    public Page<Transaction> getType(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "EGRESS") String type,
-//                                     @RequestParam(defaultValue = "REPUESTOS") String identifier) {
-//        return transactionRepository.findByTypeAndIdentifier(PageRequest.of(page, 20), type, identifier);
-//    }
 
+    //metodo para busqueda por fecha
     @PostMapping(path = "/reportTransaction/{id}")
     public Page<Transaction> getType1(@RequestParam(defaultValue = "0") int page,
                                       @RequestBody FilterDate filterDate,
@@ -62,8 +55,6 @@ public class TransactionController {
             return transactionRepository.findByItemIdAndTransactionDate(PageRequest.of(page, 20),
                     id, filterDate.getInitDate());
         } else {
-//            return transactionRepository.findByItemIdAndTransactionDateBetween(PageRequest.of(page, 20),
-//                    id, filterDate.getInitDate(), filterDate.getLastDate());
             return transactionRepository.findByTransactionDateBetween(PageRequest.of(page, 10), filterDate.getInitDate(), filterDate.getLastDate());
         }
     }
@@ -79,6 +70,26 @@ public class TransactionController {
 
         List<TotalItemReport> result = groupResults.getMappedResults();
         return result;
+    }
+
+    @GetMapping(path = "reportTransactionTotal/{identifier}")
+    public List<TransactionTotalReport> getTransactionTotal(@PathVariable String identifier) {
+
+        Aggregation aggregation = newAggregation(
+                match(Criteria.where("identifier").is(identifier)),
+                group("identifier")
+                        .sum("totalNormal").as("totalNormal")
+                        .sum("totalUpdate").as("totalUpdate")
+                        .sum("increment").as("totalIncrement"),
+                sort(Sort.Direction.ASC, previousOperation(), "identifier"));
+
+        AggregationResults<TransactionTotalReport> groupResults = mongoTemplate.aggregate(
+                aggregation, Transaction.class, TransactionTotalReport.class);
+
+        List<TransactionTotalReport> salesReport = groupResults.getMappedResults();
+
+        return salesReport;
+
     }
 
 

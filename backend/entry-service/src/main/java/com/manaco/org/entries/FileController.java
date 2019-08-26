@@ -74,7 +74,6 @@ public class FileController {
         }
 
         try {
-//            fileService.ufvUpload(file.getInputStream());
             XSSFWorkbook workbook = new XSSFWorkbook(file.getInputStream());
             executeUfv(workbook.getSheetAt(0), year);
         } catch (IOException e) {
@@ -85,9 +84,9 @@ public class FileController {
 
     @GetMapping(value = "/download/customers.xlsx")
     public ResponseEntity<InputStreamResource> excelCustomersReport() throws IOException {
-        List<Item> customers = itemRepository.findAll();
+        List<Transaction> transactions = transactionRepository.findAll();
 
-        ByteArrayInputStream in = ExcelGenerator.customersToExcel(customers);
+        ByteArrayInputStream in = ExcelGenerator.customersToExcel(transactions);
         // return IOUtils.toByteArray(in);
 
         HttpHeaders headers = new HttpHeaders();
@@ -113,57 +112,70 @@ public class FileController {
                 Cell cell = row.getCell(j);
                 try {
                     switch (j) {
-                        case 0:
-                            day = (int) cell.getNumericCellValue();
-                            break;
-                        case 1:
-                            saveUfv(day, new BigDecimal(cell.getStringCellValue().replace(",", ".")), 1, year);
-                            break;
-                        case 2:
-                            if (!cell.getStringCellValue().equals("")) {
-                                saveUfv(day, new BigDecimal(cell.getStringCellValue().replace(",", ".")), 2, year);
-                            }
-                            break;
-                        case 3:
-                            saveUfv(day, new BigDecimal(cell.getStringCellValue().replace(",", ".")), 3, year);
-                            break;
-                        case 4:
-                            if (!cell.getStringCellValue().equals("")) {
-                                saveUfv(day, new BigDecimal(cell.getStringCellValue().replace(",", ".")), 4, year);
-                            }
-                            break;
-                        case 5:
-                            saveUfv(day, new BigDecimal(cell.getStringCellValue().replace(",", ".")), 5, year);
-                            break;
-                        case 6:
-                            if (!cell.getStringCellValue().equals("")) {
-                                saveUfv(day, new BigDecimal(cell.getStringCellValue().replace(",", ".")), 6, year);
-                            }
-                            break;
-                        case 7:
-                            saveUfv(day, new BigDecimal(cell.getStringCellValue().replace(",", ".")), 7, year);
-                            break;
-                        case 8:
-                            saveUfv(day, new BigDecimal(cell.getStringCellValue().replace(",", ".")), 8, year);
-                            break;
-                        case 9:
-                            if (!cell.getStringCellValue().equals("")) {
-                                saveUfv(day, new BigDecimal(cell.getStringCellValue().replace(",", ".")), 9, year);
-                            }
-                            break;
-                        case 10:
-                            saveUfv(day, new BigDecimal(cell.getStringCellValue().replace(",", ".")), 10, year);
-                            break;
-                        case 11:
-                            if (!cell.getStringCellValue().equals("")) {
-                                saveUfv(day, new BigDecimal(cell.getStringCellValue().replace(",", ".")), 11, year);
-                            }
-                            ;
-                            break;
-                        case 12:
-                            saveUfv(day, new BigDecimal(cell.getStringCellValue().replace(",", ".")), 12, year);
-                            break;
-                    }
+                            case 0:
+                                day = (int) cell.getNumericCellValue();
+                                break;
+                            case 1:
+                                if (!cell.getStringCellValue().equals("")) {
+                                    saveUfv(day, new BigDecimal(cell.getStringCellValue().replace(",", ".")), 1, year);
+                                }
+                                break;
+                            case 2:
+                                if (!cell.getStringCellValue().equals("")) {
+                                    saveUfv(day, new BigDecimal(cell.getStringCellValue().replace(",", ".")), 2, year);
+                                }
+                                break;
+                            case 3:
+                                if (!cell.getStringCellValue().equals("")) {
+                                    saveUfv(day, new BigDecimal(cell.getStringCellValue().replace(",", ".")), 3, year);
+                                }
+                                break;
+                            case 4:
+                                if (!cell.getStringCellValue().equals("")) {
+                                    saveUfv(day, new BigDecimal(cell.getStringCellValue().replace(",", ".")), 4, year);
+                                }
+                                break;
+                            case 5:
+                                if (!cell.getStringCellValue().equals("")) {
+                                    saveUfv(day, new BigDecimal(cell.getStringCellValue().replace(",", ".")), 5, year);
+                                }
+                                break;
+                            case 6:
+                                if (!cell.getStringCellValue().equals("")) {
+                                    saveUfv(day, new BigDecimal(cell.getStringCellValue().replace(",", ".")), 6, year);
+                                }
+                                break;
+                            case 7:
+                                if (!cell.getStringCellValue().equals("")) {
+                                saveUfv(day, new BigDecimal(cell.getStringCellValue().replace(",", ".")), 7, year);
+                                   }
+                                break;
+                            case 8:
+                                if (!cell.getStringCellValue().equals("")) {
+                                    saveUfv(day, new BigDecimal(cell.getStringCellValue().replace(",", ".")), 8, year);
+                                }
+                                break;
+                            case 9:
+                                if (!cell.getStringCellValue().equals("")) {
+                                    saveUfv(day, new BigDecimal(cell.getStringCellValue().replace(",", ".")), 9, year);
+                                }
+                                break;
+                            case 10:
+                                if (!cell.getStringCellValue().equals("")) {
+                                    saveUfv(day, new BigDecimal(cell.getStringCellValue().replace(",", ".")), 10, year);
+                                }
+                                break;
+                            case 11:
+                                if (!cell.getStringCellValue().equals("")) {
+                                    saveUfv(day, new BigDecimal(cell.getStringCellValue().replace(",", ".")), 11, year);
+                                }
+                                break;
+                            case 12:
+                                if (!cell.getStringCellValue().equals("")) {
+                                saveUfv(day, new BigDecimal(cell.getStringCellValue().replace(",", ".")), 12, year);
+                                }
+                                break;
+                        }
 
                 } catch (IllegalStateException ex) {
                     LOGGER.error("Failed to convert to object", ex.getMessage());

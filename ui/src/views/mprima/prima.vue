@@ -18,7 +18,7 @@ export default {
       menus: [
         {
           text: "Articulo",
-          to: "/mitem"
+          to: "/prima"
         },
         {
           text: "Almacen",

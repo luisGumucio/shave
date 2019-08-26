@@ -6,3 +6,10 @@ backend/operartor-service/out/
 ui/node_modules/
 .DS_Store
 backend/.gradle/
+backend/common/build/
+backend/entry-service/build/
+backend/operartor-service/build/
+ui/dist/
+ui/package-lock.json
+
+

@@ -14,6 +14,7 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.data.mongodb.core.convert.CustomConversions;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.math.BigDecimal;
@@ -26,6 +27,7 @@ import java.util.Arrays;
 @EnableMongoRepositories("com.manaco.org.repositories")
 @EnableAsync
 @EnableRabbit
+@EnableScheduling
 public class Application {
 
     public static void main(String[] args) {

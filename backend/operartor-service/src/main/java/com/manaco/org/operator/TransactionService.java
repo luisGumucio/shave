@@ -12,6 +12,8 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.ZoneId;
 
 @Service
 public class TransactionService {
@@ -49,7 +51,44 @@ public class TransactionService {
             LOGGER.info("saved successfully with id " + transaction.getItem());
         } else {
             System.out.println("item not found with  id " + transaction.getItem());
+            saveItemNotFound(transaction);
         }
+    }
+
+    private void saveItemNotFound(Transaction otherTransaction) {
+        Transaction transaction = new Transaction();
+        Item item = new Item();
+        item.setId(otherTransaction.getItem().getId());
+        item.setPrice(otherTransaction.getItem().getPrice());
+        item.setQuantity(otherTransaction.getItem().getQuantity());
+        LocalDate currentDate = otherTransaction.getTransactionDate();
+        item.setInitialDate(currentDate);
+        item.setLastUpdate(item.getInitialDate());
+        item.setIdentifier(otherTransaction.getIdentifier());
+        item.setTotal(item.getPrice().multiply(item.getQuantity()));
+
+        transaction.setType(TransactionType.INITIAL);
+        transaction.setPriceActual(item.getPrice());
+        transaction.setPriceNeto(BigDecimal.ZERO);
+        transaction.setBalance(item.getQuantity());
+        transaction.setTransactionDate(item.getInitialDate());
+        transaction.setItem(item);
+        transaction.setTotalNormal(item.getTotal());
+        transaction.setTotalUpdate(item.getTotal());
+        transaction.setIncrement(BigDecimal.ZERO);
+        transaction.setProcessId(otherTransaction.getProcessId());
+        transaction.setUfv(ufvRepository.findByCreationDate(item.getLastUpdate()));
+        transaction.setDetail(null);
+        transaction.setIdentifier(otherTransaction.getIdentifier());
+//        saveItem(transaction);
+        if (transaction.getItem().getQuantity().intValue() < 0) {
+            transaction.getItem().setIsFailure(Boolean.TRUE);
+        } else {
+            transaction.getItem().setIsFailure(Boolean.FALSE);
+        }
+        itemRepository.save(transaction.getItem());
+        transactionRepository.save(transaction);
+        LOGGER.info("adding initial transaction with item id" + transaction.getItem().getId());
     }
 
     private Item updateItem(Item item, Transaction transaction, Ufv actual) {
@@ -164,9 +203,12 @@ public class TransactionService {
         }
 
         itemRepository.save(transaction.getItem());
-        detailRepository.save(transaction.getDetail());
+        if (transaction.getDetail() !=  null) {
+            detailRepository.save(transaction.getDetail());
+//            savePrimaStock(transaction, transaction.getItem());
+        }
+
         transactionRepository.save(transaction);
-        savePrimaStock(transaction, transaction.getItem());
         LOGGER.info("adding initial transaction with item id" + transaction.getItem().getId());
     }
 

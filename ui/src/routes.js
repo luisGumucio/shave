@@ -40,34 +40,24 @@ const routes = [{
   component: ufv
 },
 {
-  path: '/ufv',
-  name: 'ufv',
-  component: ufv
-},
-{
   path: '/prima',
   name: 'prima',
-  component: prima,
+  component: resolve => resolve(prima),
   children: [
     {
       path: '/mtransaction/:id',
       name: 'mtransaction',
-      component: mtransaction
-    },
-    {
-      path: '/mitem',
-      name: 'mitem',
-      component: mitem
+      component: resolve => resolve(mtransaction) 
     },
     {
       path: '',
       name: 'mitem',
-      component: mitem
+      component: resolve => resolve(mitem)
     },
     {
       path: '/mAlmacen',
       name: 'mAlmacen',
-      component: mAlmacen
+      component: resolve => resolve(mAlmacen)
     }]
 },
 {

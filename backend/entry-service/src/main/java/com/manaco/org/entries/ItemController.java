@@ -37,7 +37,7 @@ public class ItemController {
     }
 
     @GetMapping
-    public Page<Item> get(@RequestParam int page, @RequestParam String identifier) {
+    public Page<Item> get(@RequestParam(defaultValue = "0") int page, @RequestParam String identifier) {
         System.out.println(page);
 
         return itemRepository.findByIdentifier(PageRequest.of(page, 4), identifier);
