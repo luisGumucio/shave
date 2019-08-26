@@ -18,6 +18,7 @@
           <b-button variant="success spce" @click="download()">
             <i class="mdi mdi-cloud-download"></i>Exportar
           </b-button>
+          <!-- <download-modal /> -->
           <br />
           <item-table :items="items" :current-page="currentPage" />
         </div>
@@ -52,20 +53,25 @@
             </table>
           </div>
         </div>
-        <br/>
+        <br />
         <item-update />
       </div>
     </div>
   </div>
 </template>
 <script>
+
 import ItemTable from "./detail/itemTable.vue";
 import ItemUpdate from "./detail/itemUpdate.vue";
+import DownloadModal from "../utils/modal.vue";
+import DownloadService from "../../services/downloadService";
 
 export default {
   components: {
     ItemTable,
-    ItemUpdate
+    ItemUpdate,
+    DownloadModal,
+    DownloadService
   },
   data() {
     return {
@@ -127,8 +133,7 @@ export default {
       }
     },
     download() {
-      window.location.href =
-        "http://localhost:4000/files/download/customers.xlsx";
+      DownloadService.downloadfile("REPUESTOS");
     }
   },
   filters: {
