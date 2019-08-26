@@ -4,18 +4,18 @@
       type="button"
       class="btn btn-sm btn-outline-secondary"
       v-if="pagiItem.page != 1"
-      @click="page--"
+      @click="pagiItem.page--"
     ><<</button>
     <button
       type="button"
       class="btn btn-sm btn-outline-secondary"
-      v-for="pageNumber in pages.slice(page-1, page+5)"
-      @click="page = pageNumber"
+      v-for="pageNumber in pagiItem.pages.slice(pagiItem.page-1, pagiItem.page+5)"
+      @click="pagiItem.page = pageNumber"
     >{{pageNumber}}</button>
     <button
       type="button"
-      @click="page++"
-      v-if="page < pages.length"
+      @click="pagiItem.page++"
+      v-if="pagiItem.page < pagiItem.pages.length"
       class="btn btn-sm btn-outline-secondary"
     >>></button>
   </div>
@@ -23,24 +23,23 @@
 
 <script>
 export default {
-  data() {
-    return {
-      pagiItem: {
-        page: 1,
-        perPage: 10,
-        pages: [],
-        totalPages: 0
-      }
-    };
+  name: "pagination",
+  props: {
+    pagiItem: {
+        page: Number,
+        pages: Array,
+        totalPages: Number
+    }
   },
   methods: {
     paginate() {
-      //  this.$emit("")
-      alert("hola");
+      let page = this.pagiItem.page -1;
+      console.log("pepe")
+      this.$emit("paginate:pagiItem", page);
     }
   },
   watch: {
-    page: function(value) {
+    'pagiItem.page': function(val) {
       this.paginate();
     }
   }

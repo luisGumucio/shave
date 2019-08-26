@@ -11,5 +11,8 @@ backend/entry-service/build/
 backend/operartor-service/build/
 ui/dist/
 ui/package-lock.json
+backend/gradle/
+backend/gradlew
+backend/gradlew.bat
 
 

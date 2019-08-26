@@ -6,7 +6,7 @@
         <div class="card">
           <div class="card-body">
             <h4 class="card-title">Ufv</h4>
-            <form @submit.prevent="handleSubmit">
+            <form @submit.prevent="searchByDate">
               <label class="control-label" for="date">Buscar</label>
               <input
                 class="form-control"
@@ -27,27 +27,7 @@
             <br />
             <b-alert v-model="showDismissibleAlert" variant="danger" dismissible>Ufv no encontrado</b-alert>
             <b-table responsive striped hover :items="items" :fields="fields"></b-table>
-            <!-- <div class="clearfix btn-group col-md-2 offset-md-5">
-              <button
-                type="button"
-                class="btn btn-sm btn-outline-secondary"
-                v-if="page != 1"
-                @click="page--"
-              ><<</button>
-              <button
-                type="button"
-                class="btn btn-sm btn-outline-secondary"
-                v-for="pageNumber in pages.slice(page-1, page+5)"
-                @click="page = pageNumber"
-              >{{pageNumber}}</button>
-              <button
-                type="button"
-                @click="page++"
-                v-if="page < pages.length"
-                class="btn btn-sm btn-outline-secondary"
-              >>></button>
-            </div>-->
-            <item-pagination :pagiItem ="pagiItem" />
+            <item-pagination :pagiItem="pagiItem" @paginate:pagiItem="paginate" />
           </div>
         </div>
       </div>
@@ -132,9 +112,8 @@ export default {
       errorUpload: false,
       pagiItem: {
         page: 1,
-        perPage: 10,
-        pages: [],
-        totalPages: 0
+        totalPages: 0,
+        pages: []
       }
     };
   },
@@ -147,7 +126,7 @@ export default {
         const response = await fetch(this.baseUrl + "ufvs");
         const data = await response.json();
         this.items = data["content"];
-        this.totalPages = data["totalPages"];
+        this.pagiItem.totalPages = data["totalPages"];
       } catch (error) {
         console.error(error);
       }
@@ -196,7 +175,7 @@ export default {
     handleFileUpload() {
       this.file = this.$refs.file.files[0];
     },
-    async handleSubmit() {
+    async searchByDate() {
       this.submitting = true;
       if (this.invalidInitDate) {
         this.error = true;
@@ -223,17 +202,15 @@ export default {
       this.submitting = false;
       this.year = null;
       this.errorUpload = false;
+      this.pagiItem.totalPages = 0;
+      this.pagiItem.pages = [];
     },
     setPages() {
-      for (let index = 1; index <= this.totalPages; index++) {
-        this.pages.push(index);
+      for (let index = 1; index <= this.pagiItem.totalPages; index++) {
+        this.pagiItem.pages.push(index);
       }
     },
-    paginate() {
-      let page = this.page;
-      let perPage = this.perPage;
-      let from = page * perPage - perPage;
-      let to = page * perPage;
+    paginate(page) {
       return this.getItemsPagination(page);
     }
   },
@@ -255,11 +232,7 @@ export default {
       }
     },
     items() {
-      console.log("holas");
       this.setPages();
-    },
-    page: function(val) {
-      this.paginate();
     }
   }
 };
