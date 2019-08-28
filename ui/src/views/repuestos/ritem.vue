@@ -54,13 +54,12 @@
           </div>
         </div>
         <br />
-        <item-update />
+        <item-update @add:initDate="update" />
       </div>
     </div>
   </div>
 </template>
 <script>
-
 import ItemTable from "./detail/itemTable.vue";
 import ItemUpdate from "./detail/itemUpdate.vue";
 import DownloadModal from "../utils/modal.vue";
@@ -132,8 +131,11 @@ export default {
         this.items = [];
       }
     },
+    async update(initDate) {
+      DownloadService.updateItem(initDate, "REPUESTOS");
+    },
     download() {
-      DownloadService.downloadfile("REPUESTOS");
+      DownloadService.downloadfile("REPUESTOS", "item");
     }
   },
   filters: {

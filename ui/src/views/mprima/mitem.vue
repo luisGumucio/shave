@@ -56,6 +56,7 @@
 </template>
 <script>
 import ItemTable from "./detail/itemTable.vue";
+import DownloadService from "../../services/downloadService";
 
 export default {
   components: {
@@ -123,7 +124,7 @@ export default {
       }
     },
     download() {
-        window.location.href = 'http://localhost:4000/files/download/customers.xlsx';
+        DownloadService.downloadfile("PRIMA", "item");
     }
   },
   filters: {

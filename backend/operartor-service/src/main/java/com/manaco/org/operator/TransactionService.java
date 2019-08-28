@@ -104,6 +104,7 @@ public class TransactionService {
                 saveMove(item, TransactionType.UPDATE, increment, totalNormal, totalUpdate,
                         actual, transaction.getProcessId());
             } else {
+                item.setLastUpdate(transaction.getTransactionDate());
                 saveMove(item, TransactionType.UPDATE, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
                         actual, transaction.getProcessId());
             }
@@ -159,9 +160,11 @@ public class TransactionService {
         egress.setIncrement(BigDecimal.ZERO);
         egress.setProcessId(transaction.getProcessId());
         egress.setIdentifier(item.getIdentifier());
+        egress.setDetail(transaction.getDetail());
         item.setLastUpdate(transaction.getTransactionDate());
-
+        detailRepository.save(transaction.getDetail());
         itemRepository.save(item);
+
         transactionRepository.save(egress);
 
     }

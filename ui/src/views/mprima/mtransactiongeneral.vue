@@ -9,16 +9,16 @@
     <div class="row">
       <div class="col-md-12">
         <div class="table-responsive">
-          <transaction-table :items="items"  @detail:item="detail"/>
+          <transaction-table :items="items" />
         </div>
       </div>
     </div>
   </section>
 </template>
 <script>
-import TransactionTable from "./detail/transactionTable.vue";
-import TransactionDetail from "./detail/TransactionDetail.vue";
-import TransactionFilter from "./detail/TransactionFilter.vue";
+import TransactionTable from "../repuestos/detail/transactionTable.vue";
+import TransactionDetail from "../repuestos/detail/TransactionDetail.vue";
+import TransactionFilter from "../repuestos/detail/TransactionFilter.vue";
 import DownloadService from "../../services/downloadService";
 
 export default {
@@ -42,7 +42,7 @@ export default {
   methods: {
     async getItems() {
       try {
-        const response = await fetch(this.baseUrl + "/identifier/REPUESTOS");
+        const response = await fetch(this.baseUrl + "/identifier/PRIMA");
         const data = await response.json();
         this.items = data["content"];
         console.log(this.item);
@@ -53,26 +53,23 @@ export default {
     async getTotal() {
       try {
         const response = await fetch(
-          this.baseUrl + "/reportTransactionTotal/REPUESTOS"
+          this.baseUrl + "/reportTransactionTotal/PRIMA"
         );
         const data = await response.json();
         this.reportTransaction = data[0];
       } catch (error) {}
     },
     download() {
-      DownloadService.downloadfile("REPUESTOS", "transaction");
+      DownloadService.downloadfile("PRIMA", "transaction");
     },
     async getTotalByDate(filterDate) {
       if (filterDate.lastDate == null) {
         try {
-          const response = await fetch(
-            this.baseUrl + "/reportDateTransaction/",
-            {
-              method: "POST",
-              body: JSON.stringify(filterDate),
-              headers: { "Content-type": "application/json; charset=UTF-8" }
-            }
-          );
+          const response = await fetch(this.baseUrl + "/reportDateTransaction/", {
+            method: "POST",
+            body: JSON.stringify(filterDate),
+            headers: { "Content-type": "application/json; charset=UTF-8" }
+          });
           const data = await response.json();
           this.reportTransaction = data[0];
         } catch (error) {}
@@ -93,7 +90,7 @@ export default {
           last.getDate() + 1
         ).toJSON();
       }
-      filterDate.identifier = "REPUESTOS";
+      filterDate.identifier = "PRIMA";
       try {
         const response = await fetch(this.baseUrl + "/transactionDate/", {
           method: "POST",
@@ -106,15 +103,6 @@ export default {
       } catch (error) {
         console.error(error);
       }
-    },
-    detail(detail) {
-      // console.log(detail.information.ALMACEN);
-      alert(
-        "Cuenta: " +
-          detail.information.CTA +
-          "Seccion: " +
-          detail.information.SECCION
-      );
     }
   }
 };

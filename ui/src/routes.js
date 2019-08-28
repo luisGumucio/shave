@@ -25,6 +25,7 @@ import prima from './views/mprima/prima'
 import mtransaction from './views/mprima/mtransaction'
 import mitem from './views/mprima/mitem'
 import mAlmacen from './views/mprima/mAlmacen'
+import mtransactiongeneral from './views/mprima/mtransactiongeneral'
 
 // Form Components
 import forms from './views/forms/forms'
@@ -58,7 +59,12 @@ const routes = [{
       path: '/mAlmacen',
       name: 'mAlmacen',
       component: resolve => resolve(mAlmacen)
-    }]
+    },
+    {
+      path: '/mtransactiongeneral',
+      name: 'mtransactiongeneral',
+      component: mtransactiongeneral
+    },]
 },
 {
   path: '/upload',

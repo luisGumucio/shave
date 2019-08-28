@@ -82,11 +82,35 @@ public class FileController {
     }
 
 
-    @GetMapping(value = "/download/customers.xlsx")
-    public ResponseEntity<InputStreamResource> excelCustomersReport() throws IOException {
-        List<Transaction> transactions = transactionRepository.findAll();
+    @GetMapping(value = "/download/{identifer}/{type}")
+    public ResponseEntity<InputStreamResource> excelCustomersReport(@PathVariable("identifer") String identifier,
+                                                                    @PathVariable("type") String type) throws IOException {
 
-        ByteArrayInputStream in = ExcelGenerator.customersToExcel(transactions);
+        if(type.equals("transaction")) {
+            return downloadTransaction(identifier);
+        }
+        return downloadItems(identifier);
+    }
+
+    private ResponseEntity<InputStreamResource> downloadTransaction(String identifier) throws IOException {
+        List<Transaction> transactions = transactionRepository.findAllByIdentifier(identifier);
+
+        ByteArrayInputStream in = ExcelGenerator.downloadTransation(transactions);
+        // return IOUtils.toByteArray(in);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=customers.xlsx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .body(new InputStreamResource(in));
+    }
+
+    private ResponseEntity<InputStreamResource> downloadItems(String identifier) throws IOException  {
+        List<Item> items = itemRepository.findAllByIdentifier(identifier);
+
+        ByteArrayInputStream in = ExcelGenerator.downloadItem(items);
         // return IOUtils.toByteArray(in);
 
         HttpHeaders headers = new HttpHeaders();

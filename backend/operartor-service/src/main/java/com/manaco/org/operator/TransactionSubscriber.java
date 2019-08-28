@@ -27,6 +27,8 @@ public class TransactionSubscriber {
             case INITIAL:
                 transactionRepuestosService.saveItem(transaction);
                 break;
+            case UPDATE:
+                transactionRepuestosService.updateItem(transaction);
             default:
                 service.executeMoving(transaction);
                 break;

@@ -55,8 +55,45 @@ public class TransactionController {
             return transactionRepository.findByItemIdAndTransactionDate(PageRequest.of(page, 20),
                     id, filterDate.getInitDate());
         } else {
-            return transactionRepository.findByTransactionDateBetween(PageRequest.of(page, 10), filterDate.getInitDate(), filterDate.getLastDate());
+            return null;
+//            return transactionRepository.findByTransactionDateBetween(PageRequest.of(page, 10), filterDate.getInitDate(), filterDate.getLastDate());
         }
+    }
+
+    //metodo para busqueda por fecha general
+    @PostMapping(path = "/transactionDate")
+    public Page<Transaction> getType1(@RequestParam(defaultValue = "0") int page,
+                                      @RequestBody FilterDate filterDate) {
+
+        if (filterDate.getLastDate() == null) {
+            return transactionRepository.findByTransactionDateAndIdentifier(PageRequest.of(page, 20),
+                    filterDate.getInitDate(), filterDate.getIdentifier());
+        } else {
+            return transactionRepository
+                    .findByTransactionDateBetweenAndIdentifier(
+                            PageRequest.of(page, 10), filterDate.getInitDate(),
+                            filterDate.getLastDate(), filterDate.getIdentifier());
+        }
+    }
+
+    @PostMapping(path = "/reportDateTransaction")
+    public List<TransactionTotalReport> getTransactionTotal(@RequestBody FilterDate filterDate) {
+
+        Aggregation aggregation = newAggregation(
+                match(Criteria.where("identifier").is(filterDate.getIdentifier())
+                        .and("transactionDate").is(filterDate.getInitDate())),
+                group("identifier")
+                        .sum("totalNormal").as("totalNormal")
+                        .sum("totalUpdate").as("totalUpdate")
+                        .sum("increment").as("totalIncrement"),
+                sort(Sort.Direction.ASC, previousOperation(), "identifier"));
+
+        AggregationResults<TransactionTotalReport> groupResults = mongoTemplate.aggregate(
+                aggregation, Transaction.class, TransactionTotalReport.class);
+
+        List<TransactionTotalReport> salesReport = groupResults.getMappedResults();
+
+        return salesReport;
     }
 
     @GetMapping(path = "/transactionTotal")
@@ -89,7 +126,6 @@ public class TransactionController {
         List<TransactionTotalReport> salesReport = groupResults.getMappedResults();
 
         return salesReport;
-
     }
 
 

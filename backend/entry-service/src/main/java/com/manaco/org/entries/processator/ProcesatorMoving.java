@@ -39,13 +39,11 @@ public class ProcesatorMoving implements ProcesatorObject {
             transaction.setType(TransactionType.EGRESS);
             transaction.setPriceActual(item.getPrice());
             transaction.setPriceNeto(BigDecimal.ZERO);
+            transaction.setDetail(buildDetail(map, option));
         }
 
         LocalDate currentDate = convertToDate(map.get("FECHA")).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-
-//        transaction.setQuantity(item.getQuantity());
         transaction.setTransactionDate(currentDate);
-//        transaction.setUfvValue(BigDecimal.ZERO);
         transaction.setItem(item);
         transaction.setProcessId(processActive.getId());
         transaction.setDetail(buildDetail(map, option));
@@ -67,7 +65,8 @@ public class ProcesatorMoving implements ProcesatorObject {
     private TransactionDetail buildRepuestos(Map<String, String> map) {
         TransactionDetail detail = new TransactionDetail();
         Map<String, String> info = new HashMap<>();
-        info.put("DESCRIPCION", map.get("DESCRIPCION"));
+        info.put("SECCION", map.get("SECCION"));
+        info.put("CTA", map.get("CTA"));
         detail.setInformation(info);
         return detail;
     }

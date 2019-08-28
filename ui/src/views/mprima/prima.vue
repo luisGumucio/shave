@@ -21,6 +21,10 @@ export default {
           to: "/prima"
         },
         {
+          text: "Transaciones",
+          to: "/mtransactiongeneral"
+        },
+        {
           text: "Almacen",
           to: "/mAlmacen"
         },

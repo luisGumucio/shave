@@ -15,15 +15,20 @@ import java.util.List;
 
 @Repository
 public interface TransactionRepository extends MongoRepository<Transaction, String> {
-//    Page<Transaction> findByTransactionDetailItemItemIdOrderByDateAsc(Pageable pageable, String id);
-//    List<Transaction> findByTransactionDetailItemItemIdOrderByDateAsc(String id);
+
 
     Page<Transaction> findByIdentifier(Pageable pageable, String identifier);
+
+    List<Transaction> findAllByIdentifier(String identifier);
 
     Page<Transaction> findByItemId(Pageable pageable, String id);
 
     Page<Transaction> findByItemIdAndTransactionDate(Pageable pageable, String id, LocalDate creationDate);
-    Page<Transaction> findByTransactionDateBetween(Pageable pageable, LocalDate initDate, LocalDate endDate);
+
+    Page<Transaction> findByTransactionDateAndIdentifier(Pageable pageable, LocalDate creationDate, String identifier);
+
+    Page<Transaction> findByTransactionDateBetweenAndIdentifier(Pageable pageable, LocalDate initDate, LocalDate endDate,
+                                                                String identifier);
 
     Page<Transaction>  findByTypeAndIdentifier (Pageable pageable, String type, String identifier);
 

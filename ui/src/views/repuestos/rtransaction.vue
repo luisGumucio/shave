@@ -7,9 +7,9 @@
     </div>
     <div class="row">
       <div class="col-12 grid-margin">
-            <div class="table-responsive">
-              <transaction-table :items="items" />
-            </div>
+        <div class="table-responsive">
+          <transaction-table :items="items" @detail:item="detail" />
+        </div>
       </div>
     </div>
   </section>
@@ -53,7 +53,7 @@ export default {
       }
     },
     async addFilter(filterDate) {
-      if(filterDate.lastDate != null) {
+      if (filterDate.lastDate != null) {
         filterDate.initDate.setDate(filterDate.initDate.getDate() - 1);
         filterDate.lastDate.setDate(filterDate.lastDate.getDate() + 1);
       }
@@ -76,16 +76,24 @@ export default {
     async getTotal() {
       try {
         const response = await fetch(
-          "http://localhost:4000/transaction/transactionTotal?id=" + this.$route.params.id
+          "http://localhost:4000/transaction/transactionTotal?id=" +
+            this.$route.params.id
         );
-        
+
         const data = await response.json();
         this.increment = data[0].total;
       } catch (error) {
         console.error(error);
       }
     },
-
+    detail(detail) {
+      alert(
+        "Almacen: " +
+          detail.information.ALMACEN +
+          " Cuenta: " +
+          detail.information.CUENTA
+      );
+    }
   }
 };
 </script>

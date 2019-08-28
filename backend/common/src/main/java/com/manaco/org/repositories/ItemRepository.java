@@ -7,24 +7,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public interface ItemRepository extends MongoRepository<Item, String> {
-//    Page<Item> findAllByOrderByItemIdAsc(PageRequest pageRequest);
-//    @Query(value = "SELECT new com.manaco.org.dto.ItemDto(COUNT(i.id), SUM(i.price * i.quantity), SUM(i.quantity)) FROM Item i")
-//    ItemDto fetchItemInformationDtoSum();
-
 
     Page<Item> findByIdentifier(Pageable pageable, String identifier);
+    List<Item> findByIdentifier(String identifier);
 
-//    @Aggregation("{ $group : { _id : null, total : { $sum : $age } } }")
-
-//    Long sumAge();
+    List<Item> findAllByIdentifier(String identifier);
 }
-//    "$group" : {
-//            "_id" : null,
-//            "prices" : {
-//            "$sum" : {
-//            "$multiply" : ["$price", "$quantity"]
-//            }
-//            }
-//            }

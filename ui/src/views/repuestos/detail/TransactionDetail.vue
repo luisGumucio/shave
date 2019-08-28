@@ -1,7 +1,7 @@
 <template>
   <div class="col-xl-4 col-lg-4 col-md-3 col-sm-6 grid-margin stretch-card">
     <p
-      v-if="item === undefined && increment === undefined"
+      v-if="reportTransaction === undefined"
       class="empty-table"
     >No transaction detalles</p>
     <div class="card card-statistics" v-else>
@@ -18,19 +18,19 @@
               <tr>
                 <td class="pl-0">Total Normal</td>
                 <td class="pr-0 text-right">
-                  <b-badge pill variant="primary">{{ item.total | currency }}</b-badge>
+                  <b-badge pill variant="primary">{{ reportTransaction.totalNormal | currency }}</b-badge>
                 </td>
               </tr>
               <tr>
                 <td class="pl-0">Total Actualizado</td>
                 <td class="pr-0 text-right">
-                  <b-badge pill variant="primary">{{ item.quantity * item.price  | currency}}</b-badge>
+                  <b-badge pill variant="primary">{{ reportTransaction.totalUpdate | currency}}</b-badge>
                 </td>
               </tr>
               <tr>
                 <td class="pl-0">Total Incremento</td>
                 <td class="pr-0 text-right">
-                  <b-badge pill variant="primary">{{ increment | currency }}</b-badge>
+                  <b-badge pill variant="primary">{{ reportTransaction.totalIncrement | currency }}</b-badge>
                 </td>
               </tr>
             </tbody>
@@ -44,8 +44,7 @@
 export default {
   name: "transaction-detail",
   props: {
-    item: Object,
-    increment: Number
+    reportTransaction: Object
   },
   filters: {
     currency(amount) {

@@ -34,6 +34,10 @@
               <i class="mdi mdi-magnify"></i> Buscar
             </button>
           </form>
+
+          <b-button variant="success" @click="buttonClicked">
+            <i class="mdi mdi-cloud-download"></i>Exportar
+          </b-button>
         </div>
       </div>
     </div>
@@ -49,8 +53,9 @@ export default {
       error: false,
       success: false,
       filterDate: {
-        initDate: "",
-        lastDate: ""
+        initDate: Date,
+        lastDate: Date,
+        identifier: ''
       }
     };
   },
@@ -64,14 +69,20 @@ export default {
       }
       console.log(this.filterDate);
       this.$emit("add:filterDate", this.filterDate);
-            this.error = false;
+      this.error = false;
       this.success = true;
       this.submitting = false;
     },
     clearStatus() {
       this.success = false;
       this.error = false;
+    },
+    buttonClicked() {
+      this.$emit("button-clicked");
     }
+    // download() {
+    //   his.$emit("add:filterDate", this.filterDate);
+    // }
   },
   computed: {
     invalidInitDate() {
@@ -82,12 +93,11 @@ export default {
       }
     },
     invalidLastDate() {
-        if (this.filterDate.initDate === "") 
-        {
-            return true;
-        } else {
-            return false;
-        }
+      if (this.filterDate.initDate === "") {
+        return true;
+      } else {
+        return false;
+      }
     }
   }
 };

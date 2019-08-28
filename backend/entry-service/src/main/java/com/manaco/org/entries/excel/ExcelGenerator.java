@@ -20,7 +20,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class ExcelGenerator {
 
-    public static synchronized ByteArrayInputStream customersToExcel(List<Transaction> transactions) throws IOException {
+    public static synchronized ByteArrayInputStream downloadTransation(List<Transaction> transactions) throws IOException {
 //        String[] COLUMNs = {"ID", "Cantidad", "Precio", "FechaActualizacion"};
         String[] COLUMNs = { "ITEM", "TIPO", "FECHA", "INGRESO", "EGRESO", "CANTIDAD", "PRECIO_NETO", "PRECIO_ACTUAL",
         "UFV", "INGRESO_TOTAL", "EGRESO_TOTAL", "TOTAL", "TOTAL_ACT", "INCR"};
@@ -70,6 +70,53 @@ public class ExcelGenerator {
                 row.createCell(12).setCellValue((transaction.getTotalUpdate() == null)? "0":transaction.getTotalUpdate().toString());
                 row.createCell(13).setCellValue((transaction.getIncrement()== null)? "0":transaction.getIncrement().toString());
 //                row.createCell(14).setCellValue(transaction.getEgress().toString());
+            }
+
+            workbook.write(out);
+            return new ByteArrayInputStream(out.toByteArray());
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static ByteArrayInputStream downloadItem(List<Item> items) {
+        String[] COLUMNs = {"ID", "Cantidad", "Precio", "FechaActualizacion", "Total"};
+        try {
+            XSSFWorkbook workbook = new XSSFWorkbook();
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            CreationHelper createHelper = workbook.getCreationHelper();
+
+            Sheet sheet = workbook.createSheet("Repuestos");
+
+            Font headerFont = workbook.createFont();
+            headerFont.setColor(IndexedColors.BLACK.getIndex());
+
+            CellStyle headerCellStyle = workbook.createCellStyle();
+            headerCellStyle.setFont(headerFont);
+
+            // Row for Header
+            Row headerRow = sheet.createRow(0);
+
+            // Header
+            for (int col = 0; col < COLUMNs.length; col++) {
+                Cell cell = headerRow.createCell(col);
+                cell.setCellValue(COLUMNs[col]);
+                cell.setCellStyle(headerCellStyle);
+            }
+
+            // CellStyle for Age
+            CellStyle ageCellStyle = workbook.createCellStyle();
+            ageCellStyle.setDataFormat(createHelper.createDataFormat().getFormat("#"));
+
+            int rowIdx = 1;
+            for (Item item : items) {
+                Row row = sheet.createRow(rowIdx++);
+                row.createCell(0).setCellValue(item.getId());
+                row.createCell(1).setCellValue(item.getQuantity().toString());
+                row.createCell(2).setCellValue(item.getPrice().toString());
+
+                row.createCell(3).setCellValue(item.getLastUpdate().toString());
+                row.createCell(4).setCellValue(item.getTotal().toString());
             }
 
             workbook.write(out);

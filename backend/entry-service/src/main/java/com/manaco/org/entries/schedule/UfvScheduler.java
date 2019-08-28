@@ -25,7 +25,7 @@ public class UfvScheduler {
     @Autowired
     private UfvRepository ufvRepository;
 
-//    @Scheduled(cron = "*/30 * * * * *")
+//    @Scheduled(cron = "*/50 * * * * *")
     @Scheduled(cron = "0 0 7 * * *")
     public void reportCurrentTime() {
         URL url;

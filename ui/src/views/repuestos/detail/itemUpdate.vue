@@ -14,22 +14,50 @@
         @focus="clearStatus"
         @keypress="clearStatus"
       />
-      <p v-if="error && submitting" class="error-message">❗Por favor llene las fechas</p>
-     <br/>
-      <b-button variant="success" @click="update()">
+      <p v-if="error && submitting" class="error-message">❗Por favor Ingrese la fecha</p>
+      <br />
+      <button class="btn btn-success">
         <i class="mdi mdi-file"></i>Actualizar Articulos
-      </b-button> 
+      </button>
     </form>
-    <!-- <div class="template-demo">
-      <b-button variant="success" @click="update()">
-        <i class="mdi mdi-file"></i>Actualizar Articulos
-      </b-button> -->
   </div>
 </template>
 
 <script>
-export default {};
+export default {
+  name: "item-update",
+  data() {
+    return {
+      submitting: false,
+      error: false,
+      success: false,
+      initDate: ""
+    };
+  },
+  methods: {
+    handleSubmit() {
+      this.submitting = true;
+      if (this.invalidInitDate) {
+        this.error = true;
+        return;
+      }
+      this.$emit("add:initDate", this.initDate);
+    },
+    clearStatus() {
+      this.success = false;
+      this.error = false;
+    }
+  },
+  computed: {
+    invalidInitDate() {
+      return this.initDate === "";
+    }
+  }
+};
 </script>
 
 <style scoped>
+form {
+  margin-bottom: 2rem;
+}
 </style>

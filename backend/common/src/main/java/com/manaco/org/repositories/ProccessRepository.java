@@ -17,4 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public interface ProccessRepository extends MongoRepository<Process, ObjectId> {
     Process findByNumberProcessAndIsActive(Integer number, boolean active);
+
+    Process findByIsActive(boolean b);
 }
