@@ -63,6 +63,8 @@ public class FileService {
             case REPUESTOS:
                 initialExecute(file, procesatorMoving, TransactionOption.REPUESTOS, processActive);
                 break;
+            case PRODUCTO:
+                initialExecute(file, procesatorMoving, TransactionOption.PRODUCTO, processActive);
 
         }
         return null;

@@ -22,6 +22,79 @@ public class ProcesatorMoving implements ProcesatorObject {
 
     @Override
     public void execute(Map<String, String> map, TransactionOption option, Process processActive) {
+        Transaction transaction;
+
+        if(processActive.getNumberProcess() == 2) {
+            transaction = buildTransactionProcessOne(map, processActive, option);
+        } else {
+            transaction = buildTransactionProcessTwo(map, processActive, option);
+        }
+
+        publisher.sentToTransaction(transaction, option);
+    }
+
+    private Transaction buildTransactionProcessTwo(Map<String, String> map, Process processActive, TransactionOption option) {
+        Transaction transaction = new Transaction();
+        Item item = new Item();
+        item.setId(map.get("ITEM"));
+        item.setPrice(new BigDecimal(map.get("COSTO").replace(",", ""))
+                .setScale(6, BigDecimal.ROUND_DOWN));
+        item.setIdentifier(option);
+        transaction.setIdentifier(option);
+        transaction.setProcessId(processActive.getId());
+        transaction.setType(TransactionType.SECOND_PROCESSS);
+        return transaction;
+    }
+
+    private TransactionDetail buildDetail(Map<String, String> map, TransactionOption option) {
+        switch (option) {
+            case PRIMA:
+                return buildPrimaDetail(map);
+            case REPUESTOS:
+                return buildRepuestos(map);
+            case PRODUCTO:
+                return buildProductDetail(map);
+        }
+        return null;
+    }
+
+    private TransactionDetail buildProductDetail(Map<String, String> map) {
+        return null;
+    }
+
+    private TransactionDetail buildRepuestos(Map<String, String> map) {
+        TransactionDetail detail = new TransactionDetail();
+        Map<String, String> info = new HashMap<>();
+        info.put("SECCION", map.get("SECCION"));
+        info.put("CTA", map.get("CTA"));
+        detail.setInformation(info);
+        return detail;
+    }
+
+    private Date convertToDate(String receivedDate) {
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        Date date = null;
+        try {
+            date = formatter.parse(receivedDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return date;
+    }
+
+    private TransactionDetail buildPrimaDetail(Map<String, String> map) {
+        TransactionDetail detail = new TransactionDetail();
+        Map<String, String> info = new HashMap<>();
+        info.put("CUENTA", map.get("CUENTA"));
+        info.put("ALMACEN", map.get("ALMACEN"));
+        info.put("SECCION_D", map.get("SECCION_D"));
+        info.put("DESCRIPCION", map.get("DESCRIPCION"));
+        detail.setInformation(info);
+        return detail;
+    }
+
+    private Transaction buildTransactionProcessOne(Map<String, String> map, Process processActive,
+                                                   TransactionOption option) {
         Transaction transaction = new Transaction();
         Item item = new Item();
         item.setId(map.get("ITEM"));
@@ -47,50 +120,8 @@ public class ProcesatorMoving implements ProcesatorObject {
         transaction.setItem(item);
         transaction.setProcessId(processActive.getId());
         transaction.setDetail(buildDetail(map, option));
-        publisher.sentToTransaction(transaction, option);
+
+        return transaction;
     }
 
-    private TransactionDetail buildDetail(Map<String, String> map, TransactionOption option) {
-        switch (option) {
-            case PRIMA:
-                return buildPrimaDetail(map);
-            case REPUESTOS:
-                return buildRepuestos(map);
-//            case PRODUCTO:
-//                return buildProductDetail(map);
-        }
-        return null;
-    }
-
-    private TransactionDetail buildRepuestos(Map<String, String> map) {
-        TransactionDetail detail = new TransactionDetail();
-        Map<String, String> info = new HashMap<>();
-        info.put("SECCION", map.get("SECCION"));
-        info.put("CTA", map.get("CTA"));
-        detail.setInformation(info);
-        return detail;
-    }
-
-
-    private Date convertToDate(String receivedDate) {
-        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-        Date date = null;
-        try {
-            date = formatter.parse(receivedDate);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return date;
-    }
-
-    private TransactionDetail buildPrimaDetail(Map<String, String> map) {
-        TransactionDetail detail = new TransactionDetail();
-        Map<String, String> info = new HashMap<>();
-        info.put("CUENTA", map.get("CUENTA"));
-        info.put("ALMACEN", map.get("ALMACEN"));
-        info.put("SECCION_D", map.get("SECCION_D"));
-        info.put("DESCRIPCION", map.get("DESCRIPCION"));
-        detail.setInformation(info);
-        return detail;
-    }
 }

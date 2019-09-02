@@ -16,8 +16,6 @@
                 type="date"
                 :class="{ 'has-error': submitting && invalidInitDate}"
                 v-model="initDate"
-                @focus="clearStatus"
-                @keypress="clearStatus"
               />
               <p v-if="error && submitting" class="error-message">❗Por favor llene las fechas</p>
               <button class="btn btn-success spce">
@@ -53,7 +51,6 @@
                 type="text"
                 :class="{ 'has-error': submitting && invalidYear}"
                 v-model="year"
-                @keypress="clearStatus"
               />
               <p v-if="errorUpload && submitting" class="error-message">❗Por favor agrege el año</p>
               <b-button type="submit" variant="success" class="mr-2 spce">Cargar</b-button>

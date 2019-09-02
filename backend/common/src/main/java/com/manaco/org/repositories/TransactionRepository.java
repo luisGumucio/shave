@@ -23,6 +23,8 @@ public interface TransactionRepository extends MongoRepository<Transaction, Stri
 
     Page<Transaction> findByItemId(Pageable pageable, String id);
 
+    List<Transaction> findByItemId(String id);
+
     Page<Transaction> findByItemIdAndTransactionDate(Pageable pageable, String id, LocalDate creationDate);
 
     Page<Transaction> findByTransactionDateAndIdentifier(Pageable pageable, LocalDate creationDate, String identifier);

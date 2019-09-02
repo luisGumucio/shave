@@ -58,8 +58,8 @@ public class ProcesatorInitial implements ProcesatorObject {
 
     private TransactionDetail buildDetail(Map<String, String> map, TransactionOption option) {
         switch (option) {
-            case PRIMA:
-                return buildPrimaDetail(map);
+//            case PRIMA:
+//                return buildPrimaDetail(map);
 //            case REPUESTOS:
 //                initialExecute(file, processatorInitial, TransactionOption.REPUESTOS, processActive);
 //                break;
@@ -73,6 +73,7 @@ public class ProcesatorInitial implements ProcesatorObject {
         TransactionDetail detail = new TransactionDetail();
         Map<String, String> info = new HashMap<>();
         info.put("TIENDA", map.get("TIENDA"));
+        info.put("PK_SEMANA", map.get("PK_SEMANA"));
         detail.setInformation(info);
         return detail;
     }

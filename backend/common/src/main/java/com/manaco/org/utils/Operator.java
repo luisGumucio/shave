@@ -38,8 +38,8 @@ public class Operator {
         return totalUpdate.subtract(totalNormal);
     }
 
-    public BigDecimal calculateUfv(BigDecimal actualUfv, BigDecimal beforeUfv) {
-        return actualUfv.divide(beforeUfv, RoundingMode.DOWN);
+    public BigDecimal calculatePorcentaje(BigDecimal stockQuantity, BigDecimal stockTotal) {
+        return stockQuantity.divide(stockTotal, RoundingMode.DOWN);
     }
 
     public BigDecimal calculateQuantityTotal(BigDecimal quantity, BigDecimal price) {

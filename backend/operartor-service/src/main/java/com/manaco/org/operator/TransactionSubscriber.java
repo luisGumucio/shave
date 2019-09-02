@@ -20,6 +20,8 @@ public class TransactionSubscriber {
     @Autowired
     private TransactionRepuestosService transactionRepuestosService;
 
+    @Autowired
+    private TransactionPTService transactionPTService;
 
     @RabbitListener(queues = "${repuestos.rabbitmq.queue}")
     public synchronized void receiveInitial(Transaction transaction) {
@@ -41,19 +43,24 @@ public class TransactionSubscriber {
             case INITIAL:
                 service.saveItem(transaction);
                 break;
+            case SECOND_PROCESSS:
+                service.executeSecondProcess(transaction);
             default:
+
                 service.executeMoving(transaction);
                 break;
         }
         LOGGER.info("recibido");
     }
-//
-//    @RabbitListener(queues = "${producto.rabbitmq.queue}")
-//    public synchronized void receivedProducto(Transaction transaction) {
-//        switch (transaction.getType()) {
-//            case INITIAL:
-//                service.saveItemProduct(transaction);
-//                break;
-//        }
-//    }
+
+    @RabbitListener(queues = "${producto.rabbitmq.queue}")
+    public synchronized void receivedProducto(Transaction transaction) {
+        switch (transaction.getType()) {
+            case INITIAL:
+                service.saveItemProduct(transaction);
+                break;
+            default:
+                transactionPTService.executeMoving(transaction);
+        }
+    }
 }

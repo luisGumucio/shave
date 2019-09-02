@@ -13,8 +13,6 @@
               type="date"
               :class="{ 'has-error': submitting && invalidInitDate}"
               v-model="filterDate.initDate"
-              @focus="clearStatus"
-              @keypress="clearStatus"
             />
             <label class="control-label" for="date">Hasta</label>
             <input

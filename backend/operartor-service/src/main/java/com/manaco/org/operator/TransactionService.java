@@ -2,6 +2,7 @@ package com.manaco.org.operator;
 
 import com.manaco.org.model.*;
 
+import com.manaco.org.model.Process;
 import com.manaco.org.repositories.*;
 import com.manaco.org.utils.Operator;
 
@@ -14,6 +15,9 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.List;
+
+import static com.manaco.org.model.TransactionType.INITIAL;
 
 @Service
 public class TransactionService {
@@ -53,6 +57,7 @@ public class TransactionService {
             System.out.println("item not found with  id " + transaction.getItem());
             saveItemNotFound(transaction);
         }
+
     }
 
     private void saveItemNotFound(Transaction otherTransaction) {
@@ -67,7 +72,7 @@ public class TransactionService {
         item.setIdentifier(otherTransaction.getIdentifier());
         item.setTotal(item.getPrice().multiply(item.getQuantity()));
 
-        transaction.setType(TransactionType.INITIAL);
+        transaction.setType(INITIAL);
         transaction.setPriceActual(item.getPrice());
         transaction.setPriceNeto(BigDecimal.ZERO);
         transaction.setBalance(item.getQuantity());
@@ -206,7 +211,7 @@ public class TransactionService {
         }
 
         itemRepository.save(transaction.getItem());
-        if (transaction.getDetail() !=  null) {
+        if (transaction.getDetail() != null) {
             detailRepository.save(transaction.getDetail());
 //            savePrimaStock(transaction, transaction.getItem());
         }
@@ -215,67 +220,58 @@ public class TransactionService {
         LOGGER.info("adding initial transaction with item id" + transaction.getItem().getId());
     }
 
-//    private void saveStock(Transaction transaction, Item item) {
-//        Stock stock = stockRepository.findById(Long.valueOf(transaction.getDetail().getInformation().get("TIENDA"))).orElse(null);
-//        if (stock == null && item == null) {
-//            stock = new Stock();
-//            stock.setId(Long.valueOf(transaction.getDetail().getInformation().get("TIENDA")));
-//            stock.setQuantity(transaction.getQuantity());
-//            stock.addItem(transaction.getItem());
-//            stockRepository.save(stock);
-//        } else if (stock == null && item != null) {
-//            stock = new Stock();
-//            stock.setId(Long.valueOf(transaction.getDetail().getInformation().get("TIENDA")));
-//            stock.setQuantity(transaction.getQuantity());
-//            stock.addItem(item);
-//            stockRepository.save(stock);
-//        } else {
-//            stock.setQuantity(stock.getQuantity().add(transaction.getQuantity()));
-//            stock.addItem(item);
-//            stockRepository.save(stock);
-//        }
-//    }
-//
-//    private synchronized Ufv checkUfv(Ufv ufv) {
-//        Ufv actual = ufvRepository.findByCreationDate(ufv.getCreationDate());
-//        if (actual == null) {
-//            ufvRepository.save(ufv);
-//        }
-//        return actual;
-//    }
-//
-//    public void saveItemProduct(Transaction transaction) {
-//        if (transaction.getItem().getQuantity().intValue() < 0) {
-//            transaction.getItem().setIsFailure(Boolean.TRUE);
-//        } else {
-//            transaction.getItem().setIsFailure(Boolean.FALSE);
-//        }
-//
-//        Item item = itemRepository.findById(transaction.getItem().getId()).orElse(null);
-//
-//        if(item == null) {
-//            itemRepository.save(transaction.getItem());
-//        } else {
-//            item.setQuantity(item.getQuantity().add(transaction.getQuantity()));
-//            itemRepository.save(item);
-//        }
-//        saveStock(transaction, item);
-//        detailRepository.save(transaction.getDetail());
-//        transactionRepository.save(transaction);
-//        LOGGER.info("adding initial transaction with item id" + transaction.getItem().getId());
-//    }
-//
+    private void saveStock(Transaction transaction, Item item) {
+        Stock stock = stockRepository.findById(Long.valueOf(transaction.getDetail().getInformation().get("TIENDA"))).orElse(null);
+        if (stock == null && item == null) {
+            stock = new Stock();
+            stock.setId(Long.valueOf(transaction.getDetail().getInformation().get("TIENDA")));
+            stock.setQuantity(transaction.getBalance());
+            stock.addItem(transaction.getItem());
+            stockRepository.save(stock);
+        } else if (stock == null && item != null) {
+            stock = new Stock();
+            stock.setId(Long.valueOf(transaction.getDetail().getInformation().get("TIENDA")));
+            stock.setQuantity(transaction.getBalance());
+            stock.addItem(item);
+            stockRepository.save(stock);
+        } else {
+            stock.setQuantity(stock.getQuantity().add(transaction.getBalance()));
+            stock.addItem(item);
+            stockRepository.save(stock);
+        }
+    }
 
-//
+    public void saveItemProduct(Transaction transaction) {
+        if (transaction.getItem().getQuantity().intValue() < 0) {
+            transaction.getItem().setIsFailure(Boolean.TRUE);
+        } else {
+            transaction.getItem().setIsFailure(Boolean.FALSE);
+        }
+
+        Item item = itemRepository.findById(transaction.getItem().getId()).orElse(null);
+
+        if (item == null) {
+            itemRepository.save(transaction.getItem());
+        } else {
+            item.setQuantity(item.getQuantity().add(transaction.getBalance()));
+            item.setTotal(item.getQuantity().multiply(item.getPrice()));
+            itemRepository.save(item);
+        }
+        saveStock(transaction, item);
+        detailRepository.save(transaction.getDetail());
+        transactionRepository.save(transaction);
+        LOGGER.info("adding initial transaction PT with item id" + transaction.getItem().getId());
+    }
+
     private void savePrimaStock(Transaction transaction, Item item) {
         Stock stock = stockRepository.findById(Long.valueOf(transaction.getDetail().getInformation().get("ALMACEN"))).orElse(null);
-        if(stock == null && item == null) {
+        if (stock == null && item == null) {
             stock = new Stock();
             stock.setId(Long.valueOf(transaction.getDetail().getInformation().get("ALMACEN")));
             stock.setQuantity(transaction.getItem().getQuantity());
             stock.addItem(transaction.getItem());
             stockRepository.save(stock);
-        } else if(stock == null && item != null) {
+        } else if (stock == null && item != null) {
             stock = new Stock();
             stock.setId(Long.valueOf(transaction.getDetail().getInformation().get("ALMACEN")));
             stock.setQuantity(transaction.getItem().getQuantity());
@@ -287,45 +283,37 @@ public class TransactionService {
             stockRepository.save(stock);
         }
     }
-//
 
-//
-//    private Item updateItem(Item item, Transaction transaction, Ufv actual) {
-//        if (!item.getLastUpdate().equals(transaction.getTransactionDate())) {
-//            Ufv before = ufvRepository.findByCreationDate(item.getLastUpdate());
-//            if (item.getQuantity().intValue() != 0) {
-//                BigDecimal totalNormal = operator.calculateTotal(item.getQuantity(), item.getPrice());
-//                BigDecimal totalUpdate = operator.calculateUpdate(totalNormal, actual.getValue(), before.getValue());
-//                BigDecimal newPrice = operator.newPrice(totalUpdate, item.getQuantity());
-//                BigDecimal ufvValue = operator.caclulateUfvValue(totalUpdate, totalNormal);
-//                item.setPrice(newPrice.setScale(6, BigDecimal.ROUND_CEILING));
-//                item.setLastUpdate(transaction.getTransactionDate());
-//                saveMove(item, TransactionType.UPDATE, ufvValue, totalNormal, totalUpdate, transaction.getProcessId());
-//            }
-//        }
-//        return item;
-//    }
-//
-//    private void saveMove(Item item, TransactionType type, BigDecimal ufvValue, BigDecimal totalNormal,
-//                          BigDecimal totalUpdate,
-//                          String proccesID) {
-//        Transaction transaction = new Transaction();
-//        transaction.setPriceActual(item.getPrice());
-//        transaction.setQuantity(item.getQuantity());
-//        transaction.setType(type);
-//        transaction.setUfvValue(ufvValue);
-//        transaction.setTransactionDate(item.getLastUpdate());
-//        transaction.setProcessId(proccesID);
-//        transaction.setItem(item);
-//        transaction.setIdentifier(item.getIdentifier());
-//        transaction.setTotalNormal(totalNormal);
-//        transaction.setTotalUpdate(totalUpdate);
-//        itemRepository.save(item);
-//        transactionRepository.save(transaction);
-//    }
-//
+    public void executeSecondProcess(Transaction current) {
+        Item item = itemRepository.findById(current.getItem().getId()).orElse(null);
+        List<Transaction> transactions = transactionRepository.findByItemId(item.getId());
+        if (item != null && !transactions.isEmpty()) {
+            Ufv currentUfv = ufvRepository.findByCreationDate(item.getInitialDate());
+            item.setPrice(current.getItem().getPrice());
+            item.setQuantity(transactions.get(0).getBalance());
+            item.setLastUpdate(item.getInitialDate());
+            itemRepository.save(item);
+            Transaction transaction = new Transaction();
 
-//
+            transaction.setBalance(item.getQuantity());
+            transaction.setPriceActual(item.getPrice());
+            transaction.setPriceNeto(BigDecimal.ZERO);
+            transaction.setType(INITIAL);
+            transaction.setTransactionDate(item.getLastUpdate());
+            transaction.setIncrement(BigDecimal.ZERO);
+            transaction.setProcessId(transaction.getProcessId());
 
-
+            transaction.setItem(item);
+            transaction.setUfv(currentUfv);
+            transactionRepository.save(transaction);
+            transactions.forEach((b) -> {
+                if (b.getType() != INITIAL) {
+                    b.setProcessId(transaction.getProcessId());
+                    b.setPriceNeto(transaction.getPriceActual());
+                    b.setItem(item);
+                    executeMoving(b);
+                }
+            });
+        }
+    }
 }

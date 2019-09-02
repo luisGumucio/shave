@@ -8,6 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/stock")
 @CrossOrigin(origins = "*")
@@ -25,4 +27,9 @@ public class StockController {
 //    public Stock getByItem(@RequestParam(defaultValue = "0") int page, @PathVariable String id) {
 //        return stockRepository.findByItemId(id);
 //    }
+
+    @GetMapping(path = "/byItem/{id}")
+    public List<Stock> getByItem(@PathVariable String id) {
+        return stockRepository.findByItemsId(id);
+    }
 }

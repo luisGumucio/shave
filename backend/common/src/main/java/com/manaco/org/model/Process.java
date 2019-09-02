@@ -24,10 +24,9 @@ import java.util.List;
 public class Process {
     
     @Id
-    private ObjectId id;
+    private String id;
 
     private LocalDate processTime;
-
 
     private int numberProcess;
 
@@ -49,10 +48,10 @@ public class Process {
     }
 
     public String getId() {
-        return id.toHexString();
+        return id;
     }
 
-    public void setId(ObjectId id) {
+    public void setId(String id) {
         this.id = id;
     }
 
