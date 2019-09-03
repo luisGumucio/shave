@@ -2,7 +2,7 @@
   <div class="clearfix btn-group col-md-2 offset-md-5">
     <button
       type="button"
-      class="btn btn-sm btn-outline-secondary"
+      class="btn btn-sm btn-primary"
       v-if="pagiItem.page != 1"
       @click="pagiItem.page--"
     ><<</button>
@@ -16,7 +16,7 @@
       type="button"
       @click="pagiItem.page++"
       v-if="pagiItem.page < pagiItem.pages.length"
-      class="btn btn-sm btn-outline-secondary"
+      class="btn btn-sm btn-primary"
     >>></button>
   </div>
 </template>

@@ -10,7 +10,8 @@
     <div class="row">
       <div class="col-md-12">
         <div class="table-responsive">
-          <transaction-table :items="items" @detail:item="detail"/>
+          <transaction-table :items="items" @detail:item="detail" />
+          <item-pagination :pagiItem="pagiItem" @paginate:pagiItem="paginate" />
         </div>
       </div>
     </div>
@@ -22,19 +23,27 @@ import TransactionDetail from "../repuestos/detail/TransactionDetail.vue";
 import TransactionFilter from "../repuestos/detail/TransactionFilter.vue";
 import DownloadService from "../../services/downloadService";
 import VueInstantLoadingSpinner from "vue-instant-loading-spinner/src/components/VueInstantLoadingSpinner.vue";
+import ItemPagination from "../utils/pagination.vue";
+
 export default {
   components: {
     TransactionTable,
     TransactionDetail,
     TransactionFilter,
     DownloadService,
-    VueInstantLoadingSpinner
+    VueInstantLoadingSpinner,
+    ItemPagination
   },
   data() {
     return {
       reportTransaction: {},
       items: [],
-      baseUrl: "http://localhost:4000/transaction"
+      baseUrl: "http://localhost:4000/transaction",
+      pagiItem: {
+        page: 1,
+        totalPages: 0,
+        pages: []
+      }
     };
   },
   mounted() {
@@ -47,10 +56,33 @@ export default {
         const response = await fetch(this.baseUrl + "/identifier/PRIMA");
         const data = await response.json();
         this.items = data["content"];
+        this.pagiItem.totalPages = data["totalPages"];
+        this.setPages();
         console.log(this.item);
       } catch (error) {
         console.error(error);
       }
+    },
+    async getItemsPagination(page) {
+      try {
+        const response = await fetch(
+          this.baseUrl + "/identifier/PRIMA?page=" + page
+        );
+        const data = await response.json();
+        this.items = data["content"];
+        this.pagiItem.totalPages = data["totalPages"];
+        this.setPages();
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    setPages() {
+      for (let index = 1; index <= this.pagiItem.totalPages; index++) {
+        this.pagiItem.pages.push(index);
+      }
+    },
+    paginate(page) {
+      return this.getItemsPagination(page);
     },
     async getTotal() {
       try {
@@ -118,6 +150,11 @@ export default {
           " Cuenta: " +
           detail.information.CUENTA
       );
+    }
+  },
+  computed: {
+    displayedPosts() {
+      return this.paginate(this.items);
     }
   }
 };

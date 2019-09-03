@@ -24,7 +24,7 @@ export default {
       },
       {
         text: "Procesos",
-        // to: "/rprocess"
+        to: "/rprocess"
         
       },
       {
