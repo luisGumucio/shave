@@ -1,5 +1,6 @@
 <template>
   <div class="col-md-12 grid-margin stretch-card">
+    <vue-instant-loading-spinner ref="Spinner"></vue-instant-loading-spinner>
     <div class="col-md-8 grid-margin stretch-card">
       <div class="card">
         <div class="card-body">
@@ -50,6 +51,8 @@
             </table>
           </div>
         </div>
+        <br />
+        <item-update @add:initDate="update" />
       </div>
     </div>
   </div>
@@ -57,10 +60,14 @@
 <script>
 import ItemTable from "./detail/itemTable.vue";
 import DownloadService from "../../services/downloadService";
+import ItemUpdate from "../repuestos/detail/itemUpdate.vue";
+import VueInstantLoadingSpinner from "vue-instant-loading-spinner/src/components/VueInstantLoadingSpinner.vue";
 
 export default {
   components: {
-    ItemTable
+    ItemTable,
+    ItemUpdate,
+    VueInstantLoadingSpinner
   },
   data() {
     return {
@@ -108,23 +115,32 @@ export default {
     },
     async getItemById(value) {
       try {
-        const response = await fetch(
-          this.baseUrl + "/" + value
-        );
+        const response = await fetch(this.baseUrl + "/" + value);
         const data = await response.json();
-        if(data != null) {
-            this.items.push(data);
+        if (data != null) {
+          this.items.push(data);
         } else {
-            this.items = [];
+          this.items = [];
         }
-        
       } catch (error) {
         console.error(error);
         this.items = [];
       }
     },
-    download() {
-        DownloadService.downloadfile("PRIMA", "item");
+    async download() {
+      this.$refs.Spinner.show();
+      DownloadService.downloadfile("PRIMA", "item", this.$refs.Spinner);
+    },
+    async update(initDate) {
+      DownloadService.updateItem(initDate, "PRIMA");
+    },
+    sleep(milliseconds) {
+      var start = new Date().getTime();
+      for (var i = 0; i < 1e7; i++) {
+        if (new Date().getTime() - start > milliseconds) {
+          break;
+        }
+      }
     }
   },
   filters: {
@@ -140,10 +156,10 @@ export default {
     search: function(value) {
       if (this.search.length == 0) {
         this.items = this.itemstemporal;
-      } else if(this.search.length >= 4) {
+      } else if (this.search.length >= 4) {
         this.getItemById(value);
       } else {
-          this.items = [];
+        this.items = [];
       }
     }
   }

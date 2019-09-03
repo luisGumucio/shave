@@ -1,5 +1,6 @@
 package com.manaco.org.operator;
 
+import com.manaco.org.dto.ItemStock;
 import com.manaco.org.model.*;
 
 import com.manaco.org.model.Process;
@@ -222,21 +223,37 @@ public class TransactionService {
 
     private void saveStock(Transaction transaction, Item item) {
         Stock stock = stockRepository.findById(Long.valueOf(transaction.getDetail().getInformation().get("TIENDA"))).orElse(null);
+        ItemStock itemStock = new ItemStock();
+
         if (stock == null && item == null) {
             stock = new Stock();
             stock.setId(Long.valueOf(transaction.getDetail().getInformation().get("TIENDA")));
-            stock.setQuantity(transaction.getBalance());
-            stock.addItem(transaction.getItem());
+            itemStock.setQuantity(transaction.getBalance());
+            itemStock.setTotal(itemStock.getQuantity().multiply(transaction.getItem().getPrice()));
+            itemStock.setItem(transaction.getItem());
+            stock.addItem(itemStock);
+
             stockRepository.save(stock);
         } else if (stock == null && item != null) {
             stock = new Stock();
             stock.setId(Long.valueOf(transaction.getDetail().getInformation().get("TIENDA")));
-            stock.setQuantity(transaction.getBalance());
-            stock.addItem(item);
+            itemStock.setQuantity(transaction.getBalance());
+            itemStock.setTotal(itemStock.getQuantity().multiply(item.getPrice()));
+            itemStock.setItem(item);
+            stock.addItem(itemStock);
             stockRepository.save(stock);
-        } else {
-            stock.setQuantity(stock.getQuantity().add(transaction.getBalance()));
-            stock.addItem(item);
+        } else if (stock != null && item == null) {
+            itemStock.setQuantity(transaction.getBalance());
+            itemStock.setTotal(itemStock.getQuantity().multiply(transaction.getItem().getPrice()));
+            itemStock.setItem(transaction.getItem());
+            stock.addItem(itemStock);
+            stockRepository.save(stock);
+        }
+        else {
+            itemStock.setQuantity(transaction.getBalance());
+            itemStock.setTotal(itemStock.getQuantity().multiply(item.getPrice()));
+            itemStock.setItem(item);
+            stock.addItem(itemStock);
             stockRepository.save(stock);
         }
     }
@@ -263,26 +280,26 @@ public class TransactionService {
         LOGGER.info("adding initial transaction PT with item id" + transaction.getItem().getId());
     }
 
-    private void savePrimaStock(Transaction transaction, Item item) {
-        Stock stock = stockRepository.findById(Long.valueOf(transaction.getDetail().getInformation().get("ALMACEN"))).orElse(null);
-        if (stock == null && item == null) {
-            stock = new Stock();
-            stock.setId(Long.valueOf(transaction.getDetail().getInformation().get("ALMACEN")));
-            stock.setQuantity(transaction.getItem().getQuantity());
-            stock.addItem(transaction.getItem());
-            stockRepository.save(stock);
-        } else if (stock == null && item != null) {
-            stock = new Stock();
-            stock.setId(Long.valueOf(transaction.getDetail().getInformation().get("ALMACEN")));
-            stock.setQuantity(transaction.getItem().getQuantity());
-            stock.addItem(item);
-            stockRepository.save(stock);
-        } else {
-            stock.setQuantity(stock.getQuantity().add(transaction.getItem().getQuantity()));
-            stock.addItem(item);
-            stockRepository.save(stock);
-        }
-    }
+//    private void savePrimaStock(Transaction transaction, Item item) {
+//        Stock stock = stockRepository.findById(Long.valueOf(transaction.getDetail().getInformation().get("ALMACEN"))).orElse(null);
+//        if (stock == null && item == null) {
+//            stock = new Stock();
+//            stock.setId(Long.valueOf(transaction.getDetail().getInformation().get("ALMACEN")));
+//            stock.setQuantity(transaction.getItem().getQuantity());
+//            stock.addItem(transaction.getItem());
+//            stockRepository.save(stock);
+//        } else if (stock == null && item != null) {
+//            stock = new Stock();
+//            stock.setId(Long.valueOf(transaction.getDetail().getInformation().get("ALMACEN")));
+//            stock.setQuantity(transaction.getItem().getQuantity());
+//            stock.addItem(item);
+//            stockRepository.save(stock);
+//        } else {
+//            stock.setQuantity(stock.getQuantity().add(transaction.getItem().getQuantity()));
+//            stock.addItem(item);
+//            stockRepository.save(stock);
+//        }
+//    }
 
     public void executeSecondProcess(Transaction current) {
         Item item = itemRepository.findById(current.getItem().getId()).orElse(null);

@@ -24,10 +24,10 @@ export default {
           text: "Transaciones",
           to: "/mtransactiongeneral"
         },
-        {
-          text: "Almacen",
-          to: "/mAlmacen"
-        },
+        // {
+        //   text: "Almacen",
+        //   to: "/mAlmacen"
+        // },
         {
           text: "Procesos",
           active: true

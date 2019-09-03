@@ -1,5 +1,6 @@
 <template>
   <section class="dashboard">
+    <vue-instant-loading-spinner ref="Spinner"></vue-instant-loading-spinner>
     <h4 class="card-title">Transacciones generales</h4>
     <div class="row">
       <transaction-filter @add:filterDate="addFilter" @button-clicked="download()" />
@@ -9,7 +10,7 @@
     <div class="row">
       <div class="col-md-12">
         <div class="table-responsive">
-          <transaction-table :items="items" />
+          <transaction-table :items="items" @detail:item="detail"/>
         </div>
       </div>
     </div>
@@ -20,13 +21,14 @@ import TransactionTable from "../repuestos/detail/transactionTable.vue";
 import TransactionDetail from "../repuestos/detail/TransactionDetail.vue";
 import TransactionFilter from "../repuestos/detail/TransactionFilter.vue";
 import DownloadService from "../../services/downloadService";
-
+import VueInstantLoadingSpinner from "vue-instant-loading-spinner/src/components/VueInstantLoadingSpinner.vue";
 export default {
   components: {
     TransactionTable,
     TransactionDetail,
     TransactionFilter,
-    DownloadService
+    DownloadService,
+    VueInstantLoadingSpinner
   },
   data() {
     return {
@@ -60,16 +62,20 @@ export default {
       } catch (error) {}
     },
     download() {
-      DownloadService.downloadfile("PRIMA", "transaction");
+      this.$refs.Spinner.show();
+      DownloadService.downloadfile("PRIMA", "transaction", this.$refs.Spinner);
     },
     async getTotalByDate(filterDate) {
       if (filterDate.lastDate == null) {
         try {
-          const response = await fetch(this.baseUrl + "/reportDateTransaction/", {
-            method: "POST",
-            body: JSON.stringify(filterDate),
-            headers: { "Content-type": "application/json; charset=UTF-8" }
-          });
+          const response = await fetch(
+            this.baseUrl + "/reportDateTransaction/",
+            {
+              method: "POST",
+              body: JSON.stringify(filterDate),
+              headers: { "Content-type": "application/json; charset=UTF-8" }
+            }
+          );
           const data = await response.json();
           this.reportTransaction = data[0];
         } catch (error) {}
@@ -103,6 +109,15 @@ export default {
       } catch (error) {
         console.error(error);
       }
+    },
+    detail(detail) {
+      // console.log(detail.information.ALMACEN);
+      alert(
+        "Almacen: " +
+          detail.information.ALMACEN +
+          " Cuenta: " +
+          detail.information.CUENTA
+      );
     }
   }
 };

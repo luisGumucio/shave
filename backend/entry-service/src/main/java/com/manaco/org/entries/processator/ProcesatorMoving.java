@@ -25,9 +25,9 @@ public class ProcesatorMoving implements ProcesatorObject {
         Transaction transaction;
 
         if(processActive.getNumberProcess() == 2) {
-            transaction = buildTransactionProcessOne(map, processActive, option);
-        } else {
             transaction = buildTransactionProcessTwo(map, processActive, option);
+        } else {
+            transaction = buildTransactionProcessOne(map, processActive, option);
         }
 
         publisher.sentToTransaction(transaction, option);

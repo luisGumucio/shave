@@ -12,7 +12,6 @@
         </div>
       </div>
     </div>
-
   </section>
 </template>
 
@@ -55,7 +54,7 @@ export default {
       }
     },
     async addFilter(filterDate) {
-      if (filterDate.lastDate != null) {
+      if (filterDate.lastDate != "") {
         filterDate.initDate.setDate(filterDate.initDate.getDate() - 1);
         filterDate.lastDate.setDate(filterDate.lastDate.getDate() + 1);
       }
@@ -91,15 +90,18 @@ export default {
 
     detail(detail) {
       // console.log(detail.information.ALMACEN);
-      alert("Almacen: " + detail.information.ALMACEN 
-      + " Cuenta: " + detail.information.CUENTA);
+      alert(
+        "Almacen: " +
+          detail.information.ALMACEN +
+          " Cuenta: " +
+          detail.information.CUENTA
+      );
     }
   }
 };
 </script>
 
 <style>
-
 .modal-mask {
   position: fixed;
   z-index: 9998;
@@ -107,9 +109,9 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, .5);
+  background-color: rgba(0, 0, 0, 0.5);
   display: table;
-  transition: opacity .3s ease;
+  transition: opacity 0.3s ease;
 }
 
 .modal-wrapper {
@@ -123,8 +125,8 @@ export default {
   padding: 20px 30px;
   background-color: #fff;
   border-radius: 2px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
-  transition: all .3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
+  transition: all 0.3s ease;
   font-family: Helvetica, Arial, sans-serif;
 }
 

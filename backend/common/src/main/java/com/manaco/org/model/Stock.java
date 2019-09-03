@@ -1,6 +1,7 @@
 package com.manaco.org.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.manaco.org.dto.ItemStock;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -18,11 +19,7 @@ public class Stock {
 
     private String name;
 
-    @NotNull
-    private BigDecimal quantity;
-
-    @DBRef
-    private List<Item> items;
+    private List<ItemStock> items;
 
     public Stock() {
         items = new ArrayList<>();
@@ -36,13 +33,6 @@ public class Stock {
         this.id = id;
     }
 
-    public BigDecimal getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(BigDecimal quantity) {
-        this.quantity = quantity;
-    }
 
     public String getName() {
         return name;
@@ -52,15 +42,16 @@ public class Stock {
         this.name = name;
     }
 
-    public List<Item> getItems() {
+    public List<ItemStock> getItems() {
         return items;
     }
 
-    public void setItems(List<Item> items) {
+    public void setItems(List<ItemStock> items) {
         this.items = items;
     }
 
-    public void addItem(Item item) {
+    public void addItem(ItemStock item) {
         this.items.add(item);
     }
+
 }

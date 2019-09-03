@@ -11,8 +11,6 @@
         type="date"
         :class="{ 'has-error': submitting && invalidInitDate}"
         v-model="initDate"
-        @focus="clearStatus"
-        @keypress="clearStatus"
       />
       <p v-if="error && submitting" class="error-message">❗Por favor Ingrese la fecha</p>
       <br />
@@ -42,6 +40,7 @@ export default {
         return;
       }
       this.$emit("add:initDate", this.initDate);
+      this.clearStatus();
     },
     clearStatus() {
       this.success = false;

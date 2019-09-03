@@ -11,5 +11,5 @@ public interface StockRepository extends MongoRepository<Stock, Long> {
 
 //    Stock findByItemId(String id);
 
-    List<Stock> findByItemsId(String id);
+    List<Stock> findByItemsItemId(String id);
 }

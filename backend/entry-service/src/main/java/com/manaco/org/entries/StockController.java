@@ -30,6 +30,7 @@ public class StockController {
 
     @GetMapping(path = "/byItem/{id}")
     public List<Stock> getByItem(@PathVariable String id) {
-        return stockRepository.findByItemsId(id);
+        return stockRepository.findByItemsItemId(id);
     }
+
 }

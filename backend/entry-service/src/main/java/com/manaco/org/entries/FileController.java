@@ -111,8 +111,6 @@ public class FileController {
         List<Item> items = itemRepository.findAllByIdentifier(identifier);
 
         ByteArrayInputStream in = ExcelGenerator.downloadItem(items);
-        // return IOUtils.toByteArray(in);
-
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=customers.xlsx");
 

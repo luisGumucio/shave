@@ -51,8 +51,8 @@ export default {
       error: false,
       success: false,
       filterDate: {
-        initDate: Date,
-        lastDate: Date,
+        initDate: '',
+        lastDate: '',
         identifier: ''
       }
     };
@@ -60,7 +60,6 @@ export default {
   methods: {
     handleSubmit() {
       this.submitting = true;
-      this.clearStatus();
       if (this.invalidInitDate || this.invalidLastDate) {
         this.error = true;
         return;

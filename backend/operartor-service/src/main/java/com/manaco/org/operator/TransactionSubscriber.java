@@ -60,7 +60,7 @@ public class TransactionSubscriber {
                 service.saveItemProduct(transaction);
                 break;
             default:
-                transactionPTService.executeMoving(transaction);
+//                transactionPTService.executeMoving(transaction);
         }
     }
 }
