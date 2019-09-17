@@ -6,6 +6,7 @@
 package com.manaco.org.repositories;
 
 import com.manaco.org.model.Process;
+import com.manaco.org.model.TransactionOption;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public interface ProccessRepository extends MongoRepository<Process, String> {
     Process findByNumberProcessAndIsActive(Integer number, boolean active);
+    Process findByNumberProcessAndIsActiveAndTransactionOption(Integer number, boolean active,
+                                                               TransactionOption option);
 
     Process findByIsActive(boolean b);
 }

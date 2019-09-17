@@ -8,6 +8,7 @@ public class FileUpload {
     private String name;
     private Date creationTime;
     private TransactionOption option;
+    private int totalRows;
 
     public FileUpload(String name, TransactionOption option) {
         this.name = name;
@@ -49,5 +50,13 @@ public class FileUpload {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public int getTotalRows() {
+        return totalRows;
+    }
+
+    public void setTotalRows(int totalRows) {
+        this.totalRows = totalRows;
     }
 }

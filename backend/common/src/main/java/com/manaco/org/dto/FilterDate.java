@@ -7,6 +7,7 @@ public class FilterDate {
     private LocalDate initDate;
     private LocalDate lastDate;
     private String identifier;
+    private String type;
 
     public LocalDate getInitDate() {
         return initDate;
@@ -30,5 +31,13 @@ public class FilterDate {
 
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

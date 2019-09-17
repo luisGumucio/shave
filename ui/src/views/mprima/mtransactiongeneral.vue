@@ -129,6 +129,7 @@ export default {
         ).toJSON();
       }
       filterDate.identifier = "PRIMA";
+      console.log(filterDate);
       try {
         const response = await fetch(this.baseUrl + "/transactionDate/", {
           method: "POST",
@@ -136,8 +137,8 @@ export default {
           headers: { "Content-type": "application/json; charset=UTF-8" }
         });
         const data = await response.json();
-        this.items = data["content"];
-        this.getTotalByDate(filterDate);
+        this.items = data;
+        // this.getTotalByDate(filterDate);
       } catch (error) {
         console.error(error);
       }

@@ -62,18 +62,19 @@ public class TransactionController {
 
     //metodo para busqueda por fecha general
     @PostMapping(path = "/transactionDate")
-    public Page<Transaction> getType1(@RequestParam(defaultValue = "0") int page,
-                                      @RequestBody FilterDate filterDate) {
+    public List<Transaction> getType1(@RequestBody FilterDate filterDate) {
 
-        if (filterDate.getLastDate() == null) {
-            return transactionRepository.findByTransactionDateAndIdentifier(PageRequest.of(page, 20),
-                    filterDate.getInitDate(), filterDate.getIdentifier());
-        } else {
-            return transactionRepository
-                    .findByTransactionDateBetweenAndIdentifier(
-                            PageRequest.of(page, 10), filterDate.getInitDate(),
-                            filterDate.getLastDate(), filterDate.getIdentifier());
-        }
+        return transactionRepository.findByTransactionDateAndIdentifierAndType(
+                filterDate.getInitDate(), filterDate.getIdentifier(), filterDate.getType());
+//        if (filterDate.getLastDate() == null) {
+//            return transactionRepository.findByTransactionDateAndIdentifier(PageRequest.of(page, 20),
+//                    filterDate.getInitDate(), filterDate.getIdentifier());
+//        } else {
+//            return transactionRepository
+//                    .findByTransactionDateBetweenAndIdentifier(
+//                            PageRequest.of(page, 10), filterDate.getInitDate(),
+//                            filterDate.getLastDate(), filterDate.getIdentifier());
+//        }
     }
 
     @PostMapping(path = "/reportDateTransaction")

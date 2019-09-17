@@ -3,6 +3,7 @@ package com.manaco.org.entries.excel;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 
 import com.manaco.org.model.Item;
@@ -66,10 +67,11 @@ public class ExcelGenerator {
                 row.createCell(8).setCellValue(transaction.getUfv().getValue().toString());
                 row.createCell(9).setCellValue((transaction.getTotalEntry() == null)? "0":transaction.getTotalEntry().toString());
                 row.createCell(10).setCellValue((transaction.getTotalEgress() == null)? "0":transaction.getTotalEgress().toString());
-                row.createCell(11).setCellValue((transaction.getTotalNormal() == null)? "0":transaction.getTotalNormal().toString());
-                row.createCell(12).setCellValue((transaction.getTotalUpdate() == null)? "0":transaction.getTotalUpdate().toString());
-                row.createCell(13).setCellValue((transaction.getIncrement()== null)? "0":transaction.getIncrement().toString());
+                row.createCell(11).setCellValue((transaction.getTotalNormal() == null)? BigDecimal.ZERO.intValue() :transaction.getTotalNormal().doubleValue());
+                row.createCell(12).setCellValue((transaction.getTotalUpdate() == null)? BigDecimal.ZERO.intValue():transaction.getTotalUpdate().doubleValue());
+                row.createCell(13).setCellValue((transaction.getIncrement()== null)? BigDecimal.ZERO.intValue():transaction.getIncrement().doubleValue());
 //                row.createCell(14).setCellValue(transaction.getEgress().toString());
+
             }
 
             workbook.write(out);

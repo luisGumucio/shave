@@ -60,7 +60,8 @@ public class FileController {
         try {
             Process processActive = fileService.saveProcess(option, process);
             fileService.readFile(file.getInputStream(), processActive, option);
-            fileUpload = fileService.saveFile(option, file.getOriginalFilename());
+            fileUpload = fileService.saveFile(option, file.getOriginalFilename(), fileService.getTotal());
+
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -26,8 +26,9 @@
               @focus="clearStatus"
             />
             <p v-if="error && submitting" class="error-message">❗Por favor llene las fechas</p>
-            <!-- <p v-if="success" class="success-message">✅ Employee successfully added</p> -->
-
+            <b-form-group label="tipo de transaccion" label-for="input11">
+              <b-form-select v-model="selected" :options="options" />
+            </b-form-group>
             <button class="btn btn-success">
               <i class="mdi mdi-magnify"></i> Buscar
             </button>
@@ -51,10 +52,20 @@ export default {
       error: false,
       success: false,
       filterDate: {
-        initDate: '',
-        lastDate: '',
-        identifier: ''
-      }
+        initDate: "",
+        lastDate: "",
+        identifier: "",
+        type:""
+      },
+      selected: "",
+      options: [
+        { value: null, text: "Seleccione una opcion" },
+        { value: "INITIAL", text: "Inicial" },
+        { value: "ENTRY", text: "Ingreso" },
+        { value: "EGRESS", text: "Egreso" },
+        { value: "UPDATE", text: "Actualizacion" },
+        { value: "TODO", text: "Todo" }
+      ]
     };
   },
   methods: {
@@ -65,6 +76,7 @@ export default {
         return;
       }
       console.log(this.filterDate);
+      this.filterDate.type = this.selected;
       this.$emit("add:filterDate", this.filterDate);
       this.error = false;
       this.success = true;

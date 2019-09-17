@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.CompletableFuture;
 
+import static com.manaco.org.model.TransactionOption.*;
+
 @Service
 public class FileService {
 
@@ -43,9 +45,11 @@ public class FileService {
     @Autowired
     private ProcesatorMoving procesatorMoving;
 
+    private int total;
 
-    @Async("threadPoolTaskExecutor")
-    public CompletableFuture<Void> readFile(InputStream file, Process processActive, String option) {
+//    @Async("threadPoolTaskExecutor")
+    public synchronized CompletableFuture<Void> readFile(InputStream file, Process processActive, String option) {
+        total = 0;
         TransactionOption transactionOption = TransactionOption.valueOf(option);
         switch (transactionOption) {
             case SALDO_INITIAL_PRIMA:
@@ -76,7 +80,8 @@ public class FileService {
             ExcelWorkSheetRowCallbackHandler sheetRowCallbackHandler =
                     new ExcelWorkSheetRowCallbackHandler((rowNum, map) -> {
                         LOGGER.info("rowNum=" + rowNum + ", map=" + map);
-                        procesatorObject.execute(map, option, processActive);
+                        total++;
+//                        procesatorObject.execute(map, option, processActive);
                     });
             pkg = OPCPackage.open(file);
             ExcelSheetCallback sheetCallback = new ExcelSheetCallback() {
@@ -118,29 +123,46 @@ public class FileService {
     }
 
     public Process saveProcess(String option, String number) {
-        Process process = processService.findByNumberProcessAndIsActive(Integer.valueOf(number), true);
         TransactionOption transactionOption = TransactionOption.valueOf(option);
-        if (process != null) {
-            process.addTransaction(transactionOption);
-        } else {
+        TransactionOption current = null;
+        switch (transactionOption) {
+            case SALDO_INITIAL_REPUESTOS:
+                current = REPUESTOS;
+                break;
+            case SALDO_INITIAL_PRIMA:
+                current = PRIMA;
+                break;
+            case SALDO_INITIAL_PRODUCTO:
+                current = PRODUCTO;
+                break;
+        }
+        Process process = processService.findByNumberProcessAndIsActiveAndTransactionOption(Integer.valueOf(number),
+                true, current);
+
+        if (process == null) {
             process = new Process();
             process.setNumberProcess(Integer.valueOf(number));
-            process.addTransaction(transactionOption);
+            process.setTransactionOption(current);
         }
 
         return processService.createProcess(process);
     }
 
-    public FileUpload saveFile(String option, String name) {
+    public FileUpload saveFile(String option, String name, int total) {
         FileUpload fileUpload = new FileUpload();
         TransactionOption transactionOption = TransactionOption.valueOf(option);
         fileUpload.setName(name);
         fileUpload.setOption(transactionOption);
+        fileUpload.setTotalRows(total);
         return filesRepository.save(fileUpload);
     }
 
 
     public Page<FileUpload> getFiles(PageRequest of) {
         return filesRepository.findAll(of);
+    }
+
+    public int getTotal() {
+        return total;
     }
 }

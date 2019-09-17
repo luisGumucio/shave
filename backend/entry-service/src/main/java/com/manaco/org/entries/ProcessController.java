@@ -1,6 +1,7 @@
 package com.manaco.org.entries;
 
 import com.manaco.org.model.Process;
+import com.manaco.org.model.TransactionOption;
 import com.manaco.org.repositories.ProccessRepository;
 import com.manaco.org.repositories.UfvRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +24,8 @@ public class ProcessController {
         return proccessRepository.findAll(new PageRequest(page, 10));
     }
 
-//    @GetMapping(path = "/fecha/{date}")
-//    public Ufv getDate(@PathVariable String date) {
-//        return ufvRepository.findByCreationDate(LocalDate.parse(date));
-//    }
+    @GetMapping(path = "/{identifier}")
+    public Process getDate(@PathVariable String identifier) {
+        return proccessRepository.findByNumberProcessAndIsActiveAndTransactionOption(1, true, TransactionOption.REPUESTOS);
+    }
 }
