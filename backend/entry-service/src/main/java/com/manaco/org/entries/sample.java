@@ -16,18 +16,6 @@ public class sample {
 
     public static void main( String[] args )
     {
-//        String s = "<td colspan=\"2\" align=\"center\" valign=\"middle\"><strong>Bs</strong>2,31220&nbsp;&nbsp;por unidad de <strong>UFV</strong> </td>";
-//        String target = "<td colspan=\"2\" align=\"center\" valign=\"middle\"><strong>Bs</strong>";
-//        String target1 = "&nbsp;&nbsp;por unidad de <strong>UFV</strong> </td>";
-//        int index = s.indexOf(target);
-//        int index1 = s.indexOf(target1);
-//
-//        int subIndex = index + target.length();
-//        int subIndex1 = index1 - target1.length();
-//
-//        System.out.print(s.substring(subIndex, subIndex1));
-
-
         URL url;
 
         try {

@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-public class Transaction {
+public class Transaction implements Comparable<Transaction> {
 
 
     @Id
@@ -187,6 +187,11 @@ public class Transaction {
 
     public void setIdentifier(TransactionOption identifier) {
         this.identifier = identifier;
+    }
+
+    @Override
+    public int compareTo(Transaction o) {
+        return getTransactionDate().compareTo(o.getTransactionDate());
     }
 
     //    @Override
