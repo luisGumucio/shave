@@ -108,6 +108,7 @@ public class ProcesatorMoving implements ProcesatorObject {
             transaction.setType(TransactionType.ENTRY);
             transaction.setPriceActual(item.getPrice());
             transaction.setPriceNeto(item.getPrice());
+            transaction.setDetail(buildDetail(map, option));
         } else if (map.get("TIPO").equals("S")) {
             transaction.setType(TransactionType.EGRESS);
             transaction.setPriceActual(item.getPrice());

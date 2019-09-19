@@ -8,6 +8,8 @@ import java.util.List;
 
 import com.manaco.org.model.Item;
 import com.manaco.org.model.Transaction;
+import com.manaco.org.model.TransactionOption;
+import com.manaco.org.model.TransactionType;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
@@ -21,10 +23,13 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class ExcelGenerator {
 
-    public static synchronized ByteArrayInputStream downloadTransation(List<Transaction> transactions) throws IOException {
-//        String[] COLUMNs = {"ID", "Cantidad", "Precio", "FechaActualizacion"};
+    public static synchronized ByteArrayInputStream downloadTransation(List<Transaction> transactions, String identifier) throws IOException {
         String[] COLUMNs = { "ITEM", "TIPO", "FECHA", "INGRESO", "EGRESO", "CANTIDAD", "PRECIO_NETO", "PRECIO_ACTUAL",
-        "UFV", "INGRESO_TOTAL", "EGRESO_TOTAL", "TOTAL", "TOTAL_ACT", "INCR"};
+                "UFV", "INGRESO_TOTAL", "EGRESO_TOTAL", "TOTAL", "TOTAL_ACT", "INCR", "SECCION", "CUENTA", "ALMACEN", "DESCRIPCION"};
+        if(TransactionOption.valueOf(identifier) == TransactionOption.REPUESTOS) {
+
+        }
+
         try {
             XSSFWorkbook workbook = new XSSFWorkbook();
             ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -70,6 +75,14 @@ public class ExcelGenerator {
                 row.createCell(11).setCellValue((transaction.getTotalNormal() == null)? BigDecimal.ZERO.intValue() :transaction.getTotalNormal().doubleValue());
                 row.createCell(12).setCellValue((transaction.getTotalUpdate() == null)? BigDecimal.ZERO.intValue():transaction.getTotalUpdate().doubleValue());
                 row.createCell(13).setCellValue((transaction.getIncrement()== null)? BigDecimal.ZERO.intValue():transaction.getIncrement().doubleValue());
+                row.createCell(14).setCellValue((transaction.getDetail()== null)? "":transaction.getDetail()
+                        .getInformation().get("SECCION_D"));
+                row.createCell(15).setCellValue((transaction.getDetail()== null)? "":transaction.getDetail()
+                        .getInformation().get("CUENTA"));
+                row.createCell(16).setCellValue((transaction.getDetail()== null)? "":transaction.getDetail()
+                        .getInformation().get("ALMACEN"));
+                row.createCell(17).setCellValue((transaction.getDetail()== null)? "":transaction.getDetail()
+                        .getInformation().get("DESCRIPCION"));
 //                row.createCell(14).setCellValue(transaction.getEgress().toString());
 
             }

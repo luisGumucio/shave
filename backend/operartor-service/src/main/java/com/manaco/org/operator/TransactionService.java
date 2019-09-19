@@ -195,9 +195,10 @@ public class TransactionService {
         entry.setIncrement(BigDecimal.ZERO);
         entry.setProcessId(transaction.getProcessId());
         entry.setIdentifier(item.getIdentifier());
+        entry.setDetail(transaction.getDetail());
         item.setPrice(entry.getPriceActual());
         item.setLastUpdate(transaction.getTransactionDate());
-
+        detailRepository.save(transaction.getDetail());
         itemRepository.save(item);
         transactionRepository.save(entry);
     }

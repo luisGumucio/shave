@@ -96,7 +96,7 @@ public class FileController {
     private ResponseEntity<InputStreamResource> downloadTransaction(String identifier) throws IOException {
         List<Transaction> transactions = transactionRepository.findAllByIdentifier(identifier);
 
-        ByteArrayInputStream in = ExcelGenerator.downloadTransation(transactions);
+        ByteArrayInputStream in = ExcelGenerator.downloadTransation(transactions, identifier);
         // return IOUtils.toByteArray(in);
 
         HttpHeaders headers = new HttpHeaders();

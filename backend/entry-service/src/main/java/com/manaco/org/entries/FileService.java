@@ -81,7 +81,7 @@ public class FileService {
                     new ExcelWorkSheetRowCallbackHandler((rowNum, map) -> {
                         LOGGER.info("rowNum=" + rowNum + ", map=" + map);
                         total++;
-//                        procesatorObject.execute(map, option, processActive);
+                        procesatorObject.execute(map, option, processActive);
                     });
             pkg = OPCPackage.open(file);
             ExcelSheetCallback sheetCallback = new ExcelSheetCallback() {
