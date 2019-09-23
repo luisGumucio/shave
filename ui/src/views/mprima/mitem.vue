@@ -62,12 +62,14 @@ import ItemTable from "./detail/itemTable.vue";
 import DownloadService from "../../services/downloadService";
 import ItemUpdate from "../repuestos/detail/itemUpdate.vue";
 import VueInstantLoadingSpinner from "vue-instant-loading-spinner/src/components/VueInstantLoadingSpinner.vue";
+import ItemService from "../../services/itemService";
 
 export default {
   components: {
     ItemTable,
     ItemUpdate,
-    VueInstantLoadingSpinner
+    VueInstantLoadingSpinner,
+    ItemService
   },
   data() {
     return {
@@ -75,7 +77,6 @@ export default {
       itemstemporal: [],
       totalsum: 0,
       totalPrice: 0,
-      baseUrl: "http://localhost:4000/items",
       currentPage: 0,
       perPage: 0,
       rows: 0,
@@ -88,44 +89,35 @@ export default {
   },
   methods: {
     async getItems() {
-      try {
-        const response = await fetch(
-          this.baseUrl + "?page=" + this.currentPage + "&identifier=PRIMA"
-        );
-        const data = await response.json();
-        this.items = data["content"];
-        this.itemstemporal = data["content"];
-        this.perPage = data.size;
-        this.rows = data.totalPages;
-        this.totalsum = data.totalElements;
-      } catch (error) {
-        console.error(error);
-      }
+      ItemService.getItems("PRIMA", this.currentPage)
+        .then(response => {
+          this.items = response.data["content"];
+          this.itemstemporal = response.data["content"];
+          this.perPage = response.data.size;
+          this.rows = response.data.totalPages;
+          this.totalsum = response.data.totalElements;
+        })
+        .catch(error => {
+          console.log(error);
+        });
     },
     async getTotal() {
-      try {
-        const response = await fetch(
-          "http://localhost:4000/items/itemtotal?identifier=PRIMA"
-        );
-        const data = await response.json();
-        this.totalPrice = data[0].total;
-      } catch (error) {
-        console.error(error);
-      }
+      ItemService.getTotal("PRIMA").then(response => {
+        this.totalPrice = response.data[0].total;
+      });
     },
     async getItemById(value) {
-      try {
-        const response = await fetch(this.baseUrl + "/" + value);
-        const data = await response.json();
-        if (data != null) {
-          this.items.push(data);
+      ItemService.getItemById(value).then(response => {
+        if (response.data !== "") {
+          this.items = [];
+          this.items.push(response.data);
         } else {
           this.items = [];
         }
-      } catch (error) {
-        console.error(error);
+      }).catch(error => {
+        console.log(error);
         this.items = [];
-      }
+      });
     },
     async download() {
       this.$refs.Spinner.show();

@@ -73,7 +73,7 @@ public class ProcesatorInitial implements ProcesatorObject {
         TransactionDetail detail = new TransactionDetail();
         Map<String, String> info = new HashMap<>();
         info.put("TIENDA", map.get("TIENDA"));
-        info.put("PK_SEMANA", map.get("PK_SEMANA"));
+//        info.put("PK_SEMANA", map.get("PK_SEMANA"));
         detail.setInformation(info);
         return detail;
     }

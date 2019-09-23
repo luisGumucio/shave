@@ -1,117 +1,27 @@
 <template>
-      <div class="col-md-12 grid-margin stretch-card">
+  <div class="col-md-12 grid-margin stretch-card">
+    <vue-instant-loading-spinner ref="Spinner"></vue-instant-loading-spinner>
     <div class="col-md-8 grid-margin stretch-card">
       <div class="card">
         <div class="card-body">
           <h4 class="card-title">Articulos</h4>
-          <!-- <b-table responsive :items="items1"></b-table>
-            <b-pagination :total-rows="20" v-model="currentPage" :per-page="5">
-          </b-pagination>-->
-          <div class="form-group pull-right">
-            <input type="text" class="search form-control" placeholder="Buscar Item" />
-            <b-button variant="success">
-              <i class="mdi mdi-cloud-download"></i>Exportar
-            </b-button>
+          <div class="col-lg-6">
+            <div class="input-group">
+              <input
+                type="text"
+                class="search form-control"
+                placeholder="Buscar Item"
+                v-model="search"
+              />
+            </div>
           </div>
-          <!-- <div class="form-group">
-            <label class="control-label" for="date">Date</label>
-            <input class="form-control" id="date" name="date" placeholder="MM/DD/YYY" type="date" />
-          </div> -->
-          <table class="table">
-            <thead class="thead-dark">
-              <tr>
-                <th scope="col">ID</th>
-                <th scope="col">Cantidad</th>
-                <th scope="col">Precio</th>
-                <th scope="col">Fecha Actualizacion</th>
-                <th scope="col">Total</th>
-                <th scope="col">Accion</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <th scope="row">94100230</th>
-                <td>5</td>
-                <td>12</td>
-                <td>10/20/2019</td>
-                <td>22</td>
-                <td>
-                  <p data-placement="top" data-toggle="tooltip" title="Transaction">
-                    <!-- <button
-                      class="btn btn-primary btn-xs"
-                      data-title="Transaction"
-                      data-toggle="modal"
-                      data-target="#edit"
-                    >
-                      <span class="mdi mdi-file-chart"></span>
-                    </button> -->
-                    <router-link class="btn btn-primary btn-xs" to="/rtransaction/"><span class="mdi mdi-file-chart"></span></router-link>
-                  </p>
-                </td>
-              </tr>
-              <tr>
-                <th scope="row">1</th>
-                <td>94100231</td>
-                <td>12</td>
-                <td>10/20/2019</td>
-                <td>22</td>
-                <td>
-                  <p data-placement="top" data-toggle="tooltip" title="Transaction">
-                    <button
-                      class="btn btn-primary btn-xs"
-                      data-title="Transaction"
-                      data-toggle="modal"
-                      data-target="#edit"
-                    >
-                      <span class="mdi mdi-file-chart"></span>
-                    </button>
-                  </p>
-                </td>
-              </tr>
-              <tr>
-                <th scope="row">1</th>
-                <td>94100233</td>
-                <td>12</td>
-                <td>10/20/2019</td>
-                <td>22</td>
-                <td>
-                  <p data-placement="top" data-toggle="tooltip" title="Transaction">
-                    <button
-                      class="btn btn-primary btn-xs"
-                      data-title="Transaction"
-                      data-toggle="modal"
-                      data-target="#edit"
-                    >
-                      <span class="mdi mdi-file-chart"></span>
-                    </button>
-                  </p>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <nav aria-label="Page navigation example">
-            <ul class="pagination">
-              <li class="page-item">
-                <a class="page-link" href="#" aria-label="Previous">
-                  <span aria-hidden="true">&laquo;</span>
-                </a>
-              </li>
-              <li class="page-item">
-                <a class="page-link" href="#">1</a>
-              </li>
-              <li class="page-item">
-                <a class="page-link" href="#">2</a>
-              </li>
-              <li class="page-item">
-                <a class="page-link" href="#">3</a>
-              </li>
-              <li class="page-item">
-                <a class="page-link" href="#" aria-label="Next">
-                  <span aria-hidden="true">&raquo;</span>
-                </a>
-              </li>
-            </ul>
-          </nav>
+          <br />
+          <b-button variant="success spce" @click="download()">
+            <i class="mdi mdi-cloud-download"></i>Exportar
+          </b-button>
+          <!-- <download-modal /> -->
+          <br />
+          <item-table :items="items" :current-page="currentPage" />
         </div>
       </div>
     </div>
@@ -131,30 +41,122 @@
                 <tr>
                   <td class="pl-0">Cantidad total</td>
                   <td class="pr-0 text-right">
-                    <b-badge pill variant="primary">5</b-badge>
+                    <b-badge pill variant="primary">{{ totalsum }}</b-badge>
                   </td>
                 </tr>
                 <tr>
                   <td class="pl-0">Precio total</td>
                   <td class="pr-0 text-right">
-                    <b-badge pill variant="primary">124,425.23</b-badge>
+                    <b-badge pill variant="primary">{{ totalPrice | currency }}</b-badge>
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
         </div>
+        <br />
+        <item-update @add:initDate="update" />
       </div>
     </div>
   </div>
 </template>
-
 <script>
+import ItemTable from "./detail/itemTable.vue";
+import ItemUpdate from "../repuestos/detail/itemUpdate.vue";
+import DownloadService from "../../services/downloadService";
+import ItemService from "../../services/itemService";
+import VueInstantLoadingSpinner from "vue-instant-loading-spinner/src/components/VueInstantLoadingSpinner.vue";
+
 export default {
-    
-}
+  components: {
+    ItemTable,
+    ItemUpdate,
+    DownloadService,
+    ItemService,
+    VueInstantLoadingSpinner
+  },
+  data() {
+    return {
+      items: [],
+      itemstemporal: [],
+      totalsum: 0,
+      totalPrice: 0,
+      currentPage: 0,
+      perPage: 0,
+      rows: 0,
+      search: ""
+    };
+  },
+  mounted() {
+    this.getItems();
+    this.getTotal();
+  },
+  methods: {
+    async getItems() {
+      ItemService.getItems("PRODUCTO", this.currentPage)
+      .then(response => {
+        this.items = response.data["content"];
+        this.itemstemporal = response.data["content"];
+        this.perPage = response.data.size;
+        this.rows = response.data.totalPages;
+        this.totalsum = response.data.totalElements;
+      }).catch(error => {
+        console.log(error);
+      });
+    },
+    async getTotal() {
+      ItemService.getTotal("PRODUCTO").then(response => {
+        this.totalPrice = response.data[0].total;
+      });
+    },
+    async getItemById(value) {
+      ItemService.getItemById(value).then(response => {
+        if (response.data !== "") {
+          this.items = [];
+          this.items.push(response.data);
+        } else {
+          this.items = [];
+        }
+      }).catch(error => {
+        console.log(error);
+        this.items = [];
+      });
+    },
+    async update(initDate) {
+      DownloadService.updateItem(initDate, "PRODUCTO");
+    },
+    download() {
+      this.$refs.Spinner.show();
+      DownloadService.downloadfile("PRODUCTO", "item", this.$refs.Spinner);
+    }
+  },
+  filters: {
+    currency(amount) {
+      const amt = Number(amount);
+      return (
+        (amt && amt.toLocaleString(undefined, { maximumFractionDigits: 3 })) ||
+        "0"
+      );
+    }
+  },
+  watch: {
+    search: function(value) {
+      console.log(value);
+      if (this.search.length == 0) {
+        this.items = this.itemstemporal;
+      } else if (this.search.length >= 4) {
+        this.getItemById(value);
+      } else {
+        this.items = [];
+      }
+    }
+  }
+};
 </script>
 
 <style scoped>
-
+.spce {
+  margin-bottom: 5px;
+}
 </style>
+

@@ -4,7 +4,7 @@
       <app-header/>
       <div class="container-fluid page-body-wrapper">
         <app-sidebar/>
-        <div class="main-panel">
+        <div class="main-panel" style="width:100%">
           <div class="col-md-14" style="    background: #F6F8FA;
               padding-top: 1.5rem;
 padding-right: 1.0rem;

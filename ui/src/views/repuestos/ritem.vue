@@ -1,5 +1,6 @@
 <template>
   <div class="col-md-12 grid-margin stretch-card">
+    <vue-instant-loading-spinner ref="Spinner"></vue-instant-loading-spinner>
     <div class="col-md-8 grid-margin stretch-card">
       <div class="card">
         <div class="card-body">
@@ -7,7 +8,7 @@
           <div class="col-lg-6">
             <div class="input-group">
               <input
-                type="number"
+                type="text"
                 class="search form-control"
                 placeholder="Buscar Item"
                 v-model="search"
@@ -62,15 +63,17 @@
 <script>
 import ItemTable from "./detail/itemTable.vue";
 import ItemUpdate from "./detail/itemUpdate.vue";
-import DownloadModal from "../utils/modal.vue";
 import DownloadService from "../../services/downloadService";
+import ItemService from "../../services/itemService";
+import VueInstantLoadingSpinner from "vue-instant-loading-spinner/src/components/VueInstantLoadingSpinner.vue";
 
 export default {
   components: {
     ItemTable,
     ItemUpdate,
-    DownloadModal,
-    DownloadService
+    DownloadService,
+    ItemService,
+    VueInstantLoadingSpinner
   },
   data() {
     return {
@@ -78,7 +81,6 @@ export default {
       itemstemporal: [],
       totalsum: 0,
       totalPrice: 0,
-      baseUrl: "http://localhost:4000/items",
       currentPage: 0,
       perPage: 0,
       rows: 0,
@@ -91,51 +93,41 @@ export default {
   },
   methods: {
     async getItems() {
-      try {
-        const response = await fetch(
-          this.baseUrl + "?page=" + this.currentPage + "&identifier=REPUESTOS"
-        );
-        const data = await response.json();
-        this.items = data["content"];
-        this.itemstemporal = data["content"];
-        this.perPage = data.size;
-        this.rows = data.totalPages;
-        this.totalsum = data.totalElements;
-      } catch (error) {
-        console.error(error);
-      }
+      ItemService.getItems("REPUESTOS", this.currentPage)
+      .then(response => {
+        this.items = response.data["content"];
+        this.itemstemporal = response.data["content"];
+        this.perPage = response.data.size;
+        this.rows = response.data.totalPages;
+        this.totalsum = response.data.totalElements;
+      }).catch(error => {
+        console.log(error);
+      });
     },
     async getTotal() {
-      try {
-        const response = await fetch(
-          "http://localhost:4000/items/itemtotal?identifier=REPUESTOS"
-        );
-        const data = await response.json();
-        this.totalPrice = data[0].total;
-      } catch (error) {
-        console.error(error);
-      }
+      ItemService.getTotal("REPUESTOS").then(response => {
+        this.totalPrice = response.data[0].total;
+      });
     },
     async getItemById(value) {
-      try {
-        const response = await fetch(this.baseUrl + "/" + value);
-        const data = await response.json();
-        if (data != null) {
+      ItemService.getItemById(value).then(response => {
+        if (response.data !== "") {
           this.items = [];
-          this.items.push(data);
+          this.items.push(response.data);
         } else {
           this.items = [];
         }
-      } catch (error) {
-        console.error(error);
+      }).catch(error => {
+        console.log(error);
         this.items = [];
-      }
+      });
     },
     async update(initDate) {
       DownloadService.updateItem(initDate, "REPUESTOS");
     },
     download() {
-      DownloadService.downloadfile("REPUESTOS", "item");
+      this.$refs.Spinner.show();
+      DownloadService.downloadfile("REPUESTOS", "item", this.$refs.Spinner);
     }
   },
   filters: {
@@ -149,6 +141,7 @@ export default {
   },
   watch: {
     search: function(value) {
+      console.log(value);
       if (this.search.length == 0) {
         this.items = this.itemstemporal;
       } else if (this.search.length >= 4) {
