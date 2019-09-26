@@ -89,6 +89,7 @@ public class ProcesatorMoving implements ProcesatorObject {
         info.put("ALMACEN", map.get("ALMACEN"));
         info.put("SECCION_D", map.get("SECCION_D"));
         info.put("DESCRIPCION", map.get("DESCRIPCION"));
+        info.put("TRANS_TIPO", map.get("TRANS_TIPO"));
         detail.setInformation(info);
         return detail;
     }

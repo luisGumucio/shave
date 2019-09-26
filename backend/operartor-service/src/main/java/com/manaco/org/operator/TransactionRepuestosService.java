@@ -66,11 +66,11 @@ public class TransactionRepuestosService {
             transaction.setProcessId(process.getId());
             transaction.getItem().setPrice(newPrice.setScale(6, BigDecimal.ROUND_CEILING));
             transaction.getItem().setLastUpdate(transaction.getTransactionDate());
-            saveMove(transaction.getItem(), TransactionType.UPDATE, increment, totalNormal, totalUpdate,
+            saveMove(transaction.getItem(), TransactionType.CIERRE, increment, totalNormal, totalUpdate,
                     actual, transaction.getProcessId());
         } else {
             transaction.getItem().setLastUpdate(transaction.getTransactionDate());
-            saveMove(transaction.getItem(), TransactionType.UPDATE, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+            saveMove(transaction.getItem(), TransactionType.CIERRE, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
                     actual, transaction.getProcessId());
         }
     }

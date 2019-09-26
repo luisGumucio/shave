@@ -5,5 +5,6 @@ public enum TransactionType {
     ENTRY,
     EGRESS,
     UPDATE,
-    SECOND_PROCESSS
+    SECOND_PROCESSS,
+    CIERRE
 }

@@ -45,8 +45,10 @@ public class TransactionSubscriber {
                 break;
             case SECOND_PROCESSS:
                 service.executeSecondProcess(transaction);
+                break;
+            case UPDATE:
+                transactionRepuestosService.updateItem(transaction);
             default:
-
                 service.executeMoving(transaction);
                 break;
         }

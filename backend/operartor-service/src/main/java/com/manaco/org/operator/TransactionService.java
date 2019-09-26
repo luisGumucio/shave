@@ -66,35 +66,36 @@ public class TransactionService {
         Item item = new Item();
         item.setId(otherTransaction.getItem().getId());
         item.setPrice(otherTransaction.getItem().getPrice());
-        item.setQuantity(otherTransaction.getItem().getQuantity());
+        item.setQuantity(BigDecimal.ZERO);
         LocalDate currentDate = otherTransaction.getTransactionDate();
         item.setInitialDate(currentDate);
         item.setLastUpdate(item.getInitialDate());
-        item.setIdentifier(otherTransaction.getIdentifier());
-        item.setTotal(item.getPrice().multiply(item.getQuantity()));
+        item.setTotal(BigDecimal.ZERO);
 
         transaction.setType(INITIAL);
         transaction.setPriceActual(item.getPrice());
         transaction.setPriceNeto(BigDecimal.ZERO);
-        transaction.setBalance(item.getQuantity());
+        transaction.setBalance(BigDecimal.ZERO);
         transaction.setTransactionDate(item.getInitialDate());
         transaction.setItem(item);
-        transaction.setTotalNormal(item.getTotal());
-        transaction.setTotalUpdate(item.getTotal());
+        transaction.setTotalNormal(BigDecimal.ZERO);
+        transaction.setTotalUpdate(BigDecimal.ZERO);
         transaction.setIncrement(BigDecimal.ZERO);
         transaction.setProcessId(otherTransaction.getProcessId());
         transaction.setUfv(ufvRepository.findByCreationDate(item.getLastUpdate()));
         transaction.setDetail(null);
-        transaction.setIdentifier(otherTransaction.getIdentifier());
+        transaction.setIdentifier(otherTransaction.getItem().getIdentifier());
 //        saveItem(transaction);
         if (transaction.getItem().getQuantity().intValue() < 0) {
             transaction.getItem().setIsFailure(Boolean.TRUE);
         } else {
             transaction.getItem().setIsFailure(Boolean.FALSE);
         }
+        item.setIdentifier(transaction.getIdentifier());
         itemRepository.save(transaction.getItem());
         transactionRepository.save(transaction);
-        LOGGER.info("adding initial transaction with item id" + transaction.getItem().getId());
+        LOGGER.info("adding initial transaction with item id: " + transaction.getItem().getId());
+        executeMoving(otherTransaction);
     }
 
     private Item updateItem(Item item, Transaction transaction, Ufv actual) {
