@@ -68,6 +68,25 @@ public class FileController {
         return new ResponseEntity<>(fileUpload, HttpStatus.OK);
     }
 
+    @PostMapping(path = "/ajuste")
+    public ResponseEntity<FileUpload> solver(@RequestParam("file") MultipartFile file,
+                                             @RequestPart("option") String option, @RequestParam("process") String process) {
+        LOGGER.info("adding new files");
+        FileUpload fileUpload = null;
+        if (file == null) {
+            throw new MultipartException("You must select the a file for uploading");
+        }
+        try {
+            Process processActive = fileService.saveProcess(option, process);
+            fileService.ajuste(file.getInputStream(), processActive, option);
+            fileUpload = fileService.saveFile(option, file.getOriginalFilename(), fileService.getTotal());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(fileUpload, HttpStatus.OK);
+    }
+
     @PostMapping(path = "/ufv")
     public void uploadUfv(@RequestParam("file") MultipartFile file, @RequestParam String year) {
         if (file == null) {

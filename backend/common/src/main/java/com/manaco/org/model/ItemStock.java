@@ -1,14 +1,23 @@
-package com.manaco.org.dto;
+package com.manaco.org.model;
 
 import com.manaco.org.model.Item;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.math.BigDecimal;
 
+@Document
 public class ItemStock {
+
+    @Id
+    private String id;
 
     @DBRef
     private Item item;
+
+    @DBRef
+    private Stock stock;
 
     private BigDecimal quantity;
     private BigDecimal total;
@@ -35,5 +44,21 @@ public class ItemStock {
 
     public void setTotal(BigDecimal total) {
         this.total = total;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public Stock getStock() {
+        return stock;
+    }
+
+    public void setStock(Stock stock) {
+        this.stock = stock;
     }
 }

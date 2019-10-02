@@ -70,7 +70,7 @@ public class ExcelGenerator {
                 row.createCell(5).setCellValue((transaction.getBalance() == null)? BigDecimal.ZERO.intValue():transaction.getBalance().doubleValue());
                 row.createCell(6).setCellValue((transaction.getPriceNeto() == null) ? BigDecimal.ZERO.intValue():transaction.getPriceNeto().doubleValue());
                 row.createCell(7).setCellValue((transaction.getPriceActual() == null)? BigDecimal.ZERO.intValue():transaction.getPriceActual().doubleValue());
-                row.createCell(8).setCellValue(transaction.getUfv().getValue().toString());
+                row.createCell(8).setCellValue((transaction.getUfv() == null)? 0 : transaction.getUfv().getValue().doubleValue());
                 row.createCell(9).setCellValue((transaction.getTotalEntry() == null)? BigDecimal.ZERO.intValue():transaction.getTotalEntry().doubleValue());
                 row.createCell(10).setCellValue((transaction.getTotalEgress() == null)? BigDecimal.ZERO.intValue():transaction.getTotalEgress().doubleValue());
                 row.createCell(11).setCellValue((transaction.getTotalNormal() == null)? BigDecimal.ZERO.intValue() :transaction.getTotalNormal().doubleValue());

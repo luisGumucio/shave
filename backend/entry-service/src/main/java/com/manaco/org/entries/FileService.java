@@ -9,6 +9,8 @@ import com.manaco.org.entries.processator.ProcesatorMoving;
 import com.manaco.org.model.*;
 import com.manaco.org.model.Process;
 import com.manaco.org.repositories.FilesRepository;
+import com.manaco.org.repositories.ItemRepository;
+import com.manaco.org.repositories.TransactionRepository;
 import com.manaco.org.utils.ProcesatorObject;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.openxml4j.opc.OPCPackage;
@@ -23,6 +25,10 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import static com.manaco.org.model.TransactionOption.*;
@@ -44,6 +50,12 @@ public class FileService {
 
     @Autowired
     private ProcesatorMoving procesatorMoving;
+
+    @Autowired
+    private ItemRepository itemRepository;
+
+    @Autowired
+    private TransactionRepository transactionRepository;
 
     private int total;
 
@@ -69,7 +81,7 @@ public class FileService {
                 break;
             case PRODUCTO:
                 initialExecute(file, procesatorMoving, TransactionOption.PRODUCTO, processActive);
-
+                break;
         }
         return null;
     }
@@ -136,13 +148,13 @@ public class FileService {
                 current = PRODUCTO;
                 break;
         }
-        Process process = processService.findByNumberProcessAndIsActiveAndTransactionOption(Integer.valueOf(number),
-                true, current);
+        Process process = processService.findByNumberProcessAndIsActive(Integer.valueOf(number),
+                true);
 
         if (process == null) {
             process = new Process();
             process.setNumberProcess(Integer.valueOf(number));
-            process.setTransactionOption(current);
+            process.getTransactionOptions().add(current);
         }
 
         return processService.createProcess(process);
@@ -165,4 +177,79 @@ public class FileService {
     public int getTotal() {
         return total;
     }
+
+
+    public void ajuste(InputStream file, Process processActive, String option) {
+        OPCPackage pkg = null;
+        try {
+            ExcelWorkSheetRowCallbackHandler sheetRowCallbackHandler =
+                    new ExcelWorkSheetRowCallbackHandler((rowNum, map) -> {
+                        LOGGER.info("rowNum=" + rowNum + ", map=" + map);
+                        total++;
+                        TransactionOption transactionOption = TransactionOption.valueOf(option);
+                        ajusteTransaction(map, transactionOption, processActive);
+                    });
+            pkg = OPCPackage.open(file);
+            ExcelSheetCallback sheetCallback = new ExcelSheetCallback() {
+                private int sheetNumber = 0;
+
+                @Override
+                public void startSheet(int sheetNum, String sheetName) {
+                    this.sheetNumber = sheetNum;
+                    System.out.println("Started processing sheet number=" + sheetNumber
+                            + " and Sheet Name is '" + sheetName + "'");
+                }
+
+                @Override
+                public void endSheet() {
+                    System.out.println("Processing completed for sheet number=" + sheetNumber);
+                }
+            };
+            ExcelReader excelReader = new ExcelReader(pkg, sheetRowCallbackHandler, sheetCallback);
+            excelReader.process();
+
+        } catch (RuntimeException are) {
+            LOGGER.error(are.getMessage(), are.getCause());
+        } catch (InvalidFormatException ife) {
+            LOGGER.error(ife.getMessage(), ife.getCause());
+        } catch (IOException ioe) {
+            LOGGER.error(ioe.getMessage(), ioe.getCause());
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            IOUtils.closeQuietly(file);
+            try {
+                if (null != pkg) {
+                    pkg.close();
+                }
+            } catch (IOException e) {
+                // just ignore IO exception
+            }
+        }
+    }
+
+    private void ajusteTransaction(Map<String, String> map, TransactionOption option, Process processActive) {
+        Transaction transaction = new Transaction();
+        Item item = itemRepository.findById(map.get("ITEM")).get();
+        item.setQuantity(new BigDecimal(map.get("CANTIDAD").replace(",", ""))
+                .setScale(6, BigDecimal.ROUND_DOWN));
+        item.setTotal(item.getPrice().multiply(item.getQuantity()));
+
+        transaction.setType(TransactionType.AJUSTE);
+        transaction.setPriceActual(item.getPrice());
+        transaction.setPriceNeto(BigDecimal.ZERO);
+        transaction.setBalance(item.getQuantity());
+        transaction.setTransactionDate(item.getLastUpdate());
+        transaction.setItem(item);
+        transaction.setTotalNormal(item.getTotal());
+        transaction.setTotalUpdate(item.getTotal());
+        transaction.setIncrement(BigDecimal.ZERO);
+        transaction.setProcessId(processActive.getId());
+//        transaction.setUfv(ufvRepository.findByCreationDate(item.getLastUpdate()));
+//        transaction.setDetail(buildDetail(map, option));
+        transaction.setIdentifier(option);
+        itemRepository.save(item);
+        transactionRepository.save(transaction);
+    }
+
 }

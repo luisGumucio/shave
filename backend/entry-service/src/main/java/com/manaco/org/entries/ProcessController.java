@@ -24,8 +24,8 @@ public class ProcessController {
         return proccessRepository.findAll(new PageRequest(page, 10));
     }
 
-    @GetMapping(path = "/{identifier}")
-    public Process getDate(@PathVariable String identifier) {
-        return proccessRepository.findByNumberProcessAndIsActiveAndTransactionOption(1, true, TransactionOption.REPUESTOS);
-    }
+//    @GetMapping(path = "/{identifier}")
+//    public Process getDate(@PathVariable String identifier) {
+//        return proccessRepository.findByNumberProcessAndIsActiveAndTransactionOption(1, true, TransactionOption.REPUESTOS);
+//    }
 }

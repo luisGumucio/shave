@@ -6,5 +6,6 @@ public enum TransactionType {
     EGRESS,
     UPDATE,
     SECOND_PROCESSS,
-    CIERRE
+    CIERRE,
+    AJUSTE
 }

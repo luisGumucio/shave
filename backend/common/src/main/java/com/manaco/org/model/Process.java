@@ -30,7 +30,7 @@ public class Process {
 
     private int numberProcess;
 
-    private TransactionOption transactionOption;
+    private List<TransactionOption> transactionOptions;
 
     private boolean isActive;
 
@@ -38,6 +38,7 @@ public class Process {
     public Process() {
         processTime = LocalDate.now();
         isActive = true;
+        transactionOptions = new ArrayList<>();
     }
 
     public Process(int numberProcess) {
@@ -79,11 +80,11 @@ public class Process {
         this.numberProcess = numberProcess;
     }
 
-    public TransactionOption getTransactionOption() {
-        return transactionOption;
+    public List<TransactionOption> getTransactionOptions() {
+        return transactionOptions;
     }
 
-    public void setTransactionOption(TransactionOption transactionOption) {
-        this.transactionOption = transactionOption;
+    public void setTransactionOptions(List<TransactionOption> transactionOptions) {
+        this.transactionOptions = transactionOptions;
     }
 }

@@ -1,6 +1,6 @@
 package com.manaco.org.operator;
 
-import com.manaco.org.dto.ItemStock;
+import com.manaco.org.model.ItemStock;
 import com.manaco.org.model.*;
 import com.manaco.org.repositories.*;
 import com.manaco.org.utils.Operator;
@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class TransactionPTService {
@@ -80,39 +79,39 @@ public class TransactionPTService {
                           BigDecimal totalUpdate, Ufv actual,
                           String proccesID, TransactionDetail detail) {
 
-        List<Stock> stocks = stockRepository.findByItemsItemId(item.getId());
+
         long stockId = Long.parseLong(detail.getInformation().get("TIENDA"));
         itemRepository.save(item);
-        stocks.forEach(b -> {
-            ItemStock itemStock = b.getItems()
-                    .stream().filter(c -> c.getItem().getId() == item.getId()).findAny().get();
-            Transaction transaction = new Transaction();
-
-            if(stockId == b.getId()) {
-                transaction.setDetail(detail);
-            }
-
-            if(item.getQuantity().intValue() == 0) {
-                transaction.setBalance(item.getQuantity());
-                transaction.setTotalNormal(totalNormal);
-                transaction.setTotalUpdate(totalUpdate);
-            } else {
-                BigDecimal porcentaje = operator.calculatePorcentaje(itemStock.getQuantity(), item.getQuantity());
-                transaction.setBalance(itemStock.getQuantity());
-                transaction.setTotalNormal(itemStock.getQuantity().multiply(item.getPrice()));
-                transaction.setTotalUpdate(porcentaje.multiply(totalUpdate));
-            }
-
-            transaction.setItem(item);
-            transaction.setType(type);
-            transaction.setTransactionDate(item.getLastUpdate());
-            transaction.setPriceActual(item.getPrice());
-            transaction.setUfv(actual);
-            transaction.setIncrement(increment);
-            transaction.setProcessId(proccesID);
-            transaction.setIdentifier(item.getIdentifier());
-            transactionRepository.save(transaction);
-        });
+//        stocks.forEach(b -> {
+//            ItemStock itemStock = b.getItems()
+//                    .stream().filter(c -> c.getItem().getId() == item.getId()).findAny().get();
+//            Transaction transaction = new Transaction();
+//
+//            if(stockId == b.getId()) {
+//                transaction.setDetail(detail);
+//            }
+//
+//            if(item.getQuantity().intValue() == 0) {
+//                transaction.setBalance(item.getQuantity());
+//                transaction.setTotalNormal(totalNormal);
+//                transaction.setTotalUpdate(totalUpdate);
+//            } else {
+//                BigDecimal porcentaje = operator.calculatePorcentaje(itemStock.getQuantity(), item.getQuantity());
+//                transaction.setBalance(itemStock.getQuantity());
+//                transaction.setTotalNormal(itemStock.getQuantity().multiply(item.getPrice()));
+//                transaction.setTotalUpdate(porcentaje.multiply(totalUpdate));
+//            }
+//
+//            transaction.setItem(item);
+//            transaction.setType(type);
+//            transaction.setTransactionDate(item.getLastUpdate());
+//            transaction.setPriceActual(item.getPrice());
+//            transaction.setUfv(actual);
+//            transaction.setIncrement(increment);
+//            transaction.setProcessId(proccesID);
+//            transaction.setIdentifier(item.getIdentifier());
+//            transactionRepository.save(transaction);
+//        });
     }
 
 

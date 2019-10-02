@@ -18,8 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public interface ProccessRepository extends MongoRepository<Process, String> {
     Process findByNumberProcessAndIsActive(Integer number, boolean active);
-    Process findByNumberProcessAndIsActiveAndTransactionOption(Integer number, boolean active,
-                                                               TransactionOption option);
+//    Process findByNumberProcessAndIsActiveAndTransactionOption(Integer number, boolean active,
+//                                                               TransactionOption option);
 
     Process findByIsActive(boolean b);
 }

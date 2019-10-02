@@ -1,21 +1,18 @@
 package com.manaco.org.operator;
 
-import com.manaco.org.dto.ItemStock;
+import com.manaco.org.model.ItemStock;
 import com.manaco.org.model.*;
 
-import com.manaco.org.model.Process;
 import com.manaco.org.repositories.*;
 import com.manaco.org.utils.Operator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.List;
 
 import static com.manaco.org.model.TransactionType.INITIAL;
@@ -39,6 +36,8 @@ public class TransactionService {
     private TransactionDetailRepository detailRepository;
     @Autowired
     private StockRepository stockRepository;
+    @Autowired
+    private ItemStockRepository itemStockRepository;
 
     public void executeMoving(Transaction transaction) {
         Item item = itemRepository.findById(transaction.getItem().getId()).orElse(null);
@@ -204,7 +203,6 @@ public class TransactionService {
         transactionRepository.save(entry);
     }
 
-
     public void saveItem(Transaction transaction) {
 
         if (transaction.getItem().getQuantity().intValue() < 0) {
@@ -225,38 +223,53 @@ public class TransactionService {
 
     private void saveStock(Transaction transaction, Item item) {
         Stock stock = stockRepository.findById(Long.valueOf(transaction.getDetail().getInformation().get("TIENDA"))).orElse(null);
-        ItemStock itemStock = new ItemStock();
+        ItemStock itemStock = null;
 
-        if (stock == null && item == null) {
+        if(stock != null) {
+            itemStock = itemStockRepository.findByStockIdAndItemId(stock.getId(), item.getId()).orElse(null);
+        }
+
+
+        if (stock == null && itemStock == null) {
             stock = new Stock();
+            itemStock = new ItemStock();
             stock.setId(Long.valueOf(transaction.getDetail().getInformation().get("TIENDA")));
             itemStock.setQuantity(transaction.getBalance());
             itemStock.setTotal(itemStock.getQuantity().multiply(transaction.getItem().getPrice()));
             itemStock.setItem(transaction.getItem());
-            stock.addItem(itemStock);
+            itemStock.setStock(stock);
 
             stockRepository.save(stock);
-        } else if (stock == null && item != null) {
+            itemStockRepository.save(itemStock);
+
+        } else if (stock == null && itemStock != null) {
             stock = new Stock();
             stock.setId(Long.valueOf(transaction.getDetail().getInformation().get("TIENDA")));
             itemStock.setQuantity(transaction.getBalance());
             itemStock.setTotal(itemStock.getQuantity().multiply(item.getPrice()));
             itemStock.setItem(item);
-            stock.addItem(itemStock);
+            itemStock.setStock(stock);
             stockRepository.save(stock);
-        } else if (stock != null && item == null) {
+            itemStockRepository.save(itemStock);
+
+        } else if (stock != null && itemStock == null) {
+            itemStock = new ItemStock();
             itemStock.setQuantity(transaction.getBalance());
             itemStock.setTotal(itemStock.getQuantity().multiply(transaction.getItem().getPrice()));
             itemStock.setItem(transaction.getItem());
-            stock.addItem(itemStock);
+            itemStock.setStock(stock);
+
             stockRepository.save(stock);
+            itemStockRepository.save(itemStock);
         }
         else {
+            itemStock = new ItemStock();
             itemStock.setQuantity(transaction.getBalance());
             itemStock.setTotal(itemStock.getQuantity().multiply(item.getPrice()));
             itemStock.setItem(item);
-            stock.addItem(itemStock);
+            itemStock.setStock(stock);
             stockRepository.save(stock);
+            itemStockRepository.save(itemStock);
         }
     }
 
@@ -270,11 +283,11 @@ public class TransactionService {
         Item item = itemRepository.findById(transaction.getItem().getId()).orElse(null);
 
         if (item == null) {
-            itemRepository.save(transaction.getItem());
+            item = itemRepository.save(transaction.getItem());
         } else {
             item.setQuantity(item.getQuantity().add(transaction.getBalance()));
             item.setTotal(item.getQuantity().multiply(item.getPrice()));
-            itemRepository.save(item);
+            item = itemRepository.save(item);
         }
         saveStock(transaction, item);
         detailRepository.save(transaction.getDetail());
@@ -282,26 +295,6 @@ public class TransactionService {
         LOGGER.info("adding initial transaction PT with item id" + transaction.getItem().getId());
     }
 
-//    private void savePrimaStock(Transaction transaction, Item item) {
-//        Stock stock = stockRepository.findById(Long.valueOf(transaction.getDetail().getInformation().get("ALMACEN"))).orElse(null);
-//        if (stock == null && item == null) {
-//            stock = new Stock();
-//            stock.setId(Long.valueOf(transaction.getDetail().getInformation().get("ALMACEN")));
-//            stock.setQuantity(transaction.getItem().getQuantity());
-//            stock.addItem(transaction.getItem());
-//            stockRepository.save(stock);
-//        } else if (stock == null && item != null) {
-//            stock = new Stock();
-//            stock.setId(Long.valueOf(transaction.getDetail().getInformation().get("ALMACEN")));
-//            stock.setQuantity(transaction.getItem().getQuantity());
-//            stock.addItem(item);
-//            stockRepository.save(stock);
-//        } else {
-//            stock.setQuantity(stock.getQuantity().add(transaction.getItem().getQuantity()));
-//            stock.addItem(item);
-//            stockRepository.save(stock);
-//        }
-//    }
 
     public void executeSecondProcess(Transaction current) {
         Item item = itemRepository.findById(current.getItem().getId()).orElse(null);

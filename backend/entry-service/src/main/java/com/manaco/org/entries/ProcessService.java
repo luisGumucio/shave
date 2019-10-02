@@ -27,9 +27,9 @@ public class ProcessService {
         return processRepository.findByNumberProcessAndIsActive(number, active);
     }
 
-    public Process findByNumberProcessAndIsActiveAndTransactionOption(Integer number,
-                                                                      boolean active, TransactionOption transactionOption) {
-        return processRepository.findByNumberProcessAndIsActiveAndTransactionOption(number, active, transactionOption);
-    }
+//    public Process findByNumberProcessAndIsActiveAndTransactionOption(Integer number,
+//                                                                      boolean active, TransactionOption transactionOption) {
+//        return processRepository.findByNumberProcessAndIsActiveAndTransactionOption(number, active, transactionOption);
+//    }
 }
 

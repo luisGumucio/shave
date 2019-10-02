@@ -10,6 +10,4 @@ import java.util.List;
 public interface StockRepository extends MongoRepository<Stock, Long> {
 
 //    Stock findByItemId(String id);
-
-    List<Stock> findByItemsItemId(String id);
 }
