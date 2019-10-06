@@ -2,6 +2,7 @@ package com.manaco.org.model;
 
 import com.manaco.org.model.Item;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -14,9 +15,11 @@ public class ItemStock {
     private String id;
 
     @DBRef
+    @Indexed
     private Item item;
 
     @DBRef
+    @Indexed
     private Stock stock;
 
     private BigDecimal quantity;

@@ -220,57 +220,31 @@ public class TransactionService {
         transactionRepository.save(transaction);
         LOGGER.info("adding initial transaction with item id" + transaction.getItem().getId());
     }
+    private void saveItemStock(Stock stock, Transaction transaction, Item  item) {
+        ItemStock itemStock =  itemStockRepository.findByStockIdAndItemId(stock.getId(), item.getId()).orElse(null);
+        if(itemStock == null) {
+            itemStock = new ItemStock();
+            itemStock.setStock(stock);
+            itemStock.setItem(item);
+            itemStock.setQuantity(transaction.getBalance());
+            itemStock.setTotal(itemStock.getQuantity().multiply(transaction.getItem().getPrice()));
+        } else {
+            itemStock.setQuantity(itemStock.getQuantity().add(transaction.getBalance()));
+            itemStock.setTotal(itemStock.getQuantity().multiply(transaction.getItem().getPrice()));
+        }
+
+        itemStockRepository.save(itemStock);
+    }
 
     private void saveStock(Transaction transaction, Item item) {
-        Stock stock = stockRepository.findById(Long.valueOf(transaction.getDetail().getInformation().get("TIENDA"))).orElse(null);
-        ItemStock itemStock = null;
-
-        if(stock != null) {
-            itemStock = itemStockRepository.findByStockIdAndItemId(stock.getId(), item.getId()).orElse(null);
-        }
-
-
-        if (stock == null && itemStock == null) {
+        long stockId = Long.valueOf(transaction.getDetail().getInformation().get("TIENDA"));
+        Stock stock = stockRepository.findById(stockId).orElse(null);
+        if (stock == null) {
             stock = new Stock();
-            itemStock = new ItemStock();
-            stock.setId(Long.valueOf(transaction.getDetail().getInformation().get("TIENDA")));
-            itemStock.setQuantity(transaction.getBalance());
-            itemStock.setTotal(itemStock.getQuantity().multiply(transaction.getItem().getPrice()));
-            itemStock.setItem(transaction.getItem());
-            itemStock.setStock(stock);
-
+            stock.setId(stockId);
             stockRepository.save(stock);
-            itemStockRepository.save(itemStock);
-
-        } else if (stock == null && itemStock != null) {
-            stock = new Stock();
-            stock.setId(Long.valueOf(transaction.getDetail().getInformation().get("TIENDA")));
-            itemStock.setQuantity(transaction.getBalance());
-            itemStock.setTotal(itemStock.getQuantity().multiply(item.getPrice()));
-            itemStock.setItem(item);
-            itemStock.setStock(stock);
-            stockRepository.save(stock);
-            itemStockRepository.save(itemStock);
-
-        } else if (stock != null && itemStock == null) {
-            itemStock = new ItemStock();
-            itemStock.setQuantity(transaction.getBalance());
-            itemStock.setTotal(itemStock.getQuantity().multiply(transaction.getItem().getPrice()));
-            itemStock.setItem(transaction.getItem());
-            itemStock.setStock(stock);
-
-            stockRepository.save(stock);
-            itemStockRepository.save(itemStock);
         }
-        else {
-            itemStock = new ItemStock();
-            itemStock.setQuantity(transaction.getBalance());
-            itemStock.setTotal(itemStock.getQuantity().multiply(item.getPrice()));
-            itemStock.setItem(item);
-            itemStock.setStock(stock);
-            stockRepository.save(stock);
-            itemStockRepository.save(itemStock);
-        }
+        saveItemStock(stock, transaction, item);
     }
 
     public void saveItemProduct(Transaction transaction) {

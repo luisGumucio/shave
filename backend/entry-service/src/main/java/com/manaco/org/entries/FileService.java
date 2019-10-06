@@ -231,14 +231,32 @@ public class FileService {
     private void ajusteTransaction(Map<String, String> map, TransactionOption option, Process processActive) {
         Transaction transaction = new Transaction();
         Item item = itemRepository.findById(map.get("ITEM")).get();
-        item.setQuantity(new BigDecimal(map.get("CANTIDAD").replace(",", ""))
-                .setScale(6, BigDecimal.ROUND_DOWN));
+        BigDecimal quantity = new BigDecimal(map.get("CANTIDAD").replace(",", ""))
+                .setScale(6, BigDecimal.ROUND_DOWN);
+        BigDecimal diferencial = new BigDecimal(map.get("DIFERENTE").replace(",", ""))
+                .setScale(6, BigDecimal.ROUND_DOWN);
+        BigDecimal x = null;
+        if(quantity.compareTo(item.getQuantity()) >= 0) {
+            if(item.getQuantity().compareTo(BigDecimal.ZERO) < 0) {
+                x = diferencial.add(item.getQuantity().negate());
+            }
+            x = diferencial.add(item.getQuantity());
+            transaction.setEntry(diferencial);
+            transaction.setBalance(x);
+            item.setQuantity(x);
+        } else {
+            x = item.getQuantity().subtract(diferencial);
+            transaction.setEgress(diferencial);
+            transaction.setBalance(x);
+            item.setQuantity(x);
+
+        }
+
         item.setTotal(item.getPrice().multiply(item.getQuantity()));
 
         transaction.setType(TransactionType.AJUSTE);
         transaction.setPriceActual(item.getPrice());
         transaction.setPriceNeto(BigDecimal.ZERO);
-        transaction.setBalance(item.getQuantity());
         transaction.setTransactionDate(item.getLastUpdate());
         transaction.setItem(item);
         transaction.setTotalNormal(item.getTotal());
