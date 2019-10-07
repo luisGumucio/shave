@@ -59,10 +59,12 @@ public class TransactionSubscriber {
     public synchronized void receivedProducto(Transaction transaction) {
         switch (transaction.getType()) {
             case INITIAL:
-                service.saveItemProduct(transaction);
+                transactionPTService.saveItemProduct(transaction);
                 break;
             default:
-//                transactionPTService.executeMoving(transaction);
+//                transactionPTService.loadData(transaction);
+                transactionPTService.executeMoving(transaction);
+                break;
         }
     }
 }

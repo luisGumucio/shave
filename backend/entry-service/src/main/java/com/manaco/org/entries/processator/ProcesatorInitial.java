@@ -8,6 +8,7 @@ import com.manaco.org.utils.ProcesatorObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -54,6 +55,11 @@ public class ProcesatorInitial implements ProcesatorObject {
         transaction.setDetail(buildDetail(map, option));
         transaction.setIdentifier(option);
         publisher.sentToTransaction(transaction, option);
+    }
+
+    @Override
+    public void execute(InputStream file, TransactionOption option, Process processActive) {
+
     }
 
     private TransactionDetail buildDetail(Map<String, String> map, TransactionOption option) {

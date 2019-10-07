@@ -1,10 +1,13 @@
 package com.manaco.org.entries.file;
 
+import com.manaco.org.entries.excel.ExcelGenerator;
 import com.manaco.org.model.*;
 import com.manaco.org.model.Process;
+import org.apache.poi.util.IOUtils;
 import org.springframework.http.HttpEntity;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -16,16 +19,19 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class FileRead {
+    private List<String> fileAdd = new ArrayList<>();
+    private List<Transaction> move = new ArrayList<>();
 
+    public static void main(String args[]) throws IOException {
+        ExcelGenerator excelGenerator = new ExcelGenerator();
 
-    public static void main(String args[]) {
         Transaction transaction = new Transaction();
         List<String> fileAdd = new ArrayList<>();
 
         List<Transaction> move = new ArrayList<>();
         long start = new Date().getTime();
         System.out.println("BufferedReader Time Consumed => " + new Date().toString());
-        String fileName = "C:\\Users\\lucho\\Documents\\manaco\\datosOficial\\productoTerminado\\move.txt"; //this path is on my local
+        String fileName = "C:\\Users\\lucho\\Documents\\manaco\\datosOficial\\productoTerminado\\movimiento.txt"; //this path is on my local
         int cont = 0;
         try (BufferedReader fileBufferReader = new BufferedReader(new FileReader(fileName))) {
             String fileLineContent;
@@ -35,7 +41,13 @@ public class FileRead {
                 } else {
                     System.out.println(fileLineContent);
                     cont++;
-//                    move.add(readContent(fileLineContent));
+                    if(move.size() == 100) {
+                        ByteArrayInputStream in = excelGenerator.downloadTransation1(move, "PRODUCTO");
+                        IOUtils.toByteArray(in);
+                        return;
+                    }
+//                    fileAdd.add(fileLineContent);
+                    move.add(readContent(fileLineContent));
                 }
             }
 
@@ -43,13 +55,68 @@ public class FileRead {
             e.printStackTrace();
         }
 
+
 //        for (String value: fileAdd) {
+//           if(move.size() == 100) {
+//               excelGenerator.downloadTransation1(move, "PRODUCTO");
+//               return;
+//           }
 //            move.add(readContent(value));
 //        }
         long end = new Date().getTime();
 
         long time = (long) (end - start);
-        executeTransaction(move);
+//        executeTransaction(move);
+        System.out.println(fileAdd.size());
+
+        System.out.println("BufferedReader Time Consumed => " + time);
+        System.out.println("total Time Consumed => " + move.size());
+        System.out.println(cont);
+    }
+
+    public void ReadFile(String value) {
+        ExcelGenerator excelGenerator = new ExcelGenerator();
+        Transaction transaction = new Transaction();
+
+
+
+        long start = new Date().getTime();
+        System.out.println("BufferedReader Time Consumed => " + new Date().toString());
+        String fileName = "C:\\Users\\lucho\\Documents\\manaco\\datosOficial\\productoTerminado\\byItem\\pag" +value+".txt"; //this path is on my local
+        int cont = 0;
+        try (BufferedReader fileBufferReader = new BufferedReader(new FileReader(fileName))) {
+            String fileLineContent;
+            while ((fileLineContent = fileBufferReader.readLine()) != null) {
+                if (cont == 0) {
+                    cont++;
+                } else {
+//                    System.out.println(fileLineContent);
+                    cont++;
+//                    fileAdd.add(fileLineContent);
+                    move.add(readContent(fileLineContent));
+                }
+            }
+//            ByteArrayInputStream in = excelGenerator.downloadTransation1(move, "PRODUCTO");
+//            return IOUtils.toByteArray(in);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+//        for (String value: fileAdd) {
+//           if(move.size() == 100) {
+//               excelGenerator.downloadTransation1(move, "PRODUCTO");
+//               return;
+//           }
+//            move.add(readContent(value));
+//        }
+        long end = new Date().getTime();
+
+        long time = (long) (end - start);
+//        executeTransaction(move);
+        System.out.println(fileAdd.size());
+
         System.out.println("BufferedReader Time Consumed => " + time);
         System.out.println("total Time Consumed => " + move.size());
         System.out.println(cont);
@@ -71,6 +138,8 @@ public class FileRead {
                                 transaction.setType(TransactionType.ENTRY);
                             } else if (value.equals("S")) {
                                 transaction.setType(TransactionType.EGRESS);
+                            } else if (value.equals("EC")) {
+                                transaction.setType(TransactionType.ENTRY_BUY);
                             }
                             break;
                         case 1:
@@ -112,7 +181,7 @@ public class FileRead {
             item.setIdentifier(TransactionOption.PRODUCTO);
             transaction.setItem(item);
             transaction.setDetail(detail);
-            if (transaction.getType() == TransactionType.ENTRY) {
+            if (transaction.getType() == TransactionType.ENTRY || transaction.getType() == TransactionType.ENTRY_BUY) {
                 transaction.setPriceActual(item.getPrice());
                 transaction.setPriceNeto(item.getPrice());
             } else if (transaction.getType() == TransactionType.EGRESS) {
@@ -159,6 +228,10 @@ public class FileRead {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    public List<Transaction> getTransaction() {
+        return move;
     }
 }
 

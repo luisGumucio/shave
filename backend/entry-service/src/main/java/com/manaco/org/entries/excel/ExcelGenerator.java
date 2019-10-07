@@ -59,6 +59,7 @@ public class ExcelGenerator {
             ageCellStyle.setDataFormat(createHelper.createDataFormat().getFormat("#"));
 
             int rowIdx = 1;
+            int cont = 0;
             for (Transaction transaction : transactions) {
                 Row row = sheet.createRow(rowIdx++);
                 row.createCell(0).setCellValue(transaction.getItem().getId());
@@ -76,23 +77,26 @@ public class ExcelGenerator {
                 row.createCell(11).setCellValue((transaction.getTotalNormal() == null)? BigDecimal.ZERO.intValue() :transaction.getTotalNormal().doubleValue());
                 row.createCell(12).setCellValue((transaction.getTotalUpdate() == null)? BigDecimal.ZERO.intValue():transaction.getTotalUpdate().doubleValue());
                 row.createCell(13).setCellValue((transaction.getIncrement()== null)? BigDecimal.ZERO.intValue():transaction.getIncrement().doubleValue());
-                row.createCell(14).setCellValue((transaction.getDetail()== null)? "":transaction.getDetail()
-                        .getInformation().get("SECCION_D"));
-                row.createCell(15).setCellValue((transaction.getDetail()== null)? "":transaction.getDetail()
-                        .getInformation().get("CUENTA"));
-                row.createCell(16).setCellValue((transaction.getDetail()== null)? 0:Integer.parseInt(transaction.getDetail()
-                        .getInformation().get("ALMACEN")));
-                row.createCell(17).setCellValue((transaction.getDetail()== null)? "":transaction.getDetail()
-                        .getInformation().get("DESCRIPCION"));
-                row.createCell(18).setCellValue((transaction.getDetail()== null)? 0: Integer.parseInt(transaction.getDetail()
-                        .getInformation().get("TRANS_TIPO")));
+//                row.createCell(14).setCellValue((transaction.getDetail()== null)? "":transaction.getDetail()
+//                        .getInformation().get("SECCION_D"));
+//                row.createCell(15).setCellValue((transaction.getDetail()== null)? "":transaction.getDetail()
+//                        .getInformation().get("CUENTA"));
+//                row.createCell(16).setCellValue((transaction.getDetail()== null)? 0:Integer.parseInt(transaction.getDetail()
+//                        .getInformation().get("ALMACEN")));
+//                row.createCell(17).setCellValue((transaction.getDetail()== null)? "":transaction.getDetail()
+//                        .getInformation().get("DESCRIPCION"));
+//                row.createCell(18).setCellValue((transaction.getDetail()== null)? 0: Integer.parseInt(transaction.getDetail()
+//                        .getInformation().get("TRANS_TIPO")));
 //                row.createCell(14).setCellValue(transaction.getEgress().toString());
-
+//                System.out.println(transaction.getItem().getId());
+                cont++;
+                System.out.println(cont);
             }
 
             workbook.write(out);
             return new ByteArrayInputStream(out.toByteArray());
         } catch (Exception e) {
+            System.out.println(e);
             return null;
         }
     }
@@ -135,6 +139,79 @@ public class ExcelGenerator {
 
                 row.createCell(3).setCellValue(item.getLastUpdate().toString());
                 row.createCell(4).setCellValue(item.getTotal().doubleValue());
+            }
+
+            workbook.write(out);
+            return new ByteArrayInputStream(out.toByteArray());
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public synchronized ByteArrayInputStream downloadTransation1(List<Transaction> transactions, String identifier) throws IOException {
+        String[] COLUMNs = { "ITEM", "TIPO", "FECHA", "INGRESO", "EGRESO", "CANTIDAD", "PRECIO_NETO", "PRECIO_ACTUAL",
+                "UFV", "INGRESO_TOTAL", "EGRESO_TOTAL", "TOTAL", "TOTAL_ACT", "INCR", "SECCION", "CUENTA", "ALMACEN", "DESCRIPCION", "TRANS_TIPO"};
+        if(TransactionOption.valueOf(identifier) == TransactionOption.REPUESTOS) {
+
+        }
+
+        try {
+            SXSSFWorkbook workbook = new SXSSFWorkbook(100);
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            CreationHelper createHelper = workbook.getCreationHelper();
+
+            Sheet sheet = workbook.createSheet("Repuestos");
+
+            Font headerFont = workbook.createFont();
+            headerFont.setColor(IndexedColors.BLACK.getIndex());
+
+            CellStyle headerCellStyle = workbook.createCellStyle();
+            headerCellStyle.setFont(headerFont);
+
+            // Row for Header
+            Row headerRow = sheet.createRow(0);
+
+            // Header
+            for (int col = 0; col < COLUMNs.length; col++) {
+                Cell cell = headerRow.createCell(col);
+                cell.setCellValue(COLUMNs[col]);
+                cell.setCellStyle(headerCellStyle);
+            }
+
+            // CellStyle for Age
+            CellStyle ageCellStyle = workbook.createCellStyle();
+            ageCellStyle.setDataFormat(createHelper.createDataFormat().getFormat("#"));
+
+            int rowIdx = 1;
+            for (Transaction transaction : transactions) {
+                Row row = sheet.createRow(rowIdx++);
+                row.createCell(0).setCellValue(transaction.getItem().getId());
+                row.createCell(1).setCellValue(transaction.getType().toString());
+                row.createCell(2).setCellValue(transaction.getTransactionDate().toString());
+
+                row.createCell(3).setCellValue((transaction.getEntry() == null) ? BigDecimal.ZERO.intValue():transaction.getEntry().doubleValue());
+                row.createCell(4).setCellValue((transaction.getEgress() == null) ? BigDecimal.ZERO.intValue():transaction.getEgress().doubleValue());
+                row.createCell(5).setCellValue((transaction.getBalance() == null)? BigDecimal.ZERO.intValue():transaction.getBalance().doubleValue());
+                row.createCell(6).setCellValue((transaction.getPriceNeto() == null) ? BigDecimal.ZERO.intValue():transaction.getPriceNeto().doubleValue());
+                row.createCell(7).setCellValue((transaction.getPriceActual() == null)? BigDecimal.ZERO.intValue():transaction.getPriceActual().doubleValue());
+                row.createCell(8).setCellValue((transaction.getUfv() == null)? 0 : transaction.getUfv().getValue().doubleValue());
+                row.createCell(9).setCellValue((transaction.getTotalEntry() == null)? BigDecimal.ZERO.intValue():transaction.getTotalEntry().doubleValue());
+                row.createCell(10).setCellValue((transaction.getTotalEgress() == null)? BigDecimal.ZERO.intValue():transaction.getTotalEgress().doubleValue());
+                row.createCell(11).setCellValue((transaction.getTotalNormal() == null)? BigDecimal.ZERO.intValue() :transaction.getTotalNormal().doubleValue());
+                row.createCell(12).setCellValue((transaction.getTotalUpdate() == null)? BigDecimal.ZERO.intValue():transaction.getTotalUpdate().doubleValue());
+                row.createCell(13).setCellValue((transaction.getIncrement()== null)? BigDecimal.ZERO.intValue():transaction.getIncrement().doubleValue());
+//                row.createCell(14).setCellValue((transaction.getDetail()== null)? "":transaction.getDetail()
+//                        .getInformation().get("SECCION_D"));
+//                row.createCell(15).setCellValue((transaction.getDetail()== null)? "":transaction.getDetail()
+//                        .getInformation().get("CUENTA"));
+//                row.createCell(16).setCellValue((transaction.getDetail()== null)? 0:Integer.parseInt(transaction.getDetail()
+//                        .getInformation().get("ALMACEN")));
+//                row.createCell(17).setCellValue((transaction.getDetail()== null)? "":transaction.getDetail()
+//                        .getInformation().get("DESCRIPCION"));
+//                row.createCell(18).setCellValue((transaction.getDetail()== null)? 0: Integer.parseInt(transaction.getDetail()
+//                        .getInformation().get("TRANS_TIPO")));
+//                row.createCell(14).setCellValue(transaction.getEgress().toString());
+
             }
 
             workbook.write(out);

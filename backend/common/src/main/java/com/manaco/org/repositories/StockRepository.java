@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
 
-public interface StockRepository extends MongoRepository<Stock, Long> {
+public interface StockRepository extends MongoRepository<Stock, String> {
 
 //    Stock findByItemId(String id);
 }

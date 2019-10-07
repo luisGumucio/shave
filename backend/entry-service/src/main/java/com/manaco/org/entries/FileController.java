@@ -1,6 +1,7 @@
 package com.manaco.org.entries;
 
 import com.manaco.org.entries.excel.ExcelGenerator;
+import com.manaco.org.entries.file.FileRead;
 import com.manaco.org.model.*;
 import com.manaco.org.model.Process;
 import com.manaco.org.repositories.ItemRepository;
@@ -102,18 +103,35 @@ public class FileController {
     }
 
 
-    @GetMapping(value = "/download/{identifer}/{type}")
+    @GetMapping(value = "/download/{identifer}/{type}/{value}")
     public ResponseEntity<InputStreamResource> excelCustomersReport(@PathVariable("identifer") String identifier,
-                                                                    @PathVariable("type") String type) throws IOException {
+                                                                    @PathVariable("type") String type, @PathVariable("value")String value) throws IOException {
 
+        FileRead fileRead = new FileRead();
+        fileRead.ReadFile(value);
         if(type.equals("transaction")) {
-            return downloadTransaction(identifier);
+            return downloadTransaction(fileRead.getTransaction(), identifier);
         }
         return downloadItems(identifier);
     }
 
     private ResponseEntity<InputStreamResource> downloadTransaction(String identifier) throws IOException {
         List<Transaction> transactions = transactionRepository.findAllByIdentifier(identifier);
+
+        ByteArrayInputStream in = ExcelGenerator.downloadTransation(transactions, identifier);
+        // return IOUtils.toByteArray(in);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=customers.xlsx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .body(new InputStreamResource(in));
+    }
+
+    private ResponseEntity<InputStreamResource> downloadTransaction(List<Transaction> transactions, String identifier) throws IOException {
+//        List<Transaction> transactions = transactionRepository.findAllByIdentifier(identifier);
 
         ByteArrayInputStream in = ExcelGenerator.downloadTransation(transactions, identifier);
         // return IOUtils.toByteArray(in);

@@ -39,7 +39,7 @@ public class Operator {
     }
 
     public BigDecimal calculatePorcentaje(BigDecimal stockQuantity, BigDecimal stockTotal) {
-        return stockQuantity.divide(stockTotal, RoundingMode.DOWN);
+        return stockQuantity.divide(stockTotal, 6, BigDecimal.ROUND_DOWN);
     }
 
     public BigDecimal calculateQuantityTotal(BigDecimal quantity, BigDecimal price) {

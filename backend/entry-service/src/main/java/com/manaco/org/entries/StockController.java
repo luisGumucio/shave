@@ -1,6 +1,8 @@
 package com.manaco.org.entries;
 
+import com.manaco.org.model.ItemStock;
 import com.manaco.org.model.Stock;
+import com.manaco.org.repositories.ItemStockRepository;
 import com.manaco.org.repositories.StockRepository;
 import com.manaco.org.repositories.UfvRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,8 @@ public class StockController {
 
     @Autowired
     private StockRepository stockRepository;
+    @Autowired
+    private ItemStockRepository itemStockRepository;
 
     @GetMapping
     public Page<Stock> get(@RequestParam(defaultValue = "0") int page) {
@@ -29,9 +33,8 @@ public class StockController {
 //    }
 
     @GetMapping(path = "/byItem/{id}")
-    public List<Stock> getByItem(@PathVariable String id) {
-//        return stockRepository.findByItemsItemId(id);
-        return null;
+    public List<ItemStock> getByItem(@PathVariable String id) {
+        return itemStockRepository.findByItemId(id);
     }
 
 }

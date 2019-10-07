@@ -7,6 +7,7 @@ import com.manaco.org.utils.ProcesatorObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -31,6 +32,10 @@ public class ProcesatorMoving implements ProcesatorObject {
         }
 
         publisher.sentToTransaction(transaction, option);
+    }
+
+    @Override
+    public void execute(InputStream file, TransactionOption option, Process processActive) {
     }
 
     private Transaction buildTransactionProcessTwo(Map<String, String> map, Process processActive, TransactionOption option) {

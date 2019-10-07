@@ -6,6 +6,7 @@ import com.manaco.org.entries.excel.ExcelSheetCallback;
 import com.manaco.org.entries.excel.ExcelWorkSheetRowCallbackHandler;
 import com.manaco.org.entries.processator.ProcesatorInitial;
 import com.manaco.org.entries.processator.ProcesatorMoving;
+import com.manaco.org.entries.processator.ProcesatorProduct;
 import com.manaco.org.model.*;
 import com.manaco.org.model.Process;
 import com.manaco.org.repositories.FilesRepository;
@@ -55,6 +56,9 @@ public class FileService {
     private ItemRepository itemRepository;
 
     @Autowired
+    private ProcesatorProduct procesatorProduct;
+
+    @Autowired
     private TransactionRepository transactionRepository;
 
     private int total;
@@ -84,6 +88,10 @@ public class FileService {
                 break;
         }
         return null;
+    }
+
+    private void movingProductExecute(InputStream file, ProcesatorObject procesatorObject, TransactionOption option, Process processActive ) {
+        procesatorObject.execute(file, option, processActive);
     }
 
     public void initialExecute(InputStream file, ProcesatorObject procesatorObject, TransactionOption option, Process processActive) {
