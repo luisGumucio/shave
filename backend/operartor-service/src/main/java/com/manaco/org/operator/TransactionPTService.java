@@ -47,24 +47,25 @@ public class TransactionPTService {
 
     public void executeMoving(Transaction transaction) {
         Item item = itemRepository.findById(transaction.getItem().getId()).orElse(null);
-        ItemStock itemStock =  itemStockRepository.findByStockIdAndItemId(transaction.getDetail().getInformation().get("ALMACEN"),
-                item.getId()).orElse(null);
+//        LOGGER.info(transaction.getDetail().getInformation().get("ALMACEN"));
+//        ItemStock itemStock =  itemStockRepository.findByStockIdAndItemId(transaction.getDetail().getInformation().get("ALMACEN"),
+//                item.getId()).orElse(null);
 
-        if (item != null && itemStock != null) {
+        if (item != null) {
             Ufv actual = ufvRepository.findByCreationDate(transaction.getTransactionDate());
-            item = updateItem(item, transaction, actual);
+//            item = updateItem(item, transaction, actual);
             switch (transaction.getType()) {
                 case ENTRY:
-                    executeEntry(item, transaction, actual, itemStock);
+                    executeEntry(item, transaction, actual, null);
                     break;
                 case EGRESS:
-                    executeEgress(item, transaction, actual, itemStock);
+                    executeEgress(item, transaction, actual, null);
                     break;
             }
             LOGGER.info("saved successfully with id " + transaction.getItem());
         } else {
             System.out.println("item not found with  id " + transaction.getItem());
-            saveItemNotFound(transaction, item);
+//            saveItemNotFound(transaction, item);
         }
     }
 
@@ -257,7 +258,7 @@ public class TransactionPTService {
     }
 
     private void executeEgress(Item item, Transaction transaction, Ufv actual, ItemStock itemStock) {
-        executeEgressByStock(item, transaction, actual, itemStock);
+//        executeEgressByStock(item, transaction, actual, itemStock);
         Transaction egress = new Transaction();
         egress.setItem(item);
         egress.setType(TransactionType.EGRESS);
@@ -291,8 +292,6 @@ public class TransactionPTService {
         detailRepository.save(transaction.getDetail());
         itemRepository.save(item);
         transactionRepository.save(egress);
-
-
     }
 
     private void executeEgressByStock(Item item, Transaction transaction, Ufv actual, ItemStock itemStock) {
@@ -334,7 +333,7 @@ public class TransactionPTService {
     }
 
     private void executeEntry(Item item, Transaction transaction, Ufv actual, ItemStock itemStock) {
-        executeEntryByStock(item, transaction, actual, itemStock);
+//        executeEntryByStock(item, transaction, actual, itemStock);
         Transaction entry = new Transaction();
         entry.setItem(item);
         entry.setType(TransactionType.ENTRY);

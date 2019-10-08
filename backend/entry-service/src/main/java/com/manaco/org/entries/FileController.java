@@ -1,5 +1,6 @@
 package com.manaco.org.entries;
 
+import com.manaco.org.dto.ProductDto;
 import com.manaco.org.entries.excel.ExcelGenerator;
 import com.manaco.org.entries.file.FileRead;
 import com.manaco.org.model.*;
@@ -103,14 +104,26 @@ public class FileController {
     }
 
 
-    @GetMapping(value = "/download/{identifer}/{type}/{value}")
+    @GetMapping(value = "/download/{identifer}/{type}")
     public ResponseEntity<InputStreamResource> excelCustomersReport(@PathVariable("identifer") String identifier,
+                                                                    @PathVariable("type") String type) throws IOException {
+
+//        FileRead fileRead = new FileRead();
+//        fileRead.ReadFile(value);
+        if(type.equals("transaction")) {
+            return downloadTransaction(identifier);
+        }
+        return downloadItems(identifier);
+    }
+
+    @GetMapping(value = "/download/{identifer}/{type}/{value}")
+    public ResponseEntity<InputStreamResource> excelCustomersReport1(@PathVariable("identifer") String identifier,
                                                                     @PathVariable("type") String type, @PathVariable("value")String value) throws IOException {
 
         FileRead fileRead = new FileRead();
         fileRead.ReadFile(value);
         if(type.equals("transaction")) {
-            return downloadTransaction(fileRead.getTransaction(), identifier);
+            return downloadTransaction1(fileRead.getTransaction(), identifier);
         }
         return downloadItems(identifier);
     }
@@ -130,10 +143,10 @@ public class FileController {
                 .body(new InputStreamResource(in));
     }
 
-    private ResponseEntity<InputStreamResource> downloadTransaction(List<Transaction> transactions, String identifier) throws IOException {
+    private ResponseEntity<InputStreamResource> downloadTransaction1(List<ProductDto> transactions, String identifier) throws IOException {
 //        List<Transaction> transactions = transactionRepository.findAllByIdentifier(identifier);
 
-        ByteArrayInputStream in = ExcelGenerator.downloadTransation(transactions, identifier);
+        ByteArrayInputStream in = ExcelGenerator.downloadProductoTerminado(transactions, identifier);
         // return IOUtils.toByteArray(in);
 
         HttpHeaders headers = new HttpHeaders();
@@ -144,6 +157,8 @@ public class FileController {
                 .headers(headers)
                 .body(new InputStreamResource(in));
     }
+
+
 
     private ResponseEntity<InputStreamResource> downloadItems(String identifier) throws IOException  {
         List<Item> items = itemRepository.findAllByIdentifier(identifier);

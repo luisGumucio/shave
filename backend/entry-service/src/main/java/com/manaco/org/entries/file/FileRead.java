@@ -1,5 +1,6 @@
 package com.manaco.org.entries.file;
 
+import com.manaco.org.dto.ProductDto;
 import com.manaco.org.entries.excel.ExcelGenerator;
 import com.manaco.org.model.*;
 import com.manaco.org.model.Process;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 public class FileRead {
     private List<String> fileAdd = new ArrayList<>();
     private List<Transaction> move = new ArrayList<>();
+    private List<ProductDto> move1 = new ArrayList<>();
 
     public static void main(String args[]) throws IOException {
         ExcelGenerator excelGenerator = new ExcelGenerator();
@@ -76,8 +78,8 @@ public class FileRead {
 
     public void ReadFile(String value) {
         ExcelGenerator excelGenerator = new ExcelGenerator();
-        Transaction transaction = new Transaction();
-
+//        Transaction transaction = new Transaction();
+        ProductDto dto = new ProductDto();
 
 
         long start = new Date().getTime();
@@ -93,7 +95,7 @@ public class FileRead {
 //                    System.out.println(fileLineContent);
                     cont++;
 //                    fileAdd.add(fileLineContent);
-                    move.add(readContent(fileLineContent));
+                    move1.add(readContent1(fileLineContent));
                 }
             }
 //            ByteArrayInputStream in = excelGenerator.downloadTransation1(move, "PRODUCTO");
@@ -197,11 +199,65 @@ public class FileRead {
 
     }
 
+    private static ProductDto readContent1(String content) {
+        try {
+            String value = "";
+            int cont = 0;
+            ProductDto dto = new ProductDto();
+            for (int x = 0; x < content.length(); x++) {
+                if (String.valueOf(content.charAt(x)).equals("|")) {
+                    switch (cont) {
+                        case 0:
+                            dto.setTIPO(value);
+                            break;
+                        case 1:
+                            dto.setALMACEN(value);
+                            break;
+                        case 2:
+                            dto.setNRO_DOC(value);
+                            break;
+                        case 3:
+                            dto.setARTICULO(value);
+                            break;
+                        case 4:
+                            dto.setPARES(value);
+                            break;
+                        case 5:
+                            dto.setPCOSTO(value);
+                            break;
+                        case 6:
+                            LocalDate currentDate = convertToDate(value).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                            dto.setFECHA_DOC(currentDate);
+                            break;
+                        case 7:
+                            dto.setORIGEN(value);
+                            break;
+                        case 8:
+                            dto.setSEMANA(value);
+                            break;
+                        case 10:
+                            dto.setTIPO_MOV(value);
+                            break;
+                    }
+                    cont++;
+                    value = "";
+                } else {
+                    value = value.concat(String.valueOf(content.charAt(x)));
+                }
+        }
+            return dto;
+        }
+        catch (Exception exception) {
+            return null;
+        }
+    }
+
     private static Date convertToDate(String receivedDate) {
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
         Date date = null;
         try {
             date = formatter.parse(receivedDate);
+            System.out.println(date.toString());
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -230,8 +286,8 @@ public class FileRead {
         }
     }
 
-    public List<Transaction> getTransaction() {
-        return move;
+    public List<ProductDto> getTransaction() {
+        return move1;
     }
 }
 
