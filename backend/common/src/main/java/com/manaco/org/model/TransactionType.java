@@ -8,5 +8,12 @@ public enum TransactionType {
     UPDATE,
     SECOND_PROCESSS,
     CIERRE,
-    AJUSTE
+    AJUSTE,
+    CAM,
+
+    G_ENTRY,
+    G_EGRESS,
+    G_ENTRY_BUY,
+    G_UPDATE,
+    G_INITIAL
 }

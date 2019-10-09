@@ -600,18 +600,6 @@ public class ProcesatorMoving implements ProcesatorObject {
             e.printStackTrace();
             return null;
         }
-
-
-//        Transaction transaction = new Transaction();
-//        Item item = new Item();
-//        item.setId(map.get("ITEM"));
-//        item.setPrice(new BigDecimal(map.get("COSTO").replace(",", ""))
-//                .setScale(6, BigDecimal.ROUND_DOWN));
-//        item.setIdentifier(option);
-//        transaction.setIdentifier(option);
-//        transaction.setProcessId(processActive.getId());
-//        transaction.setType(TransactionType.SECOND_PROCESSS);
-//        return transaction;
     }
 
     private TransactionDetail buildDetail(Map<String, String> map, TransactionOption option) {
@@ -688,6 +676,14 @@ public class ProcesatorMoving implements ProcesatorObject {
             transaction.setType(TransactionType.EGRESS);
             transaction.setPriceActual(item.getPrice());
             transaction.setPriceNeto(BigDecimal.ZERO);
+            transaction.setDetail(buildDetail(map, option));
+        } else if (map.get("TIPO").equals("EC")) {
+            transaction.setType(TransactionType.ENTRY_BUY);
+            transaction.setPriceActual(item.getPrice());
+            transaction.setPriceNeto(item.getPrice());
+            transaction.setDetail(buildDetail(map, option));
+        } else if (map.get("TIPO").equals("CAM")) {
+            transaction.setType(TransactionType.CAM);
             transaction.setDetail(buildDetail(map, option));
         }
 

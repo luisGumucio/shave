@@ -84,7 +84,7 @@ public class FileRead {
 
         long start = new Date().getTime();
         System.out.println("BufferedReader Time Consumed => " + new Date().toString());
-        String fileName = "C:\\Users\\lucho\\Documents\\manaco\\datosOficial\\productoTerminado\\byItem\\pag" +value+".txt"; //this path is on my local
+        String fileName = "C:\\Users\\lucho\\Documents\\manaco\\datosOficial\\productoTerminado\\moveOficialActualizado\\pag" +value+".txt"; //this path is on my local
         int cont = 0;
         try (BufferedReader fileBufferReader = new BufferedReader(new FileReader(fileName))) {
             String fileLineContent;
@@ -257,7 +257,6 @@ public class FileRead {
         Date date = null;
         try {
             date = formatter.parse(receivedDate);
-            System.out.println(date.toString());
         } catch (ParseException e) {
             e.printStackTrace();
         }

@@ -131,8 +131,13 @@ public class FileController {
     private ResponseEntity<InputStreamResource> downloadTransaction(String identifier) throws IOException {
         List<Transaction> transactions = transactionRepository.findAllByIdentifier(identifier);
 
-        ByteArrayInputStream in = ExcelGenerator.downloadTransation(transactions, identifier);
-        // return IOUtils.toByteArray(in);
+        TransactionOption option = TransactionOption.valueOf(identifier);
+        ByteArrayInputStream in = null;
+        switch (option) {
+            case PRODUCTO:
+                in = ExcelGenerator.downloadProducFinish(transactions, identifier);
+                break;
+        }
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=customers.xlsx");
