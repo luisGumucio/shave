@@ -5,9 +5,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.List;
 
 @Component
 public class TransactionSubscriber {
@@ -56,7 +58,7 @@ public class TransactionSubscriber {
     }
 
     @RabbitListener(queues = "${producto.rabbitmq.queue}")
-    public synchronized void receivedProducto(Transaction transaction) {
+    public void receivedProducto(Transaction transaction) {
         switch (transaction.getType()) {
             case INITIAL:
                 transactionPTService.saveItemProduct(transaction);
@@ -66,5 +68,13 @@ public class TransactionSubscriber {
                 transactionPTService.executeMoving(transaction);
                 break;
         }
+    }
+
+    @RabbitListener(queues = "${producto1.rabbitmq.queue}")
+    @Async("threadPoolTaskExecutor")
+    public void receivedProducto1(List<Transaction> transaction) {
+        transaction.forEach(b -> {
+            transactionPTService.executeMoving(b);
+        });
     }
 }

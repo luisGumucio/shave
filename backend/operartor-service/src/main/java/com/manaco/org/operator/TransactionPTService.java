@@ -7,6 +7,7 @@ import com.manaco.org.utils.Operator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -45,7 +46,8 @@ public class TransactionPTService {
         transactions = new ArrayList<>();
     }
 
-    public void executeMoving(Transaction transaction) {
+
+    public synchronized void executeMoving(Transaction transaction) {
         Item item = itemRepository.findById(transaction.getItem().getId()).orElse(null);
 //        LOGGER.info(transaction.getDetail().getInformation().get("ALMACEN"));
         ItemStock itemStock = null;
@@ -244,7 +246,7 @@ public class TransactionPTService {
 
         saveStock(transaction, item);
         detailRepository.save(transaction.getDetail());
-        transaction.setType(TransactionType.G_INITIAL);
+        transaction.setType(INITIAL);
         transactionRepository.save(transaction);
         LOGGER.info("adding initial transaction PT with item id" + transaction.getItem().getId());
     }
