@@ -294,7 +294,7 @@ public class ExcelGenerator {
 //        String[] COLUMNs = { "TIPO", "ALMACEN", "NRO_DOC", "ARTICULO", "PARES", "PCOSTO", "FECHA_DOC", "ORIGEN",
 //                "SEMANA", "TABLA_ORIGEN", "TIPO_MOV"};
         String[] COLUMNs = { "FECHA", "ITEM", "PU_ACTUAL", "CANTIDAD", "TIPO", "ALMACEN", "NRO_DOC",
-                "SEMANA"};
+                "SEMANA", "TAB_ORIG", "TIPO_MOV"};
 
 
         try {
@@ -336,6 +336,8 @@ public class ExcelGenerator {
                 row.createCell(5).setCellValue(dto.getALMACEN());
                 row.createCell(6).setCellValue(dto.getNRO_DOC());
                 row.createCell(7).setCellValue(dto.getSEMANA());
+                row.createCell(8).setCellValue(dto.getTABLA_ORIGEN());
+                row.createCell(9).setCellValue(dto.getTIPO_MOV());
 //
 //                row.createCell(7).setCellValue(dto.getORIGEN());
 //                row.createCell(9).setCellValue(dto.getTABLA_ORIGEN());
