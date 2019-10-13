@@ -84,7 +84,7 @@ public class FileService {
                 initialExecute(file, procesatorMoving, TransactionOption.REPUESTOS, processActive);
                 break;
             case PRODUCTO:
-                initialExecute(file, procesatorMoving, TransactionOption.PRODUCTO, processActive);
+                initialExecute(file, procesatorProduct, TransactionOption.PRODUCTO, processActive);
                 break;
         }
         return null;
@@ -95,6 +95,9 @@ public class FileService {
     }
 
     public void initialExecute(InputStream file, ProcesatorObject procesatorObject, TransactionOption option, Process processActive) {
+        if(procesatorObject instanceof ProcesatorProduct) {
+            procesatorProduct.load();
+        }
         OPCPackage pkg = null;
         try {
             ExcelWorkSheetRowCallbackHandler sheetRowCallbackHandler =
@@ -117,6 +120,7 @@ public class FileService {
                 @Override
                 public void endSheet() {
                     System.out.println("Processing completed for sheet number=" + sheetNumber);
+                    procesatorProduct.sendTransaction();
                 }
             };
             ExcelReader excelReader = new ExcelReader(pkg, sheetRowCallbackHandler, sheetCallback);

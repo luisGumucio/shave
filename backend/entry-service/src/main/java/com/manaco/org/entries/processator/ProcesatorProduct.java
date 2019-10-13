@@ -9,12 +9,14 @@ import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.math.BigDecimal;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class ProcesatorProduct implements ProcesatorObject {
@@ -22,9 +24,66 @@ public class ProcesatorProduct implements ProcesatorObject {
     @Autowired
     private Publisher publisher;
 
+    @Autowired
+    private Data data;
+
+    private List<Transaction> transactions;
+
+    public ProcesatorProduct() {
+
+        transactions = new ArrayList<>();
+    }
+
+    public void load() {
+            data.load();
+
+    }
+
     @Override
     public void execute(Map<String, String> map, TransactionOption option, Process processActive) {
+        Transaction transaction = new Transaction();
+        Item item = new Item();
+        item.setId(map.get("ITEM"));
+        item.setPrice(new BigDecimal(map.get("PU_ACTUAL").replace(",", ""))
+                .setScale(6, BigDecimal.ROUND_DOWN));
+        item.setQuantity(new BigDecimal(map.get("CANTIDAD").replace(",", "")));
+        item.setIdentifier(option);
 
+        if (map.get("TIPO").equals("E")) {
+            transaction.setType(TransactionType.ENTRY);
+            ItemTemp temp = data.filter(item.getId());
+            if(temp != null) {
+                item.setPrice(temp.getCosto().setScale(6, BigDecimal.ROUND_DOWN));
+            }
+
+            transaction.setPriceActual(item.getPrice());
+            transaction.setPriceNeto(item.getPrice());
+            transaction.setDetail(buildDetail(map, option));
+        } else if (map.get("TIPO").equals("S")) {
+            transaction.setType(TransactionType.EGRESS);
+            transaction.setPriceActual(item.getPrice());
+            transaction.setPriceNeto(BigDecimal.ZERO);
+            transaction.setDetail(buildDetail(map, option));
+        } else if (map.get("TIPO").equals("EC")) {
+            ItemTemp temp = data.filter(item.getId());
+            if(temp != null) {
+                item.setPrice(temp.getCosto().setScale(6, BigDecimal.ROUND_DOWN));
+            }
+            transaction.setType(TransactionType.ENTRY_BUY);
+            transaction.setPriceActual(item.getPrice());
+            transaction.setPriceNeto(item.getPrice());
+            transaction.setDetail(buildDetail(map, option));
+        } else if (map.get("TIPO").equals("CAM")) {
+            transaction.setType(TransactionType.CAM);
+            transaction.setDetail(buildDetail(map, option));
+        }
+
+        LocalDate currentDate = convertToDate(map.get("FECHA")).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        transaction.setTransactionDate(currentDate);
+        transaction.setItem(item);
+        transaction.setProcessId(processActive.getId());
+        transaction.setDetail(buildDetail(map, option));
+        transactions.add(transaction);
     }
 
     @Override
@@ -133,6 +192,52 @@ public class ProcesatorProduct implements ProcesatorObject {
             e.printStackTrace();
         }
         return date;
+    }
+
+    private TransactionDetail buildDetail(Map<String, String> map, TransactionOption option) {
+        switch (option) {
+            case PRODUCTO:
+                return buildProductDetail(map);
+        }
+        return null;
+    }
+
+    private TransactionDetail buildProductDetail(Map<String, String> map) {
+        TransactionDetail detail = new TransactionDetail();
+        Map<String, String> info = new HashMap<>();
+        info.put("ALMACEN", map.get("ALMACEN"));
+        info.put("NRO_DOC", map.get("NRO_DOC"));
+        info.put("SEMANA", map.get("SEMANA"));
+//        info.put("TIPO_MOV", map.get("TIPO_MOV"));
+        detail.setInformation(info);
+        return detail;
+    }
+
+    public void sendTransaction() {
+        executeTransaction(transactions);
+    }
+
+    private void executeTransaction(List<Transaction> raws) {
+        if (raws.isEmpty()) {
+            return;
+        } else {
+            removeAll(raws, raws.get(0).getItem().getId());
+        }
+        executeTransaction(raws);
+    }
+
+    private void removeAll(List<Transaction> raws, String id) {
+        try {
+            List<Transaction> actual = raws.stream()
+                    .filter(b -> Objects.equals(b.getItem().getId(), id))
+                    .collect(Collectors.toList());
+
+            publisher.sentToTransaction(actual);
+            System.out.println(actual.get(0).getItem().getId());
+            raws.removeIf(b -> Objects.equals(b.getItem().getId(), id));
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
 }
