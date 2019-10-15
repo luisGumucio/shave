@@ -58,21 +58,21 @@ public class TransactionSubscriber {
     }
 
     @RabbitListener(queues = "${producto.rabbitmq.queue}")
-    public void receivedProducto(Transaction transaction) {
+    public synchronized void receivedProducto(Transaction transaction) {
         switch (transaction.getType()) {
             case INITIAL:
                 transactionPTService.saveItemProduct(transaction);
                 break;
             default:
 //                transactionPTService.loadData(transaction);
-                transactionPTService.executeMoving(transaction);
+//                transactionPTService.executeMoving(transaction);
                 break;
         }
     }
 
-    @RabbitListener(queues = "${producto1.rabbitmq.queue}")
-    @Async("threadPoolTaskExecutor")
-    public void receivedProducto1(List<Transaction> transaction) {
+    @RabbitListener(queues = "${other.rabbitmq.queue}")
+    public synchronized void receivedProducto1(List<Transaction> transaction) {
+//        System.out.println(transaction.get(0).getItem().getId());
         transaction.forEach(b -> {
             transactionPTService.executeMoving(b);
         });

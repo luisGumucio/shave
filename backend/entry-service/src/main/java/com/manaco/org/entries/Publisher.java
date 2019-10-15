@@ -22,9 +22,9 @@ public class Publisher {
         amqpTemplate.convertAndSend(exchange, routingKey, transaction);
     }
 
-    public void sentToTransaction(List<Transaction> transaction) {
-        String exchange = String.format("%s.direct", "producto1");
-        String routingKey = String.format("%s.routingkey", "producto1");
+    public void sentToTransaction(List<Transaction> transaction, int channel) {
+        String exchange = String.format("%s.direct", "producto" + channel);
+        String routingKey = String.format("%s.routingkey", "producto" + channel);
         amqpTemplate.convertAndSend(exchange, routingKey, transaction);
     }
 }

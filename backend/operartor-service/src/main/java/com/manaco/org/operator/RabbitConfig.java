@@ -1,4 +1,4 @@
-package com.manaco.org.utils;
+package com.manaco.org.operator;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.amqp.core.*;
@@ -44,13 +44,13 @@ public class RabbitConfig {
     @Value("${producto.rabbitmq.routingkey}")
     private String routingKeyProducto;
 
-    @Value("${producto1.rabbitmq.queue}")
+    @Value("${other.rabbitmq.queue}")
     private String queueProducto1;
 
-    @Value("${producto1.rabbitmq.exchange}")
+    @Value("${other.rabbitmq.exchange}")
     private String exchangeProducto1;
 
-    @Value("${producto1.rabbitmq.routingkey}")
+    @Value("${other.rabbitmq.routingkey}")
     private String routingKeyProducto1;
 
 

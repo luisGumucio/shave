@@ -27,6 +27,8 @@ public class ProcesatorProduct implements ProcesatorObject {
     @Autowired
     private Data data;
 
+    private int channel;
+
     private List<Transaction> transactions;
 
     public ProcesatorProduct() {
@@ -36,7 +38,7 @@ public class ProcesatorProduct implements ProcesatorObject {
 
     public void load() {
             data.load();
-
+            channel = 1;
     }
 
     @Override
@@ -208,7 +210,8 @@ public class ProcesatorProduct implements ProcesatorObject {
         info.put("ALMACEN", map.get("ALMACEN"));
         info.put("NRO_DOC", map.get("NRO_DOC"));
         info.put("SEMANA", map.get("SEMANA"));
-//        info.put("TIPO_MOV", map.get("TIPO_MOV"));
+        info.put("TAB_ORIG", map.get("TAB_ORIG"));
+        info.put("TIPO_MOV", map.get("TIPO_MOV"));
         detail.setInformation(info);
         return detail;
     }
@@ -226,15 +229,21 @@ public class ProcesatorProduct implements ProcesatorObject {
         executeTransaction(raws);
     }
 
-    private void removeAll(List<Transaction> raws, String id) {
+    private synchronized void removeAll(List<Transaction> raws, String id) {
         try {
             List<Transaction> actual = raws.stream()
                     .filter(b -> Objects.equals(b.getItem().getId(), id))
                     .collect(Collectors.toList());
-
-            publisher.sentToTransaction(actual);
-            System.out.println(actual.get(0).getItem().getId());
-            raws.removeIf(b -> Objects.equals(b.getItem().getId(), id));
+            if(channel == 1) {
+                channel++;
+            } else {
+                channel--;
+            }
+//            System.out.println(channel);
+//            publisher.sentToTransaction(actual, channel);
+            System.out.println( "actual: " + actual.get(0).getItem().getId() + "current: " + id);
+            publisher.sentToTransaction(actual, channel);
+            raws.removeIf(b -> b.getItem().getId().equals(id));
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

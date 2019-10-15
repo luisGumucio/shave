@@ -120,7 +120,10 @@ public class FileService {
                 @Override
                 public void endSheet() {
                     System.out.println("Processing completed for sheet number=" + sheetNumber);
-                    procesatorProduct.sendTransaction();
+                    if(procesatorObject instanceof ProcesatorProduct) {
+                        procesatorProduct.sendTransaction();
+                    }
+
                 }
             };
             ExcelReader excelReader = new ExcelReader(pkg, sheetRowCallbackHandler, sheetCallback);
