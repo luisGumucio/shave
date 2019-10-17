@@ -234,11 +234,11 @@ public class ProcesatorProduct implements ProcesatorObject {
             List<Transaction> actual = raws.stream()
                     .filter(b -> Objects.equals(b.getItem().getId(), id))
                     .collect(Collectors.toList());
-            if(channel == 1) {
-                channel++;
-            } else {
-                channel--;
-            }
+//            if(channel == 1) {
+//                channel++;
+//            } else {
+//                channel--;
+//            }
 //            System.out.println(channel);
 //            publisher.sentToTransaction(actual, channel);
             System.out.println( "actual: " + actual.get(0).getItem().getId() + "current: " + id);

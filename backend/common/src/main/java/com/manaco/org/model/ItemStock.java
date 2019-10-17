@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Document
 public class ItemStock {
@@ -24,6 +25,7 @@ public class ItemStock {
 
     private BigDecimal quantity;
     private BigDecimal total;
+    private LocalDate date;
 
     public Item getItem() {
         return item;
@@ -63,5 +65,13 @@ public class ItemStock {
 
     public void setStock(Stock stock) {
         this.stock = stock;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
     }
 }
