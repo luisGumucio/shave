@@ -1,8 +1,6 @@
 package com.manaco.org.model;
 
-import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.IndexDirection;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -11,6 +9,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Map;
 
 public class Transaction implements Comparable<Transaction> {
 
@@ -36,8 +35,7 @@ public class Transaction implements Comparable<Transaction> {
 
     private String processId;
 
-    @DBRef
-    private TransactionDetail detail;
+    private Map<String, String> information;
 
     @DBRef
     private Item item;
@@ -165,12 +163,12 @@ public class Transaction implements Comparable<Transaction> {
         this.processId = processId;
     }
 
-    public TransactionDetail getDetail() {
-        return detail;
+    public Map<String, String> getInformation() {
+        return information;
     }
 
-    public void setDetail(TransactionDetail detail) {
-        this.detail = detail;
+    public void setInformation(Map<String, String> information) {
+        this.information = information;
     }
 
     public Item getItem() {

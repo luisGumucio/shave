@@ -52,7 +52,7 @@ public class ProcesatorInitial implements ProcesatorObject {
         transaction.setIncrement(BigDecimal.ZERO);
         transaction.setProcessId(processActive.getId());
         transaction.setUfv(ufvRepository.findByCreationDate(item.getLastUpdate()));
-        transaction.setDetail(buildDetail(map, option));
+        transaction.setInformation(buildDetail(map, option));
         transaction.setIdentifier(option);
         publisher.sentToTransaction(transaction, option);
     }
@@ -62,7 +62,7 @@ public class ProcesatorInitial implements ProcesatorObject {
 
     }
 
-    private TransactionDetail buildDetail(Map<String, String> map, TransactionOption option) {
+    private Map<String, String> buildDetail(Map<String, String> map, TransactionOption option) {
         switch (option) {
 //            case PRIMA:
 //                return buildPrimaDetail(map);
@@ -75,13 +75,12 @@ public class ProcesatorInitial implements ProcesatorObject {
         return null;
     }
 
-    private TransactionDetail buildProductDetail(Map<String, String> map) {
-        TransactionDetail detail = new TransactionDetail();
+    private Map<String, String> buildProductDetail(Map<String, String> map) {
+
         Map<String, String> info = new HashMap<>();
-        info.put("TIENDA", map.get("TIENDA"));
+        info.put("Almacen", map.get("ALMACEN"));
         info.put("PK_SEMANA", map.get("PK_SEMANA"));
-        detail.setInformation(info);
-        return detail;
+        return info;
     }
 
     private TransactionDetail buildPrimaDetail(Map<String, String> map) {

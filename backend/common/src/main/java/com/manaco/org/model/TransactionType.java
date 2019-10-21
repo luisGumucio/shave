@@ -15,5 +15,6 @@ public enum TransactionType {
     G_EGRESS,
     G_ENTRY_BUY,
     G_UPDATE,
-    G_INITIAL
+    G_INITIAL,
+    G_CAM
 }

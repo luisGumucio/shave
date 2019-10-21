@@ -279,7 +279,7 @@ public class FileService {
         transaction.setIncrement(BigDecimal.ZERO);
         transaction.setProcessId(processActive.getId());
 //        transaction.setUfv(ufvRepository.findByCreationDate(item.getLastUpdate()));
-//        transaction.setDetail(buildDetail(map, option));
+//        transaction.setTransactionDetail(buildDetail(map, option));
         transaction.setIdentifier(option);
         itemRepository.save(item);
         transactionRepository.save(transaction);

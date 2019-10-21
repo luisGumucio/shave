@@ -10,7 +10,6 @@ import com.manaco.org.dto.ProductDto;
 import com.manaco.org.model.Item;
 import com.manaco.org.model.Transaction;
 import com.manaco.org.model.TransactionOption;
-import com.manaco.org.model.TransactionType;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
@@ -18,7 +17,6 @@ import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -78,15 +76,15 @@ public class ExcelGenerator {
                 row.createCell(11).setCellValue((transaction.getTotalNormal() == null)? BigDecimal.ZERO.intValue() :transaction.getTotalNormal().doubleValue());
                 row.createCell(12).setCellValue((transaction.getTotalUpdate() == null)? BigDecimal.ZERO.intValue():transaction.getTotalUpdate().doubleValue());
                 row.createCell(13).setCellValue((transaction.getIncrement()== null)? BigDecimal.ZERO.intValue():transaction.getIncrement().doubleValue());
-                row.createCell(14).setCellValue((transaction.getDetail()== null)? "":transaction.getDetail()
+                row.createCell(14).setCellValue((transaction.getInformation()== null)? "":transaction
                         .getInformation().get("SECCION_D"));
-                row.createCell(15).setCellValue((transaction.getDetail()== null)? "":transaction.getDetail()
+                row.createCell(15).setCellValue((transaction.getInformation()== null)? "":transaction
                         .getInformation().get("CUENTA"));
-                row.createCell(16).setCellValue((transaction.getDetail()== null)? 0:Integer.parseInt(transaction.getDetail()
+                row.createCell(16).setCellValue((transaction.getInformation()== null)? 0:Integer.parseInt(transaction
                         .getInformation().get("ALMACEN")));
-                row.createCell(17).setCellValue((transaction.getDetail()== null)? "":transaction.getDetail()
+                row.createCell(17).setCellValue((transaction.getInformation()== null)? "":transaction
                         .getInformation().get("DESCRIPCION"));
-                row.createCell(18).setCellValue((transaction.getDetail()== null)? 0: Integer.parseInt(transaction.getDetail()
+                row.createCell(18).setCellValue((transaction.getInformation()== null)? 0: Integer.parseInt(transaction
                         .getInformation().get("TRANS_TIPO")));
 //                row.createCell(14).setCellValue(transaction.getEgress().toString());
 //                System.out.println(transaction.getItem().getId());
@@ -149,9 +147,10 @@ public class ExcelGenerator {
         }
     }
 
-    public static ByteArrayInputStream downloadProducFinish(List<Transaction> transactions, String identifier) {
+    public static ByteArrayInputStream downloadProducFinish(List<Transaction> transactions) {
         String[] COLUMNs = { "ITEM", "TIPO", "FECHA", "INGRESO", "EGRESO", "CANTIDAD", "PRECIO_NETO", "PRECIO_ACTUAL",
-                "UFV", "INGRESO_TOTAL", "EGRESO_TOTAL", "TOTAL", "TOTAL_ACT", "INCR", "ALMACEN", "NRO_DOC", "SEMANA"};
+                "UFV", "INGRESO_TOTAL", "EGRESO_TOTAL", "TOTAL", "TOTAL_ACT", "INCR", "ALMACEN", "NRO_DOC", "SEMANA",
+                "CAMINO", "TOTAL_GENERAL"};
 
         try {
             SXSSFWorkbook workbook = new SXSSFWorkbook(100);
@@ -198,18 +197,8 @@ public class ExcelGenerator {
                 row.createCell(11).setCellValue((transaction.getTotalNormal() == null)? BigDecimal.ZERO.intValue() :transaction.getTotalNormal().doubleValue());
                 row.createCell(12).setCellValue((transaction.getTotalUpdate() == null)? BigDecimal.ZERO.intValue():transaction.getTotalUpdate().doubleValue());
                 row.createCell(13).setCellValue((transaction.getIncrement()== null)? BigDecimal.ZERO.intValue():transaction.getIncrement().doubleValue());
-//                row.createCell(14).setCellValue((transaction.getDetail()== null)? "":transaction.getDetail()
-//                        .getInformation().get("SECCION_D"));
-//                row.createCell(15).setCellValue((transaction.getDetail()== null)? "":transaction.getDetail()
-//                        .getInformation().get("CUENTA"));
-//                row.createCell(16).setCellValue((transaction.getDetail()== null)? 0:Integer.parseInt(transaction.getDetail()
-//                        .getInformation().get("ALMACEN")));
-//                row.createCell(17).setCellValue((transaction.getDetail()== null)? "":transaction.getDetail()
-//                        .getInformation().get("DESCRIPCION"));
-//                row.createCell(18).setCellValue((transaction.getDetail()== null)? 0: Integer.parseInt(transaction.getDetail()
-//                        .getInformation().get("TRANS_TIPO")));
-//                row.createCell(14).setCellValue(transaction.getEgress().toString());
-
+                row.createCell(14).setCellValue((transaction.getInformation()== null)? 0:Integer.parseInt(transaction
+                        .getInformation().get("Almacen")));
             }
 
             workbook.write(out);
@@ -269,15 +258,15 @@ public class ExcelGenerator {
                 row.createCell(11).setCellValue((transaction.getTotalNormal() == null)? BigDecimal.ZERO.intValue() :transaction.getTotalNormal().doubleValue());
                 row.createCell(12).setCellValue((transaction.getTotalUpdate() == null)? BigDecimal.ZERO.intValue():transaction.getTotalUpdate().doubleValue());
                 row.createCell(13).setCellValue((transaction.getIncrement()== null)? BigDecimal.ZERO.intValue():transaction.getIncrement().doubleValue());
-//                row.createCell(14).setCellValue((transaction.getDetail()== null)? "":transaction.getDetail()
+//                row.createCell(14).setCellValue((transaction.getTransactionDetail()== null)? "":transaction.getTransactionDetail()
 //                        .getInformation().get("SECCION_D"));
-//                row.createCell(15).setCellValue((transaction.getDetail()== null)? "":transaction.getDetail()
+//                row.createCell(15).setCellValue((transaction.getTransactionDetail()== null)? "":transaction.getTransactionDetail()
 //                        .getInformation().get("CUENTA"));
-//                row.createCell(16).setCellValue((transaction.getDetail()== null)? 0:Integer.parseInt(transaction.getDetail()
+//                row.createCell(16).setCellValue((transaction.getTransactionDetail()== null)? 0:Integer.parseInt(transaction.getTransactionDetail()
 //                        .getInformation().get("ALMACEN")));
-//                row.createCell(17).setCellValue((transaction.getDetail()== null)? "":transaction.getDetail()
+//                row.createCell(17).setCellValue((transaction.getTransactionDetail()== null)? "":transaction.getTransactionDetail()
 //                        .getInformation().get("DESCRIPCION"));
-//                row.createCell(18).setCellValue((transaction.getDetail()== null)? 0: Integer.parseInt(transaction.getDetail()
+//                row.createCell(18).setCellValue((transaction.getTransactionDetail()== null)? 0: Integer.parseInt(transaction.getTransactionDetail()
 //                        .getInformation().get("TRANS_TIPO")));
 //                row.createCell(14).setCellValue(transaction.getEgress().toString());
 

@@ -3,9 +3,7 @@ package com.manaco.org.entries.file;
 import com.manaco.org.dto.ProductDto;
 import com.manaco.org.entries.excel.ExcelGenerator;
 import com.manaco.org.model.*;
-import com.manaco.org.model.Process;
 import org.apache.poi.util.IOUtils;
-import org.springframework.http.HttpEntity;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -129,7 +127,6 @@ public class FileRead {
         try {
             String value = "";
             int cont = 0;
-            TransactionDetail detail = new TransactionDetail();
             Map<String, String> info = new HashMap<>();
             Transaction transaction = new Transaction();
             Item item = new Item();
@@ -180,10 +177,9 @@ public class FileRead {
                     value = value.concat(String.valueOf(content.charAt(x)));
                 }
             }
-            detail.setInformation(info);
+            transaction.setInformation(info);
             item.setIdentifier(TransactionOption.PRODUCTO);
             transaction.setItem(item);
-            transaction.setDetail(detail);
             if (transaction.getType() == TransactionType.ENTRY || transaction.getType() == TransactionType.ENTRY_BUY) {
                 transaction.setPriceActual(item.getPrice());
                 transaction.setPriceNeto(item.getPrice());

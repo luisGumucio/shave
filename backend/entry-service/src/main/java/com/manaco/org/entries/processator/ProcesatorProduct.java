@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.math.BigDecimal;
-import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -60,12 +59,12 @@ public class ProcesatorProduct implements ProcesatorObject {
 
             transaction.setPriceActual(item.getPrice());
             transaction.setPriceNeto(item.getPrice());
-            transaction.setDetail(buildDetail(map, option));
+            transaction.setInformation(buildDetail(map, option));
         } else if (map.get("TIPO").equals("S")) {
             transaction.setType(TransactionType.EGRESS);
             transaction.setPriceActual(item.getPrice());
             transaction.setPriceNeto(BigDecimal.ZERO);
-            transaction.setDetail(buildDetail(map, option));
+            transaction.setInformation(buildDetail(map, option));
         } else if (map.get("TIPO").equals("EC")) {
             ItemTemp temp = data.filter(item.getId());
             if(temp != null) {
@@ -74,17 +73,17 @@ public class ProcesatorProduct implements ProcesatorObject {
             transaction.setType(TransactionType.ENTRY_BUY);
             transaction.setPriceActual(item.getPrice());
             transaction.setPriceNeto(item.getPrice());
-            transaction.setDetail(buildDetail(map, option));
+            transaction.setInformation(buildDetail(map, option));
         } else if (map.get("TIPO").equals("CAM")) {
             transaction.setType(TransactionType.CAM);
-            transaction.setDetail(buildDetail(map, option));
+            transaction.setInformation(buildDetail(map, option));
         }
 
         LocalDate currentDate = convertToDate(map.get("FECHA")).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         transaction.setTransactionDate(currentDate);
         transaction.setItem(item);
         transaction.setProcessId(processActive.getId());
-        transaction.setDetail(buildDetail(map, option));
+        transaction.setInformation(buildDetail(map, option));
         transactions.add(transaction);
     }
 
@@ -114,7 +113,6 @@ public class ProcesatorProduct implements ProcesatorObject {
         try {
             String value = "";
             int cont = 0;
-            TransactionDetail detail = new TransactionDetail();
             Map<String, String> info = new HashMap<>();
             Transaction transaction = new Transaction();
             Item item = new Item();
@@ -165,10 +163,9 @@ public class ProcesatorProduct implements ProcesatorObject {
                     value = value.concat(String.valueOf(content.charAt(x)));
                 }
             }
-            detail.setInformation(info);
+            transaction.setInformation(info);
             item.setIdentifier(TransactionOption.PRODUCTO);
             transaction.setItem(item);
-            transaction.setDetail(detail);
             if (transaction.getType() == TransactionType.ENTRY || transaction.getType() == TransactionType.ENTRY_BUY) {
                 transaction.setPriceActual(item.getPrice());
                 transaction.setPriceNeto(item.getPrice());
@@ -196,7 +193,7 @@ public class ProcesatorProduct implements ProcesatorObject {
         return date;
     }
 
-    private TransactionDetail buildDetail(Map<String, String> map, TransactionOption option) {
+    private Map<String, String> buildDetail(Map<String, String> map, TransactionOption option) {
         switch (option) {
             case PRODUCTO:
                 return buildProductDetail(map);
@@ -204,16 +201,15 @@ public class ProcesatorProduct implements ProcesatorObject {
         return null;
     }
 
-    private TransactionDetail buildProductDetail(Map<String, String> map) {
-        TransactionDetail detail = new TransactionDetail();
+    private Map<String, String> buildProductDetail(Map<String, String> map) {
+
         Map<String, String> info = new HashMap<>();
-        info.put("ALMACEN", map.get("ALMACEN"));
+        info.put("Almacen", map.get("ALMACEN"));
         info.put("NRO_DOC", map.get("NRO_DOC"));
         info.put("SEMANA", map.get("SEMANA"));
         info.put("TAB_ORIG", map.get("TAB_ORIG"));
         info.put("TIPO_MOV", map.get("TIPO_MOV"));
-        detail.setInformation(info);
-        return detail;
+        return info;
     }
 
     public void sendTransaction() {

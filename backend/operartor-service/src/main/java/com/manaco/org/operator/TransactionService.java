@@ -1,6 +1,5 @@
 package com.manaco.org.operator;
 
-import com.manaco.org.model.ItemStock;
 import com.manaco.org.model.*;
 
 import com.manaco.org.repositories.*;
@@ -82,7 +81,7 @@ public class TransactionService {
         transaction.setIncrement(BigDecimal.ZERO);
         transaction.setProcessId(otherTransaction.getProcessId());
         transaction.setUfv(ufvRepository.findByCreationDate(item.getLastUpdate()));
-        transaction.setDetail(null);
+        transaction.setInformation(null);
         transaction.setIdentifier(otherTransaction.getItem().getIdentifier());
 //        saveItem(transaction);
         if (transaction.getItem().getQuantity().intValue() < 0) {
@@ -167,9 +166,8 @@ public class TransactionService {
         egress.setIncrement(BigDecimal.ZERO);
         egress.setProcessId(transaction.getProcessId());
         egress.setIdentifier(item.getIdentifier());
-        egress.setDetail(transaction.getDetail());
+        egress.setInformation(transaction.getInformation());
         item.setLastUpdate(transaction.getTransactionDate());
-        detailRepository.save(transaction.getDetail());
         itemRepository.save(item);
 
         transactionRepository.save(egress);
@@ -195,10 +193,9 @@ public class TransactionService {
         entry.setIncrement(BigDecimal.ZERO);
         entry.setProcessId(transaction.getProcessId());
         entry.setIdentifier(item.getIdentifier());
-        entry.setDetail(transaction.getDetail());
+        entry.setInformation(transaction.getInformation());
         item.setPrice(entry.getPriceActual());
         item.setLastUpdate(transaction.getTransactionDate());
-        detailRepository.save(transaction.getDetail());
         itemRepository.save(item);
         transactionRepository.save(entry);
     }
@@ -212,10 +209,11 @@ public class TransactionService {
         }
 
         itemRepository.save(transaction.getItem());
-        if (transaction.getDetail() != null) {
-            detailRepository.save(transaction.getDetail());
-//            savePrimaStock(transaction, transaction.getItem());
-        }
+//        if (transaction.getInformation() != null) {
+//            detailRepository.save(transaction.getTransactionDetail());
+//        } else {
+//
+//        }
 
         transactionRepository.save(transaction);
         LOGGER.info("adding initial transaction with item id" + transaction.getItem().getId());

@@ -63,6 +63,9 @@ public class TransactionSubscriber {
             case INITIAL:
                 transactionPTService.saveItemProduct(transaction);
                 break;
+            case UPDATE:
+                transactionPTService.udpateItem(transaction);
+                break;
             default:
 //                transactionPTService.loadData(transaction);
 //                transactionPTService.executeMoving(transaction);

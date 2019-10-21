@@ -1,5 +1,6 @@
 <template>
       <div class="col-md-12 grid-margin stretch-card">
+   <vue-instant-loading-spinner ref="Spinner"></vue-instant-loading-spinner>
     <div class="col-md-8 grid-margin stretch-card">
       <div class="card">
         <div class="card-body">
@@ -9,8 +10,8 @@
           </b-pagination>-->
           <div class="form-group pull-right">
             <input type="text" class="search form-control" placeholder="Buscar Item" />
-            <b-button variant="success">
-              <i class="mdi mdi-cloud-download"></i>Exportar
+            <b-button variant="success" @click="download()" >
+              <i class="mdi mdi-cloud-download" ></i>Exportar
             </b-button>
           </div>
           <!-- <div class="form-group">
@@ -150,8 +151,19 @@
 </template>
 
 <script>
+import DownloadService from "../../services/downloadService";
+import VueInstantLoadingSpinner from "vue-instant-loading-spinner/src/components/VueInstantLoadingSpinner.vue";
 export default {
-    
+    components: {
+      DownloadService,
+      VueInstantLoadingSpinner
+    },
+    methods: {
+      download() {
+        this.$refs.Spinner.show();
+        DownloadService.downloadfileTienda(this.$refs.Spinner);
+      }
+    }
 }
 </script>
 
