@@ -110,7 +110,7 @@ public class FileController {
     @PostMapping(value = "/producto")
     public ResponseEntity<InputStreamResource> excelProductReport(@RequestBody ProductOption option) throws IOException {
         if(option.getIdentifier().equals("transaction") && option.getType().equals("general")) {
-            return productReport.downloadProductGeneral("general");
+            return productReport.downloadProductGeneral("general" , option.getTienda());
         } else if(option.getIdentifier().equals("transaction") && option.getType().equals("tienda")) {
             return productReport.downloadProductByTienda(option.getIdentifier(), option.getTienda());
         } else if(option.getType().equals("item")) {

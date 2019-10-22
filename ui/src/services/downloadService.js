@@ -2,28 +2,51 @@ import axios from 'axios';
 
 const DownloadService = {
 
-  downloadfile(identifier, type, loading) {
-    axios({
-      method: "get",
-      url: "http://localhost:4000/files/download/" + identifier + "/" + type,
-      responseType: "arraybuffer"
-    })
-      .then(response => {
-        this.forceFileDownload(response, type, loading);
+ async downloadfile(identifier, type, loading) {
+    for(let i = 0; i<6670; i++) {
+      debbuger
+      await axios({
+        method: "post",
+        url: "http://localhost:4000/files/producto/",
+        
+        data: {
+          identifier: "transaction",
+          type: "general",
+          tienda: i.toString()
+        },
+        responseType: "arraybuffer"
       })
-      .catch(err => {
-        alert("fallo al descargar");
-        console.log(err);
-      });
+        .then(response => {
+          this.forceFileDownload(response, "producto", loading);
+        })
+        .catch(err => {
+          alert("fallo al descargar");
+          loading.hide();
+          console.log(err);
+        });
+    }
+    // axios({
+    //   method: "get",
+    //   url: "http://localhost:4000/files/download/" + identifier + "/" + type,
+    //   responseType: "arraybuffer"
+    // })
+    //   .then(response => {
+    //     this.forceFileDownload(response, type, loading);
+    //   })
+    //   .catch(err => {
+    //     alert("fallo al descargar");
+    //     console.log(err);
+    //   });
   },
-  downloadfileProducto(loading) {
-    debugger
-    axios({
+ async downloadfileProducto(loading) {
+    for(let i = 0; i<6670; i++) {
+    await axios({
       method: "post",
       url: "http://localhost:4000/files/producto/",
       data: {
         identifier: "transaction",
-        type: "general"
+        type: "general",
+        tienda: i.toString()
       },
       responseType: "arraybuffer"
     })
@@ -31,13 +54,15 @@ const DownloadService = {
         this.forceFileDownload(response, "producto", loading);
       })
       .catch(err => {
-        alert("fallo al descargar");
+        // alert("fallo al descargar");
         loading.hide();
         console.log(err);
       });
+    }
   },
 
   downloadfileTienda(loading) {
+
     axios({
       method: "get",
       url: "http://localhost:4000/stock/"
@@ -45,7 +70,6 @@ const DownloadService = {
       .then(response => {
         debugger
         response.data.forEach(b => {
-          debugger
           axios({
             method: "post",
             url: "http://localhost:4000/files/producto/",

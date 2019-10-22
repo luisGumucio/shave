@@ -33,6 +33,10 @@ public class TransactionController {
     private TransactionRepository transactionRepository;
 
 
+    @GetMapping()
+    public Page<Transaction> getAll(@RequestParam(defaultValue = "0") int page) {
+        return transactionRepository.findAll(PageRequest.of(page, 1000));
+    }
 
     @GetMapping(path = "/identifier/{identifier}")
     public Page<Transaction> get(@RequestParam(defaultValue = "0") int page, @PathVariable String identifier) {
