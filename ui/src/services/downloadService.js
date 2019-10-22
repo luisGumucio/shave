@@ -7,7 +7,7 @@ const DownloadService = {
       debbuger
       await axios({
         method: "post",
-        url: "http://localhost:4000/files/producto/",
+        url: "http://10.0.1.14:4000/files/producto/",
         
         data: {
           identifier: "transaction",
@@ -42,7 +42,7 @@ const DownloadService = {
     for(let i = 0; i<6670; i++) {
     await axios({
       method: "post",
-      url: "http://localhost:4000/files/producto/",
+      url: "http://10.0.1.14:4000/files/producto/",
       data: {
         identifier: "transaction",
         type: "general",
@@ -65,14 +65,14 @@ const DownloadService = {
 
     axios({
       method: "get",
-      url: "http://localhost:4000/stock/"
+      url: "http://10.0.1.14:4000/stock/"
     })
       .then(response => {
         debugger
         response.data.forEach(b => {
           axios({
             method: "post",
-            url: "http://localhost:4000/files/producto/",
+            url: "http://10.0.1.14:4000/files/producto/",
             data: {
               identifier: "transaction",
               type: "tienda",
@@ -99,7 +99,7 @@ const DownloadService = {
     debugger
     axios({
       method: "get",
-      url: "http://localhost:4000/items/getAll/PRODUCTO"
+      url: "http://10.0.1.14:4000/items/getAll/PRODUCTO"
     })
       .then(response => {
         debugger
@@ -107,7 +107,7 @@ const DownloadService = {
           debugger
           axios({
             method: "post",
-            url: "http://localhost:4000/files/producto/",
+            url: "http://10.0.1.14:4000/files/producto/",
             data: {
               identifier: "transaction",
               type: "item",
@@ -142,7 +142,7 @@ const DownloadService = {
   },
 
   async updateItem(date1, type) {
-    axios.post("http://localhost:4000/items/fechaUpdate", {
+    axios.post("http://10.0.1.14:4000/items/fechaUpdate", {
       date: date1,
       option: type
     });
