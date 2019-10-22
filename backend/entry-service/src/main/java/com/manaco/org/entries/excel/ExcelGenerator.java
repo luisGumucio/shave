@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import com.manaco.org.dto.ProductDto;
+import com.manaco.org.entries.ProductDetail;
 import com.manaco.org.model.Item;
 import com.manaco.org.model.Transaction;
 import com.manaco.org.model.TransactionOption;
@@ -205,8 +206,7 @@ public class ExcelGenerator {
             return new ByteArrayInputStream(out.toByteArray());
         } catch (Exception e) {
             return null;
-        }
-
+       }
     }
 
     public synchronized ByteArrayInputStream downloadTransation1(List<Transaction> transactions, String identifier) throws IOException {
@@ -342,6 +342,72 @@ public class ExcelGenerator {
             return new ByteArrayInputStream(out.toByteArray());
         } catch (Exception e) {
             System.out.println(e);
+            return null;
+        }
+    }
+
+
+
+    public static ByteArrayInputStream downloadDetail(List<ProductDetail> transactions) {
+        String[] COLUMNs = { "DETALLE", "PARES_DEBER", "PARES_HABER"};
+
+        try {
+            SXSSFWorkbook workbook = new SXSSFWorkbook(100);
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            CreationHelper createHelper = workbook.getCreationHelper();
+
+            Sheet sheet = workbook.createSheet("Repuestos");
+
+            Font headerFont = workbook.createFont();
+            headerFont.setColor(IndexedColors.BLACK.getIndex());
+
+            CellStyle headerCellStyle = workbook.createCellStyle();
+            headerCellStyle.setFont(headerFont);
+
+            // Row for Header
+            Row headerRow = sheet.createRow(0);
+
+            // Header
+            for (int col = 0; col < COLUMNs.length; col++) {
+                Cell cell = headerRow.createCell(col);
+                cell.setCellValue(COLUMNs[col]);
+                cell.setCellStyle(headerCellStyle);
+            }
+
+            // CellStyle for Age
+            CellStyle ageCellStyle = workbook.createCellStyle();
+            ageCellStyle.setDataFormat(createHelper.createDataFormat().getFormat("#"));
+
+            int rowIdx = 1;
+            for (ProductDetail productDetail: transactions) {
+                Row row = sheet.createRow(rowIdx++);
+                row.createCell(0).setCellValue(productDetail.getDetalle());
+                if(productDetail.getType().equals("PARES_HABER")) {
+                    row.createCell(2).setCellValue((productDetail.getQuantity() == null) ? BigDecimal.ZERO.intValue():productDetail.getQuantity().doubleValue());
+                } else {
+                    row.createCell(1).setCellValue((productDetail.getQuantity() == null) ? BigDecimal.ZERO.intValue():productDetail.getQuantity().doubleValue());
+                }
+
+//                row.createCell(2).setCellValue(transaction.getTransactionDate().toString());
+//
+//                row.createCell(3).setCellValue((transaction.getEntry() == null) ? BigDecimal.ZERO.intValue():transaction.getEntry().doubleValue());
+//                row.createCell(4).setCellValue((transaction.getEgress() == null) ? BigDecimal.ZERO.intValue():transaction.getEgress().doubleValue());
+//                row.createCell(5).setCellValue((transaction.getBalance() == null)? BigDecimal.ZERO.intValue():transaction.getBalance().doubleValue());
+//                row.createCell(6).setCellValue((transaction.getPriceNeto() == null) ? BigDecimal.ZERO.intValue():transaction.getPriceNeto().doubleValue());
+//                row.createCell(7).setCellValue((transaction.getPriceActual() == null)? BigDecimal.ZERO.intValue():transaction.getPriceActual().doubleValue());
+//                row.createCell(8).setCellValue((transaction.getUfv() == null)? 0 : transaction.getUfv().getValue().doubleValue());
+//                row.createCell(9).setCellValue((transaction.getTotalEntry() == null)? BigDecimal.ZERO.intValue():transaction.getTotalEntry().doubleValue());
+//                row.createCell(10).setCellValue((transaction.getTotalEgress() == null)? BigDecimal.ZERO.intValue():transaction.getTotalEgress().doubleValue());
+//                row.createCell(11).setCellValue((transaction.getTotalNormal() == null)? BigDecimal.ZERO.intValue() :transaction.getTotalNormal().doubleValue());
+//                row.createCell(12).setCellValue((transaction.getTotalUpdate() == null)? BigDecimal.ZERO.intValue():transaction.getTotalUpdate().doubleValue());
+//                row.createCell(13).setCellValue((transaction.getIncrement()== null)? BigDecimal.ZERO.intValue():transaction.getIncrement().doubleValue());
+//                row.createCell(14).setCellValue((transaction.getInformation()== null)? 0:Integer.parseInt(transaction
+//                        .getInformation().get("Almacen")));
+            }
+
+            workbook.write(out);
+            return new ByteArrayInputStream(out.toByteArray());
+        } catch (Exception e) {
             return null;
         }
     }

@@ -71,6 +71,41 @@ const DownloadService = {
         console.log(err);
       });
   },
+  downloadfileItem(loading) {
+    debugger
+    axios({
+      method: "get",
+      url: "http://localhost:4000/items/getAll/PRODUCTO"
+    })
+      .then(response => {
+        debugger
+        response.data.forEach(b => {
+          debugger
+          axios({
+            method: "post",
+            url: "http://localhost:4000/files/producto/",
+            data: {
+              identifier: "transaction",
+              type: "item",
+              tienda: b.id
+            },
+            responseType: "arraybuffer"
+          })
+            .then(response => {
+              this.forceFileDownload(response, "producto", loading);
+            })
+            .catch(err => {
+              alert("fallo al descargar");
+              loading.hide();
+              console.log(err);
+            });
+        });
+      })
+      .catch(err => {
+        alert("fallo al descargar");
+        console.log(err);
+      });
+  },
 
   forceFileDownload(response, type, loading) {
     const url = window.URL.createObjectURL(new Blob([response.data]));

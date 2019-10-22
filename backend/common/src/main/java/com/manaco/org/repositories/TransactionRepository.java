@@ -38,11 +38,13 @@ public interface TransactionRepository extends MongoRepository<Transaction, Stri
 
     Page<Transaction> findByItemIdAndTransactionDateBetween(PageRequest of, String id, LocalDate initDate, LocalDate endDate);
 
-    List<Transaction> findAllByIdentifierAndType(String producto, String type);
+    List<Transaction> findAllByIdentifierAndTypeStartsWith(String producto, String type);
 
     Optional<Transaction> findByItemIdAndType(String itemId, String type);
 
     @Query(value = "{'information.Almacen' : ?0}")
     List<Transaction> findAllInformationAlmacen(String Almacen);
+
+    List<Transaction> findAllByIdentifierAndTypeStartsWithAndItemId(String identifier, String type, String itemId);
 }
 

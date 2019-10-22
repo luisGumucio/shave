@@ -77,7 +77,7 @@ public class TransactionSubscriber {
     public synchronized void receivedProducto1(List<Transaction> transaction) {
 //        System.out.println(transaction.get(0).getItem().getId());
         transaction.forEach(b -> {
-            transactionPTService.executeMoving(b);
+            transactionPTService.executeMoving(b, false);
         });
     }
 }

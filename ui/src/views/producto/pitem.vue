@@ -1,6 +1,6 @@
 <template>
-      <div class="col-md-12 grid-margin stretch-card">
-   <vue-instant-loading-spinner ref="Spinner"></vue-instant-loading-spinner>
+  <div class="col-md-12 grid-margin stretch-card">
+    <vue-instant-loading-spinner ref="Spinner"></vue-instant-loading-spinner>
     <div class="col-md-8 grid-margin stretch-card">
       <div class="card">
         <div class="card-body">
@@ -10,14 +10,20 @@
           </b-pagination>-->
           <div class="form-group pull-right">
             <input type="text" class="search form-control" placeholder="Buscar Item" />
-            <b-button variant="success" @click="download()" >
-              <i class="mdi mdi-cloud-download" ></i>Exportar
+            <b-button variant="success" @click="download()">
+              <i class="mdi mdi-cloud-download"></i>Exportar General
+            </b-button>
+            <b-button variant="success" @click="downloadByTienda()">
+              <i class="mdi mdi-cloud-download"></i>Exportar tienda
+            </b-button>
+            <b-button variant="success" @click="downloadfileItem()">
+              <i class="mdi mdi-cloud-download"></i>Exportar item
             </b-button>
           </div>
           <!-- <div class="form-group">
             <label class="control-label" for="date">Date</label>
             <input class="form-control" id="date" name="date" placeholder="MM/DD/YYY" type="date" />
-          </div> -->
+          </div>-->
           <table class="table">
             <thead class="thead-dark">
               <tr>
@@ -45,8 +51,10 @@
                       data-target="#edit"
                     >
                       <span class="mdi mdi-file-chart"></span>
-                    </button> -->
-                    <router-link class="btn btn-primary btn-xs" to="/rtransaction/"><span class="mdi mdi-file-chart"></span></router-link>
+                    </button>-->
+                    <router-link class="btn btn-primary btn-xs" to="/rtransaction/">
+                      <span class="mdi mdi-file-chart"></span>
+                    </router-link>
                   </p>
                 </td>
               </tr>
@@ -154,19 +162,26 @@
 import DownloadService from "../../services/downloadService";
 import VueInstantLoadingSpinner from "vue-instant-loading-spinner/src/components/VueInstantLoadingSpinner.vue";
 export default {
-    components: {
-      DownloadService,
-      VueInstantLoadingSpinner
+  components: {
+    DownloadService,
+    VueInstantLoadingSpinner
+  },
+  methods: {
+    download() {
+      this.$refs.Spinner.show();
+      DownloadService.downloadfileProducto(this.$refs.Spinner);
     },
-    methods: {
-      download() {
-        this.$refs.Spinner.show();
-        DownloadService.downloadfileTienda(this.$refs.Spinner);
-      }
+    downloadByTienda() {
+      this.$refs.Spinner.show();
+      DownloadService.downloadfileTienda(this.$refs.Spinner);
+    },
+    downloadfileItem() {
+      this.$refs.Spinner.show();
+      DownloadService.downloadfileItem(this.$refs.Spinner);
     }
-}
+  }
+};
 </script>
 
 <style scoped>
-
 </style>

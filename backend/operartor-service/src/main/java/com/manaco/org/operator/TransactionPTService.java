@@ -15,8 +15,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.manaco.org.model.TransactionType.G_INITIAL;
-import static com.manaco.org.model.TransactionType.INITIAL;
+import static com.manaco.org.model.TransactionType.*;
 
 @Service
 public class TransactionPTService {
@@ -47,9 +46,8 @@ public class TransactionPTService {
     }
 
 
-    public synchronized void executeMoving(Transaction transaction) {
+    public void executeMoving(Transaction transaction, Boolean isNotFound) {
         Item item = itemRepository.findById(transaction.getItem().getId()).orElse(null);
-//        LOGGER.info(transaction.getTransactionDetail().getInformation().get("ALMACEN"));
         ItemStock itemStock = null;
         if(item != null) {
             if (!transaction.getInformation().get("Almacen").equals("00680")) {
@@ -60,23 +58,21 @@ public class TransactionPTService {
                 itemStock.setQuantity(BigDecimal.ZERO);
             }
         }
-
         if (item != null && itemStock != null) {
-
             Ufv actual = ufvRepository.findByCreationDate(transaction.getTransactionDate());
             item = updateItem(item, transaction, actual);
             switch (transaction.getType()) {
                 case ENTRY:
-                    executeEntry(item, transaction, actual, null);
+                    executeEntry(item, transaction, actual, itemStock, isNotFound);
                     break;
                 case EGRESS:
-                    executeEgress(item, transaction, actual, null);
+                    executeEgress(item, transaction, actual, itemStock, isNotFound);
                     break;
                 case CAM:
-                    executeCam(item, transaction, actual, null);
+                    executeCam(item, transaction, actual, itemStock);
                     break;
                 case ENTRY_BUY:
-                    executeEntryBuy(item, transaction, actual, null);
+                    executeEntryBuy(item, transaction, actual, itemStock, isNotFound);
                     break;
             }
             LOGGER.info("saved successfully with id " + transaction.getItem().getId());
@@ -86,8 +82,9 @@ public class TransactionPTService {
         }
     }
 
-    private void executeEntryBuy(Item item, Transaction transaction, Ufv actual, ItemStock o) {
-        //        executeEntryByStock(item, transaction, actual, itemStock);
+    private void executeEntryBuy(Item item, Transaction transaction, Ufv actual, ItemStock itemStock,
+                                 Boolean isNotFound) {
+//        executeEntryBuyByStock(item, transaction, actual, itemStock, isNotFound);
         Transaction entry = new Transaction();
         entry.setItem(item);
         entry.setType(TransactionType.G_ENTRY_BUY);
@@ -114,21 +111,50 @@ public class TransactionPTService {
         transactionRepository.save(entry);
     }
 
+    private void executeEntryBuyByStock(Item item, Transaction transaction, Ufv actual, ItemStock itemStock, Boolean isNotFound) {
+        Transaction entry = new Transaction();
+        entry.setItem(item);
+        entry.setType(TransactionType.ENTRY_BUY);
+        entry.setTransactionDate(transaction.getTransactionDate());
+        entry.setEntry(transaction.getItem().getQuantity());
+        //calculando la entrada del item
+        if(isNotFound) {
+            entry.setBalance(itemStock.getQuantity());
+        } else {
+            entry.setBalance(itemStock.getQuantity().add(transaction.getItem().getQuantity()));
+        }
+        entry.setPriceNeto(transaction.getPriceActual());
+        entry.setPriceActual(item.getPrice());
+        entry.setTotalEntry(transaction.getItem().getPrice().multiply(transaction.getItem().getQuantity()));
+        itemStock.setTotal(itemStock.getTotal().add(entry.getTotalEntry()));
+        entry.setTotalNormal(itemStock.getTotal());
+        BigDecimal itemQuantityTotal = operator.calculateQuantityTotal(itemStock.getQuantity(), item.getPrice());
+        entry.setTotalUpdate(itemQuantityTotal.add(entry.getTotalEntry()));
+        itemStock.setQuantity(entry.getBalance());
+        entry.setUfv(actual);
+        entry.setIncrement(BigDecimal.ZERO);
+        entry.setProcessId(transaction.getProcessId());
+        entry.setIdentifier(item.getIdentifier());
+        entry.setInformation(transaction.getInformation());
+        transactionRepository.save(entry);
+        itemStockRepository.save(itemStock);
+    }
+
     private Item updateItem(Item item, Transaction transaction, Ufv actual) {
         if (!item.getLastUpdate().equals(transaction.getTransactionDate())) {
             Ufv before = ufvRepository.findByCreationDate(item.getLastUpdate());
-            if (item.getQuantity().intValue() != 0) {
+            if (item.getQuantity().intValue() > 0) {
                 BigDecimal totalNormal = operator.calculateTotal(item.getQuantity(), item.getPrice());
                 BigDecimal totalUpdate = operator.calculateUpdate(totalNormal, actual.getValue(), before.getValue());
                 BigDecimal newPrice = operator.newPrice(totalUpdate, item.getQuantity());
                 BigDecimal increment = operator.caclulateUfvValue(totalUpdate, totalNormal);
 //                item.setPrice(newPrice.setScale(6, BigDecimal.ROUND_CEILING));
                 item.setLastUpdate(transaction.getTransactionDate());
-                saveMove(item, TransactionType.UPDATE, increment, totalNormal, totalUpdate,
+                saveMove(item, TransactionType.G_UPDATE, increment, totalNormal, totalUpdate,
                         actual, transaction.getProcessId(), newPrice);
             } else {
                 item.setLastUpdate(transaction.getTransactionDate());
-                saveMove(item, TransactionType.UPDATE, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                saveMove(item, TransactionType.G_UPDATE, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
                         actual, transaction.getProcessId(),  item.getPrice());
             }
         }
@@ -140,33 +166,33 @@ public class TransactionPTService {
                           BigDecimal totalUpdate, Ufv actual,
                           String proccesID, BigDecimal newPrice) {
 
-        List<ItemStock> itemStocks = itemStockRepository.findByItemId(item.getId());
-        itemStocks.forEach(b -> {
-            Transaction transaction = new Transaction();
-            if (b.getQuantity().intValue() <= 0) {
-                transaction.setBalance(b.getQuantity());
-                transaction.setTotalNormal(totalNormal);
-                transaction.setTotalUpdate(totalUpdate);
-                transaction.setIncrement(BigDecimal.ZERO);
-            } else {
-                BigDecimal porcentaje = operator.calculatePorcentaje(b.getQuantity(), item.getQuantity());
-                transaction.setBalance(b.getQuantity());
-                transaction.setTotalNormal(b.getQuantity().multiply(item.getPrice()));
-                transaction.setTotalUpdate(porcentaje.multiply(totalUpdate));
-                transaction.setIncrement(transaction.getTotalUpdate().subtract(transaction.getTotalNormal()));
-            }
-
-            transaction.setItem(item);
-            transaction.setType(type);
-            transaction.setTransactionDate(item.getLastUpdate());
-            transaction.setPriceActual(item.getPrice());
-            transaction.setUfv(actual);
-
-            transaction.setProcessId(proccesID);
-            transaction.setIdentifier(item.getIdentifier());
-
-            transactionRepository.save(transaction);
-        });
+//        List<ItemStock> itemStocks = itemStockRepository.findByItemId(item.getId());
+//        itemStocks.forEach(b -> {
+//            Transaction transaction = new Transaction();
+//            if (b.getQuantity().intValue() <= 0 || item.getQuantity().intValue() <= 0) {
+//                transaction.setBalance(b.getQuantity());
+//                transaction.setTotalNormal(totalNormal);
+//                transaction.setTotalUpdate(totalUpdate);
+//                transaction.setIncrement(BigDecimal.ZERO);
+//            } else {
+//                BigDecimal porcentaje = operator.calculatePorcentaje(b.getQuantity(), item.getQuantity());
+//                transaction.setBalance(b.getQuantity());
+//                transaction.setTotalNormal(b.getQuantity().multiply(item.getPrice()));
+//                transaction.setTotalUpdate(porcentaje.multiply(totalUpdate));
+//                transaction.setIncrement(transaction.getTotalUpdate().subtract(transaction.getTotalNormal()));
+//            }
+//
+//            transaction.setItem(item);
+//            transaction.setType(UPDATE);
+//            transaction.setTransactionDate(item.getLastUpdate());
+//            transaction.setPriceActual(item.getPrice());
+//            transaction.setUfv(actual);
+//
+//            transaction.setProcessId(proccesID);
+//            transaction.setIdentifier(item.getIdentifier());
+//
+//            transactionRepository.save(transaction);
+//        });
 
         Transaction transaction = new Transaction();
         transaction.setItem(item);
@@ -225,7 +251,7 @@ public class TransactionPTService {
 
         Transaction other = new Transaction();
         other.setInformation(transaction.getInformation());
-        other.setType(TransactionType.INITIAL);
+        other.setType(INITIAL);
         other.setPriceActual(item.getPrice());
         other.setPriceNeto(BigDecimal.ZERO);
         other.setBalance(itemStock.getQuantity());
@@ -244,7 +270,6 @@ public class TransactionPTService {
                 .orElse(null);
         if(transactionFound == null) {
             transaction.setType(G_INITIAL);
-//            detailRepository.save(transaction.getTransactionDetail());
             transaction.setInformation(null);
             transactionRepository.save(transaction);
         } else {
@@ -253,7 +278,6 @@ public class TransactionPTService {
             transactionFound.setTotalUpdate(item.getTotal());
             transactionRepository.save(transactionFound);
         }
-
     }
 
     private void saveStock(Transaction transaction, Item item) {
@@ -339,11 +363,12 @@ public class TransactionPTService {
         transactionRepository.save(transaction);
         LOGGER.info("adding initial transaction with item id: " + transaction.getItem().getId());
         saveStockNotFound(otherTransaction, item);
-        executeMoving(otherTransaction);
+        executeMoving(otherTransaction, true);
     }
 
-    private void executeEgress(Item item, Transaction transaction, Ufv actual, ItemStock itemStock) {
-//        executeEgressByStock(item, transaction, actual, itemStock);
+    private void executeEgress(Item item, Transaction transaction, Ufv actual, ItemStock itemStock,
+                               boolean isNotFound) {
+//        executeEgressByStock(item, transaction, actual, itemStock, isNotFound);
         Transaction egress = new Transaction();
         egress.setItem(item);
         egress.setType(TransactionType.G_EGRESS);
@@ -351,12 +376,7 @@ public class TransactionPTService {
         egress.setEgress(transaction.getItem().getQuantity());
 
         //calculando la salida del item
-        if(transaction.getItem().getQuantity().compareTo(BigDecimal.ZERO) < 0) {
-//            egress.setBalance(item.getQuantity().subtract(transaction.getItem().getQuantity().negate()));
-            egress.setBalance(item.getQuantity().subtract(transaction.getItem().getQuantity()));
-        } else {
-            egress.setBalance(item.getQuantity().subtract(transaction.getItem().getQuantity()));
-        }
+        egress.setBalance(item.getQuantity().subtract(transaction.getItem().getQuantity()));
 
         egress.setPriceActual(item.getPrice());
         egress.setTotalEgress(item.getPrice().multiply(transaction.getItem().getQuantity()));
@@ -385,8 +405,8 @@ public class TransactionPTService {
         transactionRepository.save(egress);
     }
 
-    private void executeEgressByStock(Item item, Transaction transaction, Ufv actual, ItemStock itemStock) {
-
+    private void executeEgressByStock(Item item, Transaction transaction, Ufv actual, ItemStock itemStock,
+                                      boolean isNotFound) {
         Transaction egress = new Transaction();
         egress.setItem(item);
         egress.setType(TransactionType.EGRESS);
@@ -394,7 +414,12 @@ public class TransactionPTService {
         egress.setEgress(transaction.getItem().getQuantity());
 
         //calculando la salida del item
-        egress.setBalance(itemStock.getQuantity().subtract(transaction.getItem().getQuantity()));
+        if(isNotFound) {
+            egress.setBalance(itemStock.getQuantity());
+        } else {
+            egress.setBalance(itemStock.getQuantity().subtract(transaction.getItem().getQuantity()));
+        }
+
         egress.setPriceActual(item.getPrice());
         egress.setTotalEgress(item.getPrice().multiply(transaction.getItem().getQuantity()));
 
@@ -416,13 +441,13 @@ public class TransactionPTService {
         egress.setProcessId(transaction.getProcessId());
         egress.setIdentifier(item.getIdentifier());
         egress.setInformation(transaction.getInformation());
-//        item.setLastUpdate(transaction.getTransactionDate());
         transactionRepository.save(egress);
         itemStockRepository.save(itemStock);
     }
 
-    private void executeEntry(Item item, Transaction transaction, Ufv actual, ItemStock itemStock) {
-//        executeEntryByStock(item, transaction, actual, itemStock);
+    private void executeEntry(Item item, Transaction transaction, Ufv actual, ItemStock itemStock,
+                              Boolean isNotFound) {
+//        executeEntryByStock(item, transaction, actual, itemStock, isNotFound);
         Transaction entry = new Transaction();
         entry.setItem(item);
         entry.setType(TransactionType.G_ENTRY);
@@ -449,15 +474,19 @@ public class TransactionPTService {
         transactionRepository.save(entry);
     }
 
-    private void executeEntryByStock(Item item, Transaction transaction, Ufv actual, ItemStock itemStock) {
-//        executeEgressByStock(item, transaction, actual, itemStock);
+    private void executeEntryByStock(Item item, Transaction transaction, Ufv actual, ItemStock itemStock,
+                                     Boolean isNotFound) {
         Transaction entry = new Transaction();
         entry.setItem(item);
         entry.setType(TransactionType.ENTRY);
         entry.setTransactionDate(transaction.getTransactionDate());
         entry.setEntry(transaction.getItem().getQuantity());
         //calculando la entrada del item
-        entry.setBalance(itemStock.getQuantity().add(transaction.getItem().getQuantity()));
+        if(isNotFound) {
+            entry.setBalance(itemStock.getQuantity());
+        } else {
+            entry.setBalance(itemStock.getQuantity().add(transaction.getItem().getQuantity()));
+        }
         entry.setPriceNeto(transaction.getPriceActual());
         entry.setPriceActual(item.getPrice());
         entry.setTotalEntry(transaction.getItem().getPrice().multiply(transaction.getItem().getQuantity()));
@@ -471,7 +500,6 @@ public class TransactionPTService {
         entry.setProcessId(transaction.getProcessId());
         entry.setIdentifier(item.getIdentifier());
         entry.setInformation(transaction.getInformation());
-//        itemRepository.save(item);
         transactionRepository.save(entry);
         itemStockRepository.save(itemStock);
     }
@@ -523,7 +551,6 @@ public class TransactionPTService {
         other.setDate(transaction.getTransactionDate());
 
         itemStockRepository.save(other);
-//        itemRepository.save(item);
         transactionRepository.save(entry);
     }
 
@@ -555,11 +582,11 @@ public class TransactionPTService {
             transaction.setProcessId(process.getId());
             transaction.getItem().setPrice(newPrice.setScale(6, BigDecimal.ROUND_CEILING));
             transaction.getItem().setLastUpdate(transaction.getTransactionDate());
-            saveMoveUpdate(transaction.getItem(), TransactionType.CIERRE, increment, totalNormal, totalUpdate,
+            saveMoveUpdate(transaction.getItem(), TransactionType.G_CIERRE, increment, totalNormal, totalUpdate,
                     actual, transaction.getProcessId());
         } else {
             transaction.getItem().setLastUpdate(transaction.getTransactionDate());
-            saveMoveUpdate(transaction.getItem(), TransactionType.CIERRE, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+            saveMoveUpdate(transaction.getItem(), TransactionType.G_CIERRE, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
                     actual, transaction.getProcessId());
         }
     }

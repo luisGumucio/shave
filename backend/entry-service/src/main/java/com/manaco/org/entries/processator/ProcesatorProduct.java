@@ -1,9 +1,12 @@
 package com.manaco.org.entries.processator;
 
+import com.manaco.org.entries.FileService;
 import com.manaco.org.entries.Publisher;
 import com.manaco.org.model.*;
 import com.manaco.org.model.Process;
 import com.manaco.org.utils.ProcesatorObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +22,8 @@ import java.util.stream.Collectors;
 
 @Component
 public class ProcesatorProduct implements ProcesatorObject {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(FileService.class);
 
     @Autowired
     private Publisher publisher;
@@ -216,7 +221,7 @@ public class ProcesatorProduct implements ProcesatorObject {
         executeTransaction(transactions);
     }
 
-    private void executeTransaction(List<Transaction> raws) {
+    private synchronized void executeTransaction(List<Transaction> raws) {
         if (raws.isEmpty()) {
             return;
         } else {
@@ -230,14 +235,13 @@ public class ProcesatorProduct implements ProcesatorObject {
             List<Transaction> actual = raws.stream()
                     .filter(b -> Objects.equals(b.getItem().getId(), id))
                     .collect(Collectors.toList());
-//            if(channel == 1) {
-//                channel++;
-//            } else {
-//                channel--;
-//            }
-//            System.out.println(channel);
-//            publisher.sentToTransaction(actual, channel);
-            System.out.println( "actual: " + actual.get(0).getItem().getId() + "current: " + id);
+            if(channel == 1) {
+                channel++;
+            } else {
+                channel--;
+            }
+
+            LOGGER.info( "actual: " + actual.get(0).getItem().getId() + "current: " + id);
             publisher.sentToTransaction(actual, channel);
             raws.removeIf(b -> b.getItem().getId().equals(id));
         } catch (Exception e) {

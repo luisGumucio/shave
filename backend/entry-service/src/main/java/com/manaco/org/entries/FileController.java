@@ -113,6 +113,10 @@ public class FileController {
             return productReport.downloadProductGeneral("general");
         } else if(option.getIdentifier().equals("transaction") && option.getType().equals("tienda")) {
             return productReport.downloadProductByTienda(option.getIdentifier(), option.getTienda());
+        } else if(option.getType().equals("item")) {
+            return productReport.downloadProductByItem(option);
+        } else  if(option.getType().equals("type")) {
+            return productReport.downloadProductByType(option);
         }
         return downloadItems(option.getIdentifier());
     }
@@ -138,9 +142,6 @@ public class FileController {
         }
         return downloadItems(identifier);
     }
-
-
-
 
     private ResponseEntity<InputStreamResource> downloadTransaction(String identifier) throws IOException {
         List<Transaction> transactions = transactionRepository.findAllByIdentifier(identifier);
