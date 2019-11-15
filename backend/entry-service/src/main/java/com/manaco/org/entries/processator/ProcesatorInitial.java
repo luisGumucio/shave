@@ -40,6 +40,7 @@ public class ProcesatorInitial implements ProcesatorObject {
         item.setLastUpdate(item.getInitialDate());
         item.setIdentifier(option);
         item.setTotal(item.getPrice().multiply(item.getQuantity()));
+        item.setTotalUpdate(item.getPrice().multiply(item.getQuantity()));
 
         transaction.setType(TransactionType.INITIAL);
         transaction.setPriceActual(item.getPrice());

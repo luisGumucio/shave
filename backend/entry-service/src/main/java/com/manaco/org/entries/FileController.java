@@ -137,6 +137,10 @@ public class FileController {
             case PRODUCTO:
                 in = ExcelGenerator.downloadProducFinish(transactions, identifier);
                 break;
+                case PRIMA:
+                    in = ExcelGenerator.downloadTransation(transactions, "PRIMA");
+                    break;
+
         }
 
         HttpHeaders headers = new HttpHeaders();

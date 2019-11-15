@@ -73,6 +73,7 @@ public class TransactionRepuestosService {
             saveMove(transaction.getItem(), TransactionType.CIERRE, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
                     actual, transaction.getProcessId());
         }
+        LOGGER.info("Updating transaction with item id" + transaction.getItem().getId());
     }
 
     private void saveMove(Item item, TransactionType type, BigDecimal increment, BigDecimal totalNormal,

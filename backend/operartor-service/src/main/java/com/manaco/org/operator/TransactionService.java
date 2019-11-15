@@ -102,13 +102,14 @@ public class TransactionService {
         if (!item.getLastUpdate().equals(transaction.getTransactionDate())) {
             Ufv before = ufvRepository.findByCreationDate(item.getLastUpdate());
             if (item.getQuantity().intValue() != 0) {
-                BigDecimal totalNormal = operator.calculateTotal(item.getQuantity(), item.getPrice());
-                BigDecimal totalUpdate = operator.calculateUpdate(totalNormal, actual.getValue(), before.getValue());
+//                BigDecimal totalNormal = operator.calculateTotal(item.getQuantity(), item.getPrice());
+                BigDecimal totalUpdate = operator.calculateUpdate(item.getTotalUpdate(), actual.getValue(), before.getValue());
                 BigDecimal newPrice = operator.newPrice(totalUpdate, item.getQuantity());
-                BigDecimal increment = operator.caclulateUfvValue(totalUpdate, totalNormal);
+                BigDecimal increment = operator.caclulateUfvValue(totalUpdate, item.getTotalUpdate());
                 item.setPrice(newPrice.setScale(6, BigDecimal.ROUND_CEILING));
                 item.setLastUpdate(transaction.getTransactionDate());
-                saveMove(item, TransactionType.UPDATE, increment, totalNormal, totalUpdate,
+                item.setTotalUpdate(totalUpdate);
+                saveMove(item, TransactionType.UPDATE, increment, item.getTotalUpdate(), totalUpdate,
                         actual, transaction.getProcessId());
             } else {
                 item.setLastUpdate(transaction.getTransactionDate());
@@ -161,6 +162,7 @@ public class TransactionService {
             BigDecimal itemQuantityTotal = operator.calculateQuantityTotal(item.getQuantity(), item.getPrice());
             egress.setTotalUpdate(itemQuantityTotal.subtract(egress.getTotalEgress()));
             item.setQuantity(egress.getBalance());
+            item.setTotalUpdate(egress.getTotalUpdate());
         }
 
         egress.setUfv(actual);
@@ -190,6 +192,7 @@ public class TransactionService {
         entry.setTotalNormal(item.getTotal());
         BigDecimal itemQuantityTotal = operator.calculateQuantityTotal(item.getQuantity(), item.getPrice());
         entry.setTotalUpdate(itemQuantityTotal.add(entry.getTotalEntry()));
+        item.setTotalUpdate(entry.getTotalUpdate());
         item.setQuantity(entry.getBalance());
         entry.setUfv(actual);
         entry.setIncrement(BigDecimal.ZERO);

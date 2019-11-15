@@ -25,6 +25,7 @@ public class Item {
     private LocalDate lastUpdate;
     private BigDecimal total;
     private Boolean isFailure;
+    private BigDecimal totalUpdate;
 
     @Indexed(name = "identifier_index", direction = IndexDirection.DESCENDING)
     private TransactionOption identifier;
@@ -103,5 +104,13 @@ public class Item {
 
     public void setTotal(BigDecimal total) {
         this.total = total;
+    }
+
+    public BigDecimal getTotalUpdate() {
+        return totalUpdate;
+    }
+
+    public void setTotalUpdate(BigDecimal totalUpdate) {
+        this.totalUpdate = totalUpdate;
     }
 }
