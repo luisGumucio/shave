@@ -251,4 +251,25 @@ public class TransactionService {
             });
         }
     }
+
+    public void updateItemCierre(Item item, Transaction transaction, Ufv actual) {
+        if (!item.getLastUpdate().equals(transaction.getTransactionDate())) {
+            if (item.getQuantity().intValue() > 0) {
+                Ufv before = ufvRepository.findByCreationDate(item.getLastUpdate());
+                BigDecimal totalUpdate = operator.calculateUpdate(item.getTotalUpdate(), actual.getValue(), before.getValue());
+                BigDecimal newPrice = operator.newPrice(totalUpdate, item.getQuantity());
+                BigDecimal increment = operator.caclulateUfvValue(totalUpdate, item.getTotalUpdate()).setScale(6, BigDecimal.ROUND_CEILING);
+                item.setPrice(newPrice.setScale(6, BigDecimal.ROUND_CEILING));
+                item.setLastUpdate(transaction.getTransactionDate());
+                item.setTotalUpdate(totalUpdate.setScale(6, BigDecimal.ROUND_CEILING));
+                item.setTotal(item.getTotal());
+                saveMove(item, TransactionType.CIERRE, increment, item.getTotal(), totalUpdate,
+                        actual, transaction.getProcessId());
+            } else {
+                item.setLastUpdate(transaction.getTransactionDate());
+                saveMove(item, TransactionType.CIERRE, BigDecimal.ZERO, item.getTotal(), item.getTotalUpdate(),
+                        actual, transaction.getProcessId());
+            }
+        }
+    }
 }
