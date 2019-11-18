@@ -57,7 +57,6 @@ public class TransactionService {
             System.out.println("item not found with  id " + transaction.getItem());
             saveItemNotFound(transaction);
         }
-
     }
 
     private void saveItemNotFound(Transaction otherTransaction) {
@@ -70,7 +69,7 @@ public class TransactionService {
         item.setInitialDate(currentDate);
         item.setLastUpdate(item.getInitialDate());
         item.setTotal(BigDecimal.ZERO);
-
+        item.setTotalUpdate(BigDecimal.ZERO);
         transaction.setType(INITIAL);
         transaction.setPriceActual(item.getPrice());
         transaction.setPriceNeto(BigDecimal.ZERO);
@@ -98,22 +97,22 @@ public class TransactionService {
         executeMoving(otherTransaction);
     }
 
-    private Item updateItem(Item item, Transaction transaction, Ufv actual) {
+    public Item updateItem(Item item, Transaction transaction, Ufv actual) {
         if (!item.getLastUpdate().equals(transaction.getTransactionDate())) {
-            Ufv before = ufvRepository.findByCreationDate(item.getLastUpdate());
-            if (item.getQuantity().intValue() != 0) {
-//                BigDecimal totalNormal = operator.calculateTotal(item.getQuantity(), item.getPrice());
+            if (item.getQuantity().intValue() > 0) {
+                Ufv before = ufvRepository.findByCreationDate(item.getLastUpdate());
                 BigDecimal totalUpdate = operator.calculateUpdate(item.getTotalUpdate(), actual.getValue(), before.getValue());
                 BigDecimal newPrice = operator.newPrice(totalUpdate, item.getQuantity());
-                BigDecimal increment = operator.caclulateUfvValue(totalUpdate, item.getTotalUpdate());
+                BigDecimal increment = operator.caclulateUfvValue(totalUpdate, item.getTotalUpdate()).setScale(6, BigDecimal.ROUND_CEILING);
                 item.setPrice(newPrice.setScale(6, BigDecimal.ROUND_CEILING));
                 item.setLastUpdate(transaction.getTransactionDate());
-                item.setTotalUpdate(totalUpdate);
-                saveMove(item, TransactionType.UPDATE, increment, item.getTotalUpdate(), totalUpdate,
+                item.setTotalUpdate(totalUpdate.setScale(6, BigDecimal.ROUND_CEILING));
+                item.setTotal(item.getTotal());
+                saveMove(item, TransactionType.UPDATE, increment, item.getTotal(), totalUpdate,
                         actual, transaction.getProcessId());
             } else {
                 item.setLastUpdate(transaction.getTransactionDate());
-                saveMove(item, TransactionType.UPDATE, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                saveMove(item, TransactionType.UPDATE, BigDecimal.ZERO, item.getTotal(), item.getTotalUpdate(),
                         actual, transaction.getProcessId());
             }
         }
@@ -141,66 +140,61 @@ public class TransactionService {
 
     private void executeEgress(Item item, Transaction transaction, Ufv actual) {
         Transaction egress = new Transaction();
-        egress.setItem(item);
         egress.setType(TransactionType.EGRESS);
         egress.setTransactionDate(transaction.getTransactionDate());
         egress.setEgress(transaction.getItem().getQuantity());
-
-        //calculando la salida del item
-        egress.setBalance(item.getQuantity().subtract(transaction.getItem().getQuantity()));
+        egress.setBalance(item.getQuantity().subtract(egress.getEgress()).setScale(6, BigDecimal.ROUND_CEILING));
         egress.setPriceActual(item.getPrice());
-        egress.setTotalEgress(item.getPrice().multiply(transaction.getItem().getQuantity()));
-
-        if (egress.getBalance().equals(BigDecimal.ZERO)) {
-            egress.setTotalNormal(BigDecimal.ZERO);
-            egress.setTotalUpdate(BigDecimal.ZERO);
-            item.setTotal(BigDecimal.ZERO);
-            item.setQuantity(BigDecimal.ZERO);
-        } else {
-            item.setTotal(item.getTotal().subtract(egress.getTotalEgress()));
-            egress.setTotalNormal(item.getTotal());
-            BigDecimal itemQuantityTotal = operator.calculateQuantityTotal(item.getQuantity(), item.getPrice());
-            egress.setTotalUpdate(itemQuantityTotal.subtract(egress.getTotalEgress()));
-            item.setQuantity(egress.getBalance());
-            item.setTotalUpdate(egress.getTotalUpdate());
-        }
-
         egress.setUfv(actual);
+        egress.setTotalEgress(operator.calculateTotalItem(item.getPrice(), egress.getEgress()));
+        egress.setTotalNormal(item.getTotal().subtract(egress.getTotalEgress()).setScale(6, BigDecimal.ROUND_CEILING));
+        egress.setTotalUpdate(item.getTotalUpdate().subtract(egress.getTotalEgress()).setScale(6, BigDecimal.ROUND_CEILING));
         egress.setIncrement(BigDecimal.ZERO);
+        //update item
+        item.setQuantity(egress.getBalance());
+        item.setTotal(egress.getTotalNormal());
+        item.setTotalUpdate(egress.getTotalUpdate());
+        // detail information
+        egress.setItem(item);
         egress.setProcessId(transaction.getProcessId());
         egress.setIdentifier(item.getIdentifier());
         egress.setDetail(transaction.getDetail());
-        item.setLastUpdate(transaction.getTransactionDate());
+        //save item
         detailRepository.save(transaction.getDetail());
         itemRepository.save(item);
-
         transactionRepository.save(egress);
     }
 
     private void executeEntry(Item item, Transaction transaction, Ufv actual) {
         Transaction entry = new Transaction();
-        entry.setItem(item);
         entry.setType(TransactionType.ENTRY);
         entry.setTransactionDate(transaction.getTransactionDate());
         entry.setEntry(transaction.getItem().getQuantity());
-        //calculando la entrada del item
-        entry.setBalance(item.getQuantity().add(transaction.getItem().getQuantity()));
-        entry.setPriceNeto(transaction.getPriceActual());
-        entry.setPriceActual(item.getPrice());
-        entry.setTotalEntry(transaction.getItem().getPrice().multiply(transaction.getItem().getQuantity()));
-        item.setTotal(item.getTotal().add(entry.getTotalEntry()));
-        entry.setTotalNormal(item.getTotal());
-        BigDecimal itemQuantityTotal = operator.calculateQuantityTotal(item.getQuantity(), item.getPrice());
-        entry.setTotalUpdate(itemQuantityTotal.add(entry.getTotalEntry()));
-        item.setTotalUpdate(entry.getTotalUpdate());
-        item.setQuantity(entry.getBalance());
+        entry.setBalance(entry.getEntry().add(item.getQuantity()));
+        entry.setPriceNeto(transaction.getPriceNeto());
         entry.setUfv(actual);
+        entry.setTotalEntry(operator.calculateTotalItem(entry.getPriceNeto(), entry.getBalance()));
+        entry.setTotalNormal(entry.getTotalEntry().add(item.getTotal()).setScale(6, BigDecimal.ROUND_CEILING));
+        entry.setTotalUpdate(entry.getTotalEntry().add(item.getTotalUpdate()).setScale(6, BigDecimal.ROUND_CEILING));
         entry.setIncrement(BigDecimal.ZERO);
+        //para obtener el nuevo precio
+        if(entry.getTotalUpdate().intValue() <= 0) {
+            entry.setPriceActual(item.getPrice());
+        } else {
+            entry.setPriceActual(operator.newPrice(entry.getTotalUpdate(), entry.getBalance()));
+        }
+
+        // update item
+        item.setPrice(entry.getPriceActual());
+        item.setQuantity(entry.getBalance());
+        item.setTotal(entry.getTotalNormal());
+        item.setTotalUpdate(entry.getTotalUpdate());
+        // detail information
         entry.setProcessId(transaction.getProcessId());
         entry.setIdentifier(item.getIdentifier());
         entry.setDetail(transaction.getDetail());
-        item.setPrice(entry.getPriceActual());
-        item.setLastUpdate(transaction.getTransactionDate());
+        entry.setItem(item);
+        // save data
         detailRepository.save(transaction.getDetail());
         itemRepository.save(item);
         transactionRepository.save(entry);

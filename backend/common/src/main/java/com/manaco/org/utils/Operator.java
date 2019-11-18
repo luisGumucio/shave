@@ -20,6 +20,13 @@ public class Operator {
         return quantity.multiply(price).setScale(6, BigDecimal.ROUND_CEILING);
     }
 
+    public BigDecimal calculateTotalItem(BigDecimal price, BigDecimal quantity) {
+        if (quantity.compareTo(BigDecimal.ZERO) == 0) {
+            return BigDecimal.ZERO;
+        }
+        return quantity.multiply(price).setScale(6, BigDecimal.ROUND_CEILING);
+    }
+
     public BigDecimal calculateUpdate(BigDecimal total, BigDecimal actualUfv, BigDecimal beforeUfv) {
         if (total.compareTo(BigDecimal.ZERO) != 0) {
             return total.multiply(actualUfv.divide(beforeUfv, RoundingMode.CEILING));
@@ -48,6 +55,14 @@ public class Operator {
 
     public BigDecimal calculateEgressBalance(BigDecimal itemQuantityTotal, BigDecimal quantity) {
         return itemQuantityTotal.subtract(quantity);
+    }
+
+    public BigDecimal calculateNewPrice(BigDecimal totalUpdate, BigDecimal quantity) {
+        if (totalUpdate.compareTo(BigDecimal.ZERO) != 0 && quantity.compareTo(BigDecimal.ZERO) != 0) {
+//            return totalUpdate.divide(quantity, RoundingMode.CEILING);
+            return totalUpdate.divide(quantity, 6, RoundingMode.CEILING);
+        }
+        return BigDecimal.ZERO;
     }
 }
 

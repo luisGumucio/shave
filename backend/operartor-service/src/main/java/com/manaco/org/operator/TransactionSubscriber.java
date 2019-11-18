@@ -1,6 +1,10 @@
 package com.manaco.org.operator;
 
+import com.manaco.org.model.Item;
 import com.manaco.org.model.Transaction;
+import com.manaco.org.model.Ufv;
+import com.manaco.org.repositories.ItemRepository;
+import com.manaco.org.repositories.UfvRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -22,6 +26,12 @@ public class TransactionSubscriber {
 
     @Autowired
     private TransactionPTService transactionPTService;
+
+    @Autowired
+    private ItemRepository itemRepository;
+
+    @Autowired
+    private UfvRepository ufvRepository;
 
     @RabbitListener(queues = "${repuestos.rabbitmq.queue}")
     public synchronized void receiveInitial(Transaction transaction) {
@@ -47,7 +57,9 @@ public class TransactionSubscriber {
                 service.executeSecondProcess(transaction);
                 break;
             case UPDATE:
-                transactionRepuestosService.updateItem(transaction);
+                Ufv actual = ufvRepository.findByCreationDate(transaction.getTransactionDate());
+                Item item = itemRepository.findById(transaction.getItem().getId()).orElse(null);
+                service.updateItem(item, transaction, actual);
             default:
                 service.executeMoving(transaction);
                 break;

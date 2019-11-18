@@ -19,13 +19,15 @@ public class Item {
     private BigDecimal quantity;
     @NotNull
     private BigDecimal price;
+    @NotNull
+    private BigDecimal total;
+    @NotNull
+    private BigDecimal totalUpdate;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDate initialDate;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDate lastUpdate;
-    private BigDecimal total;
     private Boolean isFailure;
-    private BigDecimal totalUpdate;
 
     @Indexed(name = "identifier_index", direction = IndexDirection.DESCENDING)
     private TransactionOption identifier;

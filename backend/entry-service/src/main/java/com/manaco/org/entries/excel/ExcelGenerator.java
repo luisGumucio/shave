@@ -78,16 +78,16 @@ public class ExcelGenerator {
                 row.createCell(11).setCellValue((transaction.getTotalNormal() == null)? BigDecimal.ZERO.intValue() :transaction.getTotalNormal().doubleValue());
                 row.createCell(12).setCellValue((transaction.getTotalUpdate() == null)? BigDecimal.ZERO.intValue():transaction.getTotalUpdate().doubleValue());
                 row.createCell(13).setCellValue((transaction.getIncrement()== null)? BigDecimal.ZERO.intValue():transaction.getIncrement().doubleValue());
-                row.createCell(14).setCellValue((transaction.getDetail()== null)? "":transaction.getDetail()
-                        .getInformation().get("SECCION_D"));
-                row.createCell(15).setCellValue((transaction.getDetail()== null)? "":transaction.getDetail()
-                        .getInformation().get("CUENTA"));
-                row.createCell(16).setCellValue((transaction.getDetail()== null)? 0:Integer.parseInt(transaction.getDetail()
-                        .getInformation().get("ALMACEN")));
-                row.createCell(17).setCellValue((transaction.getDetail()== null)? "":transaction.getDetail()
-                        .getInformation().get("DESCRIPCION"));
-                row.createCell(18).setCellValue((transaction.getDetail()== null)? 0: Integer.parseInt(transaction.getDetail()
-                        .getInformation().get("TRANS_TIPO")));
+//                row.createCell(14).setCellValue((transaction.getDetail()== null)? "":transaction.getDetail()
+//                        .getInformation().get("SECCION_D"));
+//                row.createCell(15).setCellValue((transaction.getDetail()== null)? "":transaction.getDetail()
+//                        .getInformation().get("CUENTA"));
+//                row.createCell(16).setCellValue((transaction.getDetail()== null)? 0:Integer.parseInt(transaction.getDetail()
+//                        .getInformation().get("ALMACEN")));
+//                row.createCell(17).setCellValue((transaction.getDetail()== null)? "":transaction.getDetail()
+//                        .getInformation().get("DESCRIPCION"));
+//                row.createCell(18).setCellValue((transaction.getDetail()== null)? 0: Integer.parseInt(transaction.getDetail()
+//                        .getInformation().get("TRANS_TIPO")));
 //                row.createCell(14).setCellValue(transaction.getEgress().toString());
 //                System.out.println(transaction.getItem().getId());
                 cont++;
