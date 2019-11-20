@@ -87,7 +87,6 @@ public class TransactionSubscriber {
 
     @RabbitListener(queues = "${other.rabbitmq.queue}")
     public synchronized void receivedProducto1(List<Transaction> transaction) {
-//        System.out.println(transaction.get(0).getItem().getId());
         transaction.forEach(b -> {
             transactionPTService.executeMoving(b, false);
         });

@@ -36,7 +36,7 @@ public class ExcelGenerator {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             CreationHelper createHelper = workbook.getCreationHelper();
 
-            Sheet sheet = workbook.createSheet("Repuestos");
+            Sheet sheet = workbook.createSheet("Materia Prima");
 
             Font headerFont = workbook.createFont();
             headerFont.setColor(IndexedColors.BLACK.getIndex());

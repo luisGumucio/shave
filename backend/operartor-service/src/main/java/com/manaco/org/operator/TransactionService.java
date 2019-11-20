@@ -81,7 +81,7 @@ public class TransactionService {
         transaction.setIncrement(BigDecimal.ZERO);
         transaction.setProcessId(otherTransaction.getProcessId());
         transaction.setUfv(ufvRepository.findByCreationDate(item.getLastUpdate()));
-        transaction.setDetail(null);
+        transaction.setInformation(null);
         transaction.setIdentifier(otherTransaction.getItem().getIdentifier());
 //        saveItem(transaction);
         if (transaction.getItem().getQuantity().intValue() < 0) {
@@ -158,9 +158,8 @@ public class TransactionService {
         egress.setItem(item);
         egress.setProcessId(transaction.getProcessId());
         egress.setIdentifier(item.getIdentifier());
-        egress.setDetail(transaction.getDetail());
+        egress.setInformation(transaction.getInformation());
         //save item
-        detailRepository.save(transaction.getDetail());
         itemRepository.save(item);
         transactionRepository.save(egress);
     }
@@ -173,7 +172,7 @@ public class TransactionService {
         entry.setBalance(entry.getEntry().add(item.getQuantity()));
         entry.setPriceNeto(transaction.getPriceNeto());
         entry.setUfv(actual);
-        entry.setTotalEntry(operator.calculateTotalItem(entry.getPriceNeto(), entry.getBalance()));
+        entry.setTotalEntry(operator.calculateTotalItem(entry.getPriceNeto(), entry.getEntry()));
         entry.setTotalNormal(entry.getTotalEntry().add(item.getTotal()).setScale(6, BigDecimal.ROUND_CEILING));
         entry.setTotalUpdate(entry.getTotalEntry().add(item.getTotalUpdate()).setScale(6, BigDecimal.ROUND_CEILING));
         entry.setIncrement(BigDecimal.ZERO);
@@ -192,10 +191,9 @@ public class TransactionService {
         // detail information
         entry.setProcessId(transaction.getProcessId());
         entry.setIdentifier(item.getIdentifier());
-        entry.setDetail(transaction.getDetail());
+        entry.setInformation(transaction.getInformation());
         entry.setItem(item);
         // save data
-        detailRepository.save(transaction.getDetail());
         itemRepository.save(item);
         transactionRepository.save(entry);
     }
@@ -206,12 +204,6 @@ public class TransactionService {
             transaction.getItem().setIsFailure(Boolean.TRUE);
         } else {
             transaction.getItem().setIsFailure(Boolean.FALSE);
-        }
-
-        itemRepository.save(transaction.getItem());
-        if (transaction.getDetail() != null) {
-            detailRepository.save(transaction.getDetail());
-//            savePrimaStock(transaction, transaction.getItem());
         }
 
         transactionRepository.save(transaction);

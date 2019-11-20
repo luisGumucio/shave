@@ -150,7 +150,7 @@ public class FileController {
         ByteArrayInputStream in = null;
         switch (option) {
             case PRODUCTO:
-//                in = ExcelGenerator.downloadProducFinish(transactions, identifier);
+                in = ExcelGenerator.downloadProducFinish(transactions);
                 break;
                 case PRIMA:
                     in = ExcelGenerator.downloadTransation(transactions, "PRIMA");
@@ -180,8 +180,6 @@ public class FileController {
                 .headers(headers)
                 .body(new InputStreamResource(in));
     }
-
-
 
     private ResponseEntity<InputStreamResource> downloadItems(String identifier) throws IOException  {
         List<Item> items = itemRepository.findAllByIdentifier(identifier);
