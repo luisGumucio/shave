@@ -14,6 +14,6 @@ public class TransactionController {
 
     @PostMapping
     public void execute() {
-        transactionPTService.executeTransaction();
+//        transactionPTService.executeTransaction();
     }
 }

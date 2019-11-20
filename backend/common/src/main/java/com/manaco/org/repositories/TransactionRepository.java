@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface TransactionRepository extends MongoRepository<Transaction, String> {
@@ -36,5 +37,14 @@ public interface TransactionRepository extends MongoRepository<Transaction, Stri
     Page<Transaction>  findByTypeAndIdentifier (Pageable pageable, String type, String identifier);
 
     Page<Transaction> findByItemIdAndTransactionDateBetween(PageRequest of, String id, LocalDate initDate, LocalDate endDate);
+
+    List<Transaction> findAllByIdentifierAndTypeStartsWith(String producto, String type);
+
+    Optional<Transaction> findByItemIdAndType(String itemId, String type);
+
+    @Query(value = "{'information.Almacen' : ?0}")
+    List<Transaction> findAllInformationAlmacen(String Almacen);
+
+    List<Transaction> findAllByIdentifierAndTypeStartsWithAndItemId(String identifier, String type, String itemId);
 }
 

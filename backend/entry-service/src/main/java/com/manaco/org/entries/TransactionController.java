@@ -33,6 +33,10 @@ public class TransactionController {
     private TransactionRepository transactionRepository;
 
 
+    @GetMapping()
+    public Page<Transaction> getAll(@RequestParam(defaultValue = "0") int page) {
+        return transactionRepository.findAll(PageRequest.of(page, 1000));
+    }
 
     @GetMapping(path = "/identifier/{identifier}")
     public Page<Transaction> get(@RequestParam(defaultValue = "0") int page, @PathVariable String identifier) {
@@ -96,6 +100,28 @@ public class TransactionController {
 
         return salesReport;
     }
+
+    @PostMapping(path = "/reportDeber")
+    public List<TransactionTotalReport> getReportDeber(@RequestBody FilterDate filterDate) {
+
+        Aggregation aggregation = newAggregation(
+                match(Criteria.where("identifier").is(filterDate.getIdentifier())),
+//                        .and("type").is("G_EGRESS")),
+                group("identifier")
+                        .sum("totalNormal").as("totalNormal")
+                        .sum("balance").as("totalUpdate"),
+                project("name"),
+//                        .sum("increment").as("totalIncrement"),
+                sort(Sort.Direction.ASC, previousOperation(), "identifier"));
+
+        AggregationResults<TransactionTotalReport> groupResults = mongoTemplate.aggregate(
+                aggregation, Transaction.class, TransactionTotalReport.class);
+
+        List<TransactionTotalReport> salesReport = groupResults.getMappedResults();
+
+        return salesReport;
+    }
+
 
     @GetMapping(path = "/transactionTotal")
     public List<TotalItemReport> getItemTotal(@RequestParam String id) {

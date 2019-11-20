@@ -51,6 +51,9 @@ public class FileController {
     @Autowired
     TransactionRepository transactionRepository;
 
+    @Autowired
+    private ProductReport productReport;
+
     @PostMapping
     public ResponseEntity<FileUpload> upload(@RequestParam("file") MultipartFile file,
                                              @RequestPart("option") String option, @RequestParam("process") String process) {
@@ -104,12 +107,24 @@ public class FileController {
     }
 
 
+    @PostMapping(value = "/producto")
+    public ResponseEntity<InputStreamResource> excelProductReport(@RequestBody ProductOption option) throws IOException {
+        if(option.getIdentifier().equals("transaction") && option.getType().equals("general")) {
+            return productReport.downloadProductGeneral("general" , option.getTienda());
+        } else if(option.getIdentifier().equals("transaction") && option.getType().equals("tienda")) {
+            return productReport.downloadProductByTienda(option.getIdentifier(), option.getTienda());
+        } else if(option.getType().equals("item")) {
+            return productReport.downloadProductByItem(option);
+        } else  if(option.getType().equals("type")) {
+            return productReport.downloadProductByType(option);
+        }
+        return downloadItems(option.getIdentifier());
+    }
+
+
     @GetMapping(value = "/download/{identifer}/{type}")
     public ResponseEntity<InputStreamResource> excelCustomersReport(@PathVariable("identifer") String identifier,
                                                                     @PathVariable("type") String type) throws IOException {
-
-//        FileRead fileRead = new FileRead();
-//        fileRead.ReadFile(value);
         if(type.equals("transaction")) {
             return downloadTransaction(identifier);
         }
@@ -135,14 +150,13 @@ public class FileController {
         ByteArrayInputStream in = null;
         switch (option) {
             case PRODUCTO:
-                in = ExcelGenerator.downloadProducFinish(transactions, identifier);
+//                in = ExcelGenerator.downloadProducFinish(transactions, identifier);
                 break;
                 case PRIMA:
                     in = ExcelGenerator.downloadTransation(transactions, "PRIMA");
                     break;
 
         }
-
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=customers.xlsx");
 

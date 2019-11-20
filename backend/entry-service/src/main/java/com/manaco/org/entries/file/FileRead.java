@@ -3,9 +3,7 @@ package com.manaco.org.entries.file;
 import com.manaco.org.dto.ProductDto;
 import com.manaco.org.entries.excel.ExcelGenerator;
 import com.manaco.org.model.*;
-import com.manaco.org.model.Process;
 import org.apache.poi.util.IOUtils;
-import org.springframework.http.HttpEntity;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -16,6 +14,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -84,7 +83,7 @@ public class FileRead {
 
         long start = new Date().getTime();
         System.out.println("BufferedReader Time Consumed => " + new Date().toString());
-        String fileName = "C:\\Users\\lucho\\Documents\\manaco\\datosOficial\\productoTerminado\\moveOficialActualizado\\pag" +value+".txt"; //this path is on my local
+        String fileName = "C:\\Users\\lucho\\Documents\\manaco\\datosOficial\\productoTerminado\\procesar\\pag" +value+".txt"; //this path is on my local
         int cont = 0;
         try (BufferedReader fileBufferReader = new BufferedReader(new FileReader(fileName))) {
             String fileLineContent;
@@ -128,7 +127,6 @@ public class FileRead {
         try {
             String value = "";
             int cont = 0;
-            TransactionDetail detail = new TransactionDetail();
             Map<String, String> info = new HashMap<>();
             Transaction transaction = new Transaction();
             Item item = new Item();
@@ -179,10 +177,9 @@ public class FileRead {
                     value = value.concat(String.valueOf(content.charAt(x)));
                 }
             }
-            detail.setInformation(info);
+            transaction.setInformation(info);
             item.setIdentifier(TransactionOption.PRODUCTO);
             transaction.setItem(item);
-            transaction.setDetail(detail);
             if (transaction.getType() == TransactionType.ENTRY || transaction.getType() == TransactionType.ENTRY_BUY) {
                 transaction.setPriceActual(item.getPrice());
                 transaction.setPriceNeto(item.getPrice());
@@ -204,7 +201,11 @@ public class FileRead {
             String value = "";
             int cont = 0;
             ProductDto dto = new ProductDto();
-            for (int x = 0; x < content.length(); x++) {
+            for (int x = 0; x <= content.length(); x++) {
+                if(x == content.length()){
+                    dto.setTIPO_MOV(value);
+                     break;
+                }
                 if (String.valueOf(content.charAt(x)).equals("|")) {
                     switch (cont) {
                         case 0:
@@ -227,13 +228,18 @@ public class FileRead {
                             break;
                         case 6:
                             LocalDate currentDate = convertToDate(value).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-                            dto.setFECHA_DOC(currentDate);
+//                            dto.setFECHA_DOC(currentDate);
+                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                            dto.setFECHA_DOC(currentDate.format(formatter));
                             break;
                         case 7:
                             dto.setORIGEN(value);
                             break;
                         case 8:
                             dto.setSEMANA(value);
+                            break;
+                        case 9:
+                            dto.setTABLA_ORIGEN(value);
                             break;
                         case 10:
                             dto.setTIPO_MOV(value);

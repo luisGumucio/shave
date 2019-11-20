@@ -9,9 +9,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.List;
 
 @Component
 public class TransactionSubscriber {
@@ -73,10 +75,21 @@ public class TransactionSubscriber {
             case INITIAL:
                 transactionPTService.saveItemProduct(transaction);
                 break;
+            case UPDATE:
+                transactionPTService.udpateItem(transaction);
+                break;
             default:
 //                transactionPTService.loadData(transaction);
-                transactionPTService.executeMoving(transaction);
+//                transactionPTService.executeMoving(transaction);
                 break;
         }
+    }
+
+    @RabbitListener(queues = "${other.rabbitmq.queue}")
+    public synchronized void receivedProducto1(List<Transaction> transaction) {
+//        System.out.println(transaction.get(0).getItem().getId());
+        transaction.forEach(b -> {
+            transactionPTService.executeMoving(b, false);
+        });
     }
 }

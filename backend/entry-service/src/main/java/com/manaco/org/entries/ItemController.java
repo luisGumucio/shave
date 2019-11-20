@@ -50,6 +50,10 @@ public class ItemController {
 
         return itemRepository.findByIdentifier(PageRequest.of(page, 4), identifier);
     }
+    @GetMapping(path = "/getAll/{identifier}")
+    public List<Item> getAll(@PathVariable String identifier) {
+        return itemRepository.findByIdentifier(identifier);
+    }
 
     @GetMapping(path = "/itemtotal")
     public List<TotalItemReport> getItemTotal(@RequestParam String identifier) {

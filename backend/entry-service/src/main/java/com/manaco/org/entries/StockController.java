@@ -22,9 +22,14 @@ public class StockController {
     @Autowired
     private ItemStockRepository itemStockRepository;
 
+//    @GetMapping
+//    public Page<Stock> get(@RequestParam(defaultValue = "0") int page) {
+//        return stockRepository.findAll(new PageRequest(page, 10));
+//    }
+
     @GetMapping
-    public Page<Stock> get(@RequestParam(defaultValue = "0") int page) {
-        return stockRepository.findAll(new PageRequest(page, 10));
+    public List<Stock> get() {
+        return stockRepository.findAll();
     }
 
 //    @GetMapping(path = "/{id}")

@@ -580,19 +580,19 @@ public class ProcesatorMoving implements ProcesatorObject {
                 transaction.setType(TransactionType.ENTRY);
                 transaction.setPriceActual(item.getPrice());
                 transaction.setPriceNeto(item.getPrice());
-                transaction.setDetail(buildDetail(map, option));
+                transaction.setInformation(buildDetail(map, option));
             } else if (map.get("TIPO").equals("S")) {
                 transaction.setType(TransactionType.EGRESS);
                 transaction.setPriceActual(item.getPrice());
                 transaction.setPriceNeto(BigDecimal.ZERO);
-                transaction.setDetail(buildDetail(map, option));
+                transaction.setInformation(buildDetail(map, option));
             }
 
             LocalDate currentDate = convertToDate(map.get("FECHA")).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
             transaction.setTransactionDate(currentDate);
             transaction.setItem(item);
             transaction.setProcessId(processActive.getId());
-            transaction.setDetail(buildDetail(map, option));
+            transaction.setInformation(buildDetail(map, option));
 
             return transaction;
 
@@ -602,7 +602,7 @@ public class ProcesatorMoving implements ProcesatorObject {
         }
     }
 
-    private TransactionDetail buildDetail(Map<String, String> map, TransactionOption option) {
+    private Map<String, String> buildDetail(Map<String, String> map, TransactionOption option) {
         switch (option) {
             case PRIMA:
                 return buildPrimaDetail(map);
@@ -614,23 +614,20 @@ public class ProcesatorMoving implements ProcesatorObject {
         return null;
     }
 
-    private TransactionDetail buildProductDetail(Map<String, String> map) {
-        TransactionDetail detail = new TransactionDetail();
+    private Map<String, String> buildProductDetail(Map<String, String> map) {
         Map<String, String> info = new HashMap<>();
-        info.put("ALMACEN", map.get("ALMACEN"));
+        info.put("Almacen", map.get("ALMACEN"));
         info.put("NRO_DOC", map.get("NRO_DOC"));
         info.put("SEMANA", map.get("SEMANA"));
-        detail.setInformation(info);
-        return detail;
+//        info.put("TIPO_MOV", map.get("TIPO_MOV"));
+        return info;
     }
 
-    private TransactionDetail buildRepuestos(Map<String, String> map) {
-        TransactionDetail detail = new TransactionDetail();
+    private Map<String, String> buildRepuestos(Map<String, String> map) {
         Map<String, String> info = new HashMap<>();
         info.put("SECCION", map.get("SECCION"));
         info.put("CTA", map.get("CTA"));
-        detail.setInformation(info);
-        return detail;
+        return info;
     }
 
     private Date convertToDate(String receivedDate) {
@@ -644,16 +641,14 @@ public class ProcesatorMoving implements ProcesatorObject {
         return date;
     }
 
-    private TransactionDetail buildPrimaDetail(Map<String, String> map) {
-        TransactionDetail detail = new TransactionDetail();
+    private Map<String, String> buildPrimaDetail(Map<String, String> map) {
         Map<String, String> info = new HashMap<>();
         info.put("CUENTA", map.get("CUENTA"));
         info.put("ALMACEN", map.get("ALMACEN"));
         info.put("SECCION_D", map.get("SECCION_D"));
         info.put("DESCRIPCION", map.get("DESCRIPCION"));
         info.put("TRANS_TIPO", map.get("TRANS_TIPO"));
-        detail.setInformation(info);
-        return detail;
+        return info;
     }
 
     private Transaction buildTransactionProcessOne(Map<String, String> map, Process processActive,
@@ -671,27 +666,27 @@ public class ProcesatorMoving implements ProcesatorObject {
             transaction.setType(TransactionType.ENTRY);
             transaction.setPriceActual(item.getPrice());
             transaction.setPriceNeto(item.getPrice());
-            transaction.setDetail(buildDetail(map, option));
+            transaction.setInformation(buildDetail(map, option));
         } else if (map.get("TIPO").equals("S")) {
             transaction.setType(TransactionType.EGRESS);
             transaction.setPriceActual(item.getPrice());
             transaction.setPriceNeto(BigDecimal.ZERO);
-            transaction.setDetail(buildDetail(map, option));
+            transaction.setInformation(buildDetail(map, option));
         } else if (map.get("TIPO").equals("EC")) {
             transaction.setType(TransactionType.ENTRY_BUY);
             transaction.setPriceActual(item.getPrice());
             transaction.setPriceNeto(item.getPrice());
-            transaction.setDetail(buildDetail(map, option));
+            transaction.setInformation(buildDetail(map, option));
         } else if (map.get("TIPO").equals("CAM")) {
             transaction.setType(TransactionType.CAM);
-            transaction.setDetail(buildDetail(map, option));
+            transaction.setInformation(buildDetail(map, option));
         }
 
         LocalDate currentDate = convertToDate(map.get("FECHA")).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         transaction.setTransactionDate(currentDate);
         transaction.setItem(item);
         transaction.setProcessId(processActive.getId());
-        transaction.setDetail(buildDetail(map, option));
+        transaction.setInformation(buildDetail(map, option));
 
         return transaction;
     }

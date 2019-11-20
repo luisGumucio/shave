@@ -9,8 +9,11 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.data.mongodb.core.convert.CustomConversions;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -20,6 +23,7 @@ import java.util.Arrays;
 @ComponentScan("com.manaco.org")
 @EnableMongoRepositories("com.manaco.org.repositories")
 @EnableRabbit
+@EnableAsync
 public class Application {
 
     public static void main(String[] args) {
@@ -49,5 +53,15 @@ public class Application {
         };
 
         return new CustomConversions(Arrays.asList(decimal128ToBigDecimal, bigDecimalToDecimal128));
+    }
+
+    @Bean("threadPoolTaskExecutor")
+    public TaskExecutor getAsyncExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(20);
+        executor.setMaxPoolSize(1000);
+        executor.setWaitForTasksToCompleteOnShutdown(true);
+        executor.setThreadNamePrefix("Async-");
+        return executor;
     }
 }

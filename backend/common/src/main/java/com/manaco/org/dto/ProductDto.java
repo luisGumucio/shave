@@ -10,7 +10,7 @@ public class ProductDto {
     private String ARTICULO;
     private String PARES;
     private String PCOSTO;
-    private LocalDate FECHA_DOC;
+    private String FECHA_DOC;
     private String ORIGEN;
     private String SEMANA;
     private String TABLA_ORIGEN;
@@ -99,11 +99,11 @@ public class ProductDto {
         this.TIPO_MOV = TIPO_MOV;
     }
 
-    public LocalDate getFECHA_DOC() {
+    public String getFECHA_DOC() {
         return FECHA_DOC;
     }
 
-    public void setFECHA_DOC(LocalDate FECHA_DOC) {
+    public void setFECHA_DOC(String FECHA_DOC) {
         this.FECHA_DOC = FECHA_DOC;
     }
 }

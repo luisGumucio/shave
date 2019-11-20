@@ -8,6 +8,8 @@ public class TransactionTotalReport {
     private BigDecimal totalUpdate;
     private BigDecimal totalIncrement;
 
+    private String name;
+
     public BigDecimal getTotalNormal() {
         return totalNormal;
     }
@@ -30,5 +32,13 @@ public class TransactionTotalReport {
 
     public void setTotalIncrement(BigDecimal totalIncrement) {
         this.totalIncrement = totalIncrement;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }
