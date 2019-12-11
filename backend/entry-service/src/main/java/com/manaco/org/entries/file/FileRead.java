@@ -83,7 +83,7 @@ public class FileRead {
 
         long start = new Date().getTime();
         System.out.println("BufferedReader Time Consumed => " + new Date().toString());
-        String fileName = "C:\\Users\\lucho\\Documents\\manaco\\datosOficial\\productoTerminado\\procesar\\pag" +value+".txt"; //this path is on my local
+        String fileName = "C:\\Users\\lucho\\Documents\\manaco\\datosOficial\\productoTerminado\\cerrado\\pag" +value+".txt"; //this path is on my local
         int cont = 0;
         try (BufferedReader fileBufferReader = new BufferedReader(new FileReader(fileName))) {
             String fileLineContent;
@@ -212,36 +212,36 @@ public class FileRead {
                             dto.setTIPO(value);
                             break;
                         case 1:
-                            dto.setALMACEN(value);
+//                            dto.setALMACEN(value);
                             break;
+//                        case 2:
+//                            dto.setNRO_DOC(value);
+//                            break;
                         case 2:
-                            dto.setNRO_DOC(value);
-                            break;
-                        case 3:
                             dto.setARTICULO(value);
                             break;
-                        case 4:
+                        case 3:
                             dto.setPARES(value);
                             break;
-                        case 5:
+                        case 4:
                             dto.setPCOSTO(value);
                             break;
-                        case 6:
+                        case 5:
                             LocalDate currentDate = convertToDate(value).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 //                            dto.setFECHA_DOC(currentDate);
                             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
                             dto.setFECHA_DOC(currentDate.format(formatter));
                             break;
-                        case 7:
+                        case 6:
                             dto.setORIGEN(value);
                             break;
-                        case 8:
+                        case 7:
                             dto.setSEMANA(value);
                             break;
+//                        case 9:
+//                            dto.setTABLA_ORIGEN(value);
+//                            break;
                         case 9:
-                            dto.setTABLA_ORIGEN(value);
-                            break;
-                        case 10:
                             dto.setTIPO_MOV(value);
                             break;
                     }
@@ -261,6 +261,7 @@ public class FileRead {
     private static Date convertToDate(String receivedDate) {
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
         Date date = null;
+        Date now = new Date(receivedDate);
         try {
             date = formatter.parse(receivedDate);
         } catch (ParseException e) {

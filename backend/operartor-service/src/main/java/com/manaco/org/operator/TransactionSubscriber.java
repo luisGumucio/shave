@@ -60,8 +60,8 @@ public class TransactionSubscriber {
                 break;
             case UPDATE:
                 Ufv actual = ufvRepository.findByCreationDate(transaction.getTransactionDate());
-                Item item = itemRepository.findById(transaction.getItem().getId()).orElse(null);
-                service.updateItemCierre(item, transaction, actual);
+//                Item item = itemRepository.findById(transaction.getItem().getId()).orElse(null);
+                service.updateItemCierre(transaction.getItem(), transaction, actual);
             default:
                 service.executeMoving(transaction);
                 break;

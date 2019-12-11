@@ -144,7 +144,7 @@ public class FileController {
     }
 
     private ResponseEntity<InputStreamResource> downloadTransaction(String identifier) throws IOException {
-        List<Transaction> transactions = transactionRepository.findAllByIdentifier(identifier);
+        List<Transaction> transactions = transactionRepository.findAllByIdentifierAndType(identifier, "CIERRE");
 
         TransactionOption option = TransactionOption.valueOf(identifier);
         ByteArrayInputStream in = null;

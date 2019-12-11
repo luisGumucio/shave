@@ -24,6 +24,14 @@ public class ProcesatorMoving implements ProcesatorObject {
     @Autowired
     private Publisher publisher;
 
+    @Autowired
+    private Data data;
+
+
+    public void load() {
+        data.load();
+    }
+
     @Override
     public void execute(Map<String, String> map, TransactionOption option, Process processActive) {
         Transaction transaction;
@@ -605,21 +613,21 @@ public class ProcesatorMoving implements ProcesatorObject {
     private Map<String, String> buildDetail(Map<String, String> map, TransactionOption option) {
         switch (option) {
             case PRIMA:
-                return buildPrimaDetail(map);
+                return buildProductDetail(map);
             case REPUESTOS:
                 return buildRepuestos(map);
             case PRODUCTO:
-                return buildProductDetail(map);
+//                return buildProductDetail(map);
         }
         return null;
     }
 
     private Map<String, String> buildProductDetail(Map<String, String> map) {
         Map<String, String> info = new HashMap<>();
-        info.put("Almacen", map.get("ALMACEN"));
-        info.put("NRO_DOC", map.get("NRO_DOC"));
+//        info.put("Almacen", map.get("ALMACEN"));
+//        info.put("NRO_DOC", map.get("NRO_DOC"));
         info.put("SEMANA", map.get("SEMANA"));
-//        info.put("TIPO_MOV", map.get("TIPO_MOV"));
+        info.put("TIPO_MOV", map.get("TIPO_MOV"));
         return info;
     }
 
@@ -663,9 +671,16 @@ public class ProcesatorMoving implements ProcesatorObject {
 
 
         if (map.get("TIPO").equals("E")) {
+            ItemTemp temp = data.filter(item.getId());
+            if(temp != null) {
+                transaction.setPriceNeto(temp.getCosto().setScale(6, BigDecimal.ROUND_DOWN));
+//                transaction.setPriceNeto(item.getPrice());
+            } else {
+                transaction.setPriceNeto(item.getPrice());
+            }
+
             transaction.setType(TransactionType.ENTRY);
             transaction.setPriceActual(item.getPrice());
-            transaction.setPriceNeto(item.getPrice());
             transaction.setInformation(buildDetail(map, option));
         } else if (map.get("TIPO").equals("S")) {
             transaction.setType(TransactionType.EGRESS);
@@ -674,8 +689,14 @@ public class ProcesatorMoving implements ProcesatorObject {
             transaction.setInformation(buildDetail(map, option));
         } else if (map.get("TIPO").equals("EC")) {
             transaction.setType(TransactionType.ENTRY_BUY);
+            ItemTemp temp = data.filter(item.getId());
+            if(temp != null) {
+                transaction.setPriceNeto(temp.getCosto().setScale(6, BigDecimal.ROUND_DOWN));
+//                transaction.setPriceNeto(item.getPrice());
+            } else {
+                transaction.setPriceNeto(item.getPrice());
+            }
             transaction.setPriceActual(item.getPrice());
-            transaction.setPriceNeto(item.getPrice());
             transaction.setInformation(buildDetail(map, option));
         } else if (map.get("TIPO").equals("CAM")) {
             transaction.setType(TransactionType.CAM);

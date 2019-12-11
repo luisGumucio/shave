@@ -51,12 +51,49 @@ public class TransactionService {
                 case EGRESS:
                     executeEgress(item, transaction, actual);
                     break;
+                case ENTRY_BUY:
+                    executeEntryBuy(item, transaction, actual);
+                    break;
             }
             LOGGER.info("saved successfully with id " + transaction.getItem());
         } else {
             System.out.println("item not found with  id " + transaction.getItem());
             saveItemNotFound(transaction);
         }
+    }
+
+    private void executeEntryBuy(Item item, Transaction transaction, Ufv actual) {
+        Transaction entry = new Transaction();
+        entry.setType(TransactionType.ENTRY_BUY);
+        entry.setTransactionDate(transaction.getTransactionDate());
+        entry.setEntry(transaction.getItem().getQuantity());
+        entry.setBalance(entry.getEntry().add(item.getQuantity()));
+        entry.setPriceNeto(transaction.getPriceNeto());
+        entry.setUfv(actual);
+        entry.setTotalEntry(operator.calculateTotalItem(entry.getPriceNeto(), entry.getEntry()));
+        entry.setTotalNormal(entry.getTotalEntry().add(item.getTotal()).setScale(6, BigDecimal.ROUND_CEILING));
+        entry.setTotalUpdate(entry.getTotalEntry().add(item.getTotalUpdate()).setScale(6, BigDecimal.ROUND_CEILING));
+        entry.setIncrement(BigDecimal.ZERO);
+        //para obtener el nuevo precio
+        if(entry.getTotalUpdate().intValue() <= 0) {
+            entry.setPriceActual(item.getPrice());
+        } else {
+            entry.setPriceActual(operator.newPrice(entry.getTotalUpdate(), entry.getBalance()));
+        }
+
+        // update item
+        item.setPrice(entry.getPriceActual());
+        item.setQuantity(entry.getBalance());
+        item.setTotal(entry.getTotalNormal());
+        item.setTotalUpdate(entry.getTotalUpdate());
+        // detail information
+        entry.setProcessId(transaction.getProcessId());
+        entry.setIdentifier(item.getIdentifier());
+        entry.setInformation(transaction.getInformation());
+        entry.setItem(item);
+        // save data
+        itemRepository.save(item);
+        transactionRepository.save(entry);
     }
 
     private void saveItemNotFound(Transaction otherTransaction) {
@@ -200,12 +237,12 @@ public class TransactionService {
 
     public void saveItem(Transaction transaction) {
 
-        if (transaction.getItem().getQuantity().intValue() < 0) {
-            transaction.getItem().setIsFailure(Boolean.TRUE);
-        } else {
-            transaction.getItem().setIsFailure(Boolean.FALSE);
-        }
-
+//        if (transaction.getItem().getQuantity().intValue() < 0) {
+//            transaction.getItem().setIsFailure(Boolean.TRUE);
+//        } else {
+//            transaction.getItem().setIsFailure(Boolean.FALSE);
+//        }
+        itemRepository.save(transaction.getItem());
         transactionRepository.save(transaction);
         LOGGER.info("adding initial transaction with item id" + transaction.getItem().getId());
     }
@@ -245,7 +282,7 @@ public class TransactionService {
     }
 
     public void updateItemCierre(Item item, Transaction transaction, Ufv actual) {
-        if (!item.getLastUpdate().equals(transaction.getTransactionDate())) {
+//        if (!item.getLastUpdate().equals(transaction.getTransactionDate())) {
             if (item.getQuantity().intValue() > 0) {
                 Ufv before = ufvRepository.findByCreationDate(item.getLastUpdate());
                 BigDecimal totalUpdate = operator.calculateUpdate(item.getTotalUpdate(), actual.getValue(), before.getValue());
@@ -262,6 +299,6 @@ public class TransactionService {
                 saveMove(item, TransactionType.CIERRE, BigDecimal.ZERO, item.getTotal(), item.getTotalUpdate(),
                         actual, transaction.getProcessId());
             }
-        }
+//        }
     }
 }

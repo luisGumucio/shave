@@ -95,8 +95,8 @@ public class FileService {
     }
 
     public void initialExecute(InputStream file, ProcesatorObject procesatorObject, TransactionOption option, Process processActive) {
-        if(procesatorObject instanceof ProcesatorProduct) {
-            procesatorProduct.load();
+        if(procesatorObject instanceof ProcesatorMoving) {
+            procesatorMoving.load();
         }
         OPCPackage pkg = null;
         try {

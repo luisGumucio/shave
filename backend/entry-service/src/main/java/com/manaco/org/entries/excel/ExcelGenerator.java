@@ -26,7 +26,9 @@ public class ExcelGenerator {
 
     public static synchronized ByteArrayInputStream downloadTransation(List<Transaction> transactions, String identifier) throws IOException {
         String[] COLUMNs = { "ITEM", "TIPO", "FECHA", "INGRESO", "EGRESO", "CANTIDAD", "PRECIO_NETO", "PRECIO_ACTUAL",
-                "UFV", "INGRESO_TOTAL", "EGRESO_TOTAL", "TOTAL", "TOTAL_ACT", "INCR", "SECCION", "CUENTA", "ALMACEN", "DESCRIPCION", "TRANS_TIPO"};
+                "UFV", "INGRESO_TOTAL", "EGRESO_TOTAL", "TOTAL", "TOTAL_ACT", "INCR", "SEMANA", "TIPO_MOV"};
+        //        String[] COLUMNs = { "ITEM", "TIPO", "FECHA", "INGRESO", "EGRESO", "CANTIDAD", "PRECIO_NETO", "PRECIO_ACTUAL",
+//                "UFV", "INGRESO_TOTAL", "EGRESO_TOTAL", "TOTAL", "TOTAL_ACT", "INCR", "SECCION", "CUENTA", "ALMACEN", "DESCRIPCION", "TRANS_TIPO"};
         if(TransactionOption.valueOf(identifier) == TransactionOption.REPUESTOS) {
 
         }
@@ -78,15 +80,17 @@ public class ExcelGenerator {
                 row.createCell(12).setCellValue((transaction.getTotalUpdate() == null)? BigDecimal.ZERO.intValue():transaction.getTotalUpdate().doubleValue());
                 row.createCell(13).setCellValue((transaction.getIncrement()== null)? BigDecimal.ZERO.intValue():transaction.getIncrement().doubleValue());
                 row.createCell(14).setCellValue((transaction.getInformation()== null)? "":transaction
-                        .getInformation().get("SECCION_D"));
+                        .getInformation().get("SEMANA"));
                 row.createCell(15).setCellValue((transaction.getInformation()== null)? "":transaction
-                        .getInformation().get("CUENTA"));
-                row.createCell(16).setCellValue((transaction.getInformation()== null)? 0:Integer.parseInt(transaction
-                        .getInformation().get("ALMACEN")));
-                row.createCell(17).setCellValue((transaction.getInformation()== null)? "":transaction
-                        .getInformation().get("DESCRIPCION"));
-                row.createCell(18).setCellValue((transaction.getInformation()== null)? 0: Integer.parseInt(transaction
-                        .getInformation().get("TRANS_TIPO")));
+                        .getInformation().get("TIPO_MOV"));
+//                row.createCell(15).setCellValue((transaction.getInformation()== null)? "":transaction
+//                        .getInformation().get("CUENTA"));
+//                row.createCell(16).setCellValue((transaction.getInformation()== null)? 0:Integer.parseInt(transaction
+//                        .getInformation().get("ALMACEN")));
+//                row.createCell(17).setCellValue((transaction.getInformation()== null)? "":transaction
+//                        .getInformation().get("DESCRIPCION"));
+//                row.createCell(18).setCellValue((transaction.getInformation()== null)? 0: Integer.parseInt(transaction
+//                        .getInformation().get("TRANS_TIPO")));
 //                row.createCell(14).setCellValue(transaction.getEgress().toString());
 //                System.out.println(transaction.getItem().getId());
                 cont++;
@@ -282,8 +286,11 @@ public class ExcelGenerator {
     public static synchronized ByteArrayInputStream downloadProductoTerminado(List<ProductDto> transactions, String identifier) throws IOException {
 //        String[] COLUMNs = { "TIPO", "ALMACEN", "NRO_DOC", "ARTICULO", "PARES", "PCOSTO", "FECHA_DOC", "ORIGEN",
 //                "SEMANA", "TABLA_ORIGEN", "TIPO_MOV"};
-        String[] COLUMNs = { "FECHA", "ITEM", "PU_ACTUAL", "CANTIDAD", "TIPO", "ALMACEN", "NRO_DOC",
-                "SEMANA", "TAB_ORIG", "TIPO_MOV"};
+//        String[] COLUMNs = { "FECHA", "ITEM", "PU_ACTUAL", "CANTIDAD", "TIPO", "ALMACEN", "NRO_DOC",
+//                "SEMANA", "TAB_ORIG", "TIPO_MOV"};
+
+        String[] COLUMNs = { "FECHA", "ITEM", "PU_ACTUAL", "CANTIDAD", "TIPO",
+                "SEMANA", "TIPO_MOV"};
 
 
         try {
@@ -322,12 +329,12 @@ public class ExcelGenerator {
                 row.createCell(2).setCellValue(dto.getPCOSTO());
                 row.createCell(3).setCellValue(dto.getPARES());
                 row.createCell(4).setCellValue(dto.getTIPO());
-                row.createCell(5).setCellValue(dto.getALMACEN());
-                row.createCell(6).setCellValue(dto.getNRO_DOC());
-                row.createCell(7).setCellValue(dto.getSEMANA());
-                row.createCell(8).setCellValue(dto.getTABLA_ORIGEN());
-                row.createCell(9).setCellValue(dto.getTIPO_MOV());
-//
+//                row.createCell(5).setCellValue(dto.getALMACEN());
+//                row.createCell(6).setCellValue(dto.getNRO_DOC());
+                row.createCell(5).setCellValue(dto.getSEMANA());
+//                row.createCell(8).setCellValue(dto.getTABLA_ORIGEN());
+                row.createCell(6).setCellValue(dto.getTIPO_MOV());
+////
 //                row.createCell(7).setCellValue(dto.getORIGEN());
 //                row.createCell(9).setCellValue(dto.getTABLA_ORIGEN());
 //                row.createCell(10).setCellValue(dto.getTIPO_MOV());

@@ -88,7 +88,7 @@ public class ItemController {
 
     @PostMapping(path = "/fechaUpdate")
     public void updateItem(@RequestBody UpdateItem updateItem) {
-       List<Item> items = itemRepository.findByIdentifier(updateItem.getOption().toString());
+     List<Item> items = itemRepository.findAllByIdentifier(updateItem.getOption().toString());
        for(Item item: items) {
            sendTransaction(item, updateItem);
        }
