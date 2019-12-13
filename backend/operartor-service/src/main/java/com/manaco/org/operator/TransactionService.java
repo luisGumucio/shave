@@ -78,7 +78,7 @@ public class TransactionService {
         if(entry.getTotalUpdate().intValue() <= 0) {
             entry.setPriceActual(item.getPrice());
         } else {
-            entry.setPriceActual(operator.newPrice(entry.getTotalUpdate(), entry.getBalance()));
+            entry.setPriceActual(operator.newPrice(entry.getTotalUpdate(), entry.getBalance(), item.getPrice()));
         }
 
         // update item
@@ -139,7 +139,7 @@ public class TransactionService {
             if (item.getQuantity().intValue() > 0) {
                 Ufv before = ufvRepository.findByCreationDate(item.getLastUpdate());
                 BigDecimal totalUpdate = operator.calculateUpdate(item.getTotalUpdate(), actual.getValue(), before.getValue());
-                BigDecimal newPrice = operator.newPrice(totalUpdate, item.getQuantity());
+                BigDecimal newPrice = operator.newPrice(totalUpdate, item.getQuantity(), item.getPrice());
                 BigDecimal increment = operator.caclulateUfvValue(totalUpdate, item.getTotalUpdate()).setScale(6, BigDecimal.ROUND_CEILING);
                 item.setPrice(newPrice.setScale(6, BigDecimal.ROUND_CEILING));
                 item.setLastUpdate(transaction.getTransactionDate());
@@ -217,7 +217,7 @@ public class TransactionService {
         if(entry.getTotalUpdate().intValue() <= 0) {
             entry.setPriceActual(item.getPrice());
         } else {
-            entry.setPriceActual(operator.newPrice(entry.getTotalUpdate(), entry.getBalance()));
+            entry.setPriceActual(operator.newPrice(entry.getTotalUpdate(), entry.getBalance(), item.getPrice()));
         }
 
         // update item
@@ -286,7 +286,7 @@ public class TransactionService {
             if (item.getQuantity().intValue() > 0) {
                 Ufv before = ufvRepository.findByCreationDate(item.getLastUpdate());
                 BigDecimal totalUpdate = operator.calculateUpdate(item.getTotalUpdate(), actual.getValue(), before.getValue());
-                BigDecimal newPrice = operator.newPrice(totalUpdate, item.getQuantity());
+                BigDecimal newPrice = operator.newPrice(totalUpdate, item.getQuantity(), item.getPrice());
                 BigDecimal increment = operator.caclulateUfvValue(totalUpdate, item.getTotalUpdate()).setScale(6, BigDecimal.ROUND_CEILING);
                 item.setPrice(newPrice.setScale(6, BigDecimal.ROUND_CEILING));
                 item.setLastUpdate(transaction.getTransactionDate());

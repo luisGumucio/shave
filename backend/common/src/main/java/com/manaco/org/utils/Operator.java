@@ -34,11 +34,11 @@ public class Operator {
         return BigDecimal.ZERO;
     }
 
-    public BigDecimal newPrice(BigDecimal totalUpdate, BigDecimal quantity) {
+    public BigDecimal newPrice(BigDecimal totalUpdate, BigDecimal quantity, BigDecimal price) {
         if (totalUpdate.compareTo(BigDecimal.ZERO) != 0 && quantity.compareTo(BigDecimal.ZERO) != 0) {
             return totalUpdate.divide(quantity, RoundingMode.CEILING);
         }
-        return BigDecimal.ZERO;
+        return price;
     }
 
     public BigDecimal caclulateUfvValue(BigDecimal totalUpdate, BigDecimal totalNormal) {

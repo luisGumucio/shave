@@ -56,7 +56,7 @@ public class TransactionRepuestosService {
             BigDecimal totalNormal = operator.calculateTotal(transaction.getItem().getQuantity(), transaction.getItem().getPrice());
 
             BigDecimal totalUpdate = operator.calculateUpdate(totalNormal, actual.getValue(), before.getValue());
-            BigDecimal newPrice = operator.newPrice(totalUpdate, transaction.getItem().getQuantity());
+            BigDecimal newPrice = operator.newPrice(totalUpdate, transaction.getItem().getQuantity(), transaction.getItem().getPrice());
             BigDecimal increment = operator.caclulateUfvValue(totalUpdate, totalNormal);
             transaction.getItem().setPrice(newPrice.setScale(6, BigDecimal.ROUND_CEILING));
             transaction.getItem().setLastUpdate(transaction.getTransactionDate());

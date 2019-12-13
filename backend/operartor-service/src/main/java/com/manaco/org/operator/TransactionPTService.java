@@ -101,7 +101,7 @@ public class TransactionPTService {
         if(entry.getTotalUpdate().intValue() <= 0) {
             entry.setPriceActual(item.getPrice());
         } else {
-            entry.setPriceActual(operator.newPrice(entry.getTotalUpdate(), entry.getBalance()));
+//            entry.setPriceActual(operator.newPrice(entry.getTotalUpdate(), entry.getBalance()));
         }
 
         // update item
@@ -153,14 +153,14 @@ public class TransactionPTService {
             if (item.getQuantity().intValue() > 0) {
                 Ufv before = ufvRepository.findByCreationDate(item.getLastUpdate());
                 BigDecimal totalUpdate = operator.calculateUpdate(item.getTotalUpdate(), actual.getValue(), before.getValue());
-                BigDecimal newPrice = operator.newPrice(totalUpdate, item.getQuantity());
-                BigDecimal increment = operator.caclulateUfvValue(totalUpdate, item.getTotalUpdate()).setScale(6, BigDecimal.ROUND_CEILING);
-                item.setPrice(newPrice.setScale(6, BigDecimal.ROUND_CEILING));
+//                BigDecimal newPrice = operator.newPrice(totalUpdate, item.getQuantity());
+//                BigDecimal increment = operator.caclulateUfvValue(totalUpdate, item.getTotalUpdate()).setScale(6, BigDecimal.ROUND_CEILING);
+////                item.setPrice(newPrice.setScale(6, BigDecimal.ROUND_CEILING));
                 item.setLastUpdate(transaction.getTransactionDate());
                 item.setTotalUpdate(totalUpdate.setScale(6, BigDecimal.ROUND_CEILING));
                 item.setTotal(item.getTotal());
-                saveMove(item, TransactionType.G_UPDATE, increment, item.getTotal(), totalUpdate,
-                        actual, transaction.getProcessId(), newPrice);
+//                saveMove(item, TransactionType.G_UPDATE, increment, item.getTotal(), totalUpdate,
+////                        actual, transaction.getProcessId(), newPrice);
             } else {
                 item.setLastUpdate(transaction.getTransactionDate());
                 saveMove(item, TransactionType.G_UPDATE, BigDecimal.ZERO, item.getTotal(), item.getTotalUpdate(),
@@ -463,7 +463,7 @@ public class TransactionPTService {
         if(entry.getTotalUpdate().intValue() <= 0) {
             entry.setPriceActual(item.getPrice());
         } else {
-            entry.setPriceActual(operator.newPrice(entry.getTotalUpdate(), entry.getBalance()));
+//            entry.setPriceActual(operator.newPrice(entry.getTotalUpdate(), entry.getBalance()));
         }
 
         // update item
@@ -580,15 +580,15 @@ public class TransactionPTService {
 
             BigDecimal totalNormal = operator.calculateTotal(transaction.getItem().getQuantity(), transaction.getItem().getPrice());
             BigDecimal totalUpdate = operator.calculateUpdate(totalNormal, actual.getValue(), before.getValue());
-            BigDecimal newPrice = operator.newPrice(totalUpdate, transaction.getItem().getQuantity());
+//            BigDecimal newPrice = operator.newPrice(totalUpdate, transaction.getItem().getQuantity());
             BigDecimal increment = operator.caclulateUfvValue(totalUpdate, totalNormal);
-            transaction.getItem().setPrice(newPrice.setScale(6, BigDecimal.ROUND_CEILING));
+//            transaction.getItem().setPrice(newPrice.setScale(6, BigDecimal.ROUND_CEILING));
             transaction.getItem().setLastUpdate(transaction.getTransactionDate());
             transaction.setUfv(actual);
             transaction.setIncrement(increment);
 
             transaction.setProcessId(process.getId());
-            transaction.getItem().setPrice(newPrice.setScale(6, BigDecimal.ROUND_CEILING));
+//            transaction.getItem().setPrice(newPrice.setScale(6, BigDecimal.ROUND_CEILING));
             transaction.getItem().setLastUpdate(transaction.getTransactionDate());
             saveMoveUpdate(transaction.getItem(), TransactionType.G_CIERRE, increment, totalNormal, totalUpdate,
                     actual, transaction.getProcessId());
